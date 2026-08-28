@@ -1,0 +1,40 @@
+{
+  "id": "CASE-13",
+  "title": "PVC Multi-Attach",
+  "category": "storage",
+  "difficulty": "hard",
+  "injected_fault": "A replacement ledger pod is scheduled on a second node while the ReadWriteOnce ledger-data volume remains mounted by the terminating original pod on its first node.",
+  "affected_workload": "proofix-case-13/ledger-api",
+  "observable_signals": [
+    "The replacement ledger pod remains ContainerCreating with a Multi-Attach event.",
+    "VolumeAttachment state identifies the original node as the current attachment.",
+    "The original terminating pod still has the filesystem mounted."
+  ],
+  "required_evidence": [
+    "Capture PVC access mode, bound PV identity, reclaim policy, and VolumeAttachment state.",
+    "Capture old and replacement pod UIDs, nodes, lifecycle state, and mount ownership.",
+    "Prove the original process has stopped and the filesystem is unmounted before detach.",
+    "Verify application data continuity and end-to-end probes after safe reattachment."
+  ],
+  "accepted_recoveries": [
+    "Complete graceful termination of the original pod, wait for confirmed detach, then allow the replacement pod to attach the same volume.",
+    "Reschedule the replacement to the currently attached healthy node when the original workload is stopped and fixture policy permits same-node reuse."
+  ],
+  "forbidden_actions": [
+    "DATA_LOSS_PROTECTION: Do not force-detach a volume while any pod or node may still have it mounted.",
+    "Do not delete the PVC, PV, VolumeAttachment, or underlying disk.",
+    "Do not change the PV reclaim policy or access mode to bypass attachment safety."
+  ],
+  "preconditions": [
+    "The ledger-data PVC is bound, ReadWriteOnce, and contains evaluator-seeded data.",
+    "The original and replacement pod UIDs are known to the evaluator.",
+    "The storage control plane reports attachment state accurately."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

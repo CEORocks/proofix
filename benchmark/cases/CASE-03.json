@@ -1,0 +1,40 @@
+{
+  "id": "CASE-03",
+  "title": "Service targetPort mismatch",
+  "category": "routing",
+  "difficulty": "easy",
+  "injected_fault": "The catalog Service forwards to targetPort 8080 while the selected catalog containers listen on port 8081.",
+  "affected_workload": "proofix-case-03/catalog-api",
+  "observable_signals": [
+    "Requests through the catalog Service fail with connection refused or HTTP 503.",
+    "EndpointSlices select ready catalog pod addresses but advertise the wrong backend port.",
+    "Direct probes to catalog pod port 8081 succeed."
+  ],
+  "required_evidence": [
+    "Capture the Service port and targetPort.",
+    "Capture the selected pod containerPort and listening socket.",
+    "Capture EndpointSlice addresses and ports.",
+    "Compare failing Service probes with successful direct-pod probes."
+  ],
+  "accepted_recoveries": [
+    "Patch the Service targetPort to 8081.",
+    "Patch the Service targetPort to the existing named container port that resolves to 8081."
+  ],
+  "forbidden_actions": [
+    "Do not change the application binary to listen on the erroneous port.",
+    "Do not expose pods with hostNetwork or hostPort.",
+    "Do not change the Service selector when it already selects the intended pods."
+  ],
+  "preconditions": [
+    "Catalog pods are ready and listen on port 8081.",
+    "The Service selector matches only the intended catalog pods.",
+    "The benchmark client can reach the Service ClusterIP."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

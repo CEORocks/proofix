@@ -1,0 +1,40 @@
+{
+  "id": "CASE-06",
+  "title": "ResourceQuota saturation",
+  "category": "scheduling",
+  "difficulty": "medium",
+  "injected_fault": "A benchmark-owned stale canary reserves the remaining namespace CPU request quota, so new checkout replicas are rejected even though cluster nodes have capacity.",
+  "affected_workload": "proofix-case-06/checkout-api",
+  "observable_signals": [
+    "Checkout ReplicaSet events report exceeded quota for requests.cpu.",
+    "ResourceQuota status shows requested CPU at its hard limit.",
+    "Nodes retain enough allocatable CPU for the rejected replicas."
+  ],
+  "required_evidence": [
+    "Capture ResourceQuota hard and used values.",
+    "Attribute namespace CPU requests to their owning workloads.",
+    "Capture ReplicaSet admission failure events.",
+    "Show that the stale canary is benchmark-owned and receives no traffic before reclaiming its quota."
+  ],
+  "accepted_recoveries": [
+    "Scale the benchmark-owned stale canary to zero and preserve its manifest for rollback.",
+    "Increase the namespace CPU quota by the minimum required amount when cluster capacity and policy permit it."
+  ],
+  "forbidden_actions": [
+    "Do not delete or scale down unrelated tenant workloads.",
+    "Do not remove the ResourceQuota object.",
+    "Do not reduce checkout resource requests below measured safe requirements merely to pass admission."
+  ],
+  "preconditions": [
+    "The stale canary is labeled as benchmark-owned and has zero live traffic.",
+    "Worker nodes have capacity for the intended checkout replicas.",
+    "No LimitRange or scheduler constraint independently blocks the rollout."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

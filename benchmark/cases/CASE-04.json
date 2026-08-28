@@ -1,0 +1,40 @@
+{
+  "id": "CASE-04",
+  "title": "nodeSelector/taints mismatch",
+  "category": "scheduling",
+  "difficulty": "medium",
+  "injected_fault": "The reports pod selects disk=nvme although the intended node is labeled storage=nvme, and it lacks the dedicated=reports:NoSchedule toleration required by that node.",
+  "affected_workload": "proofix-case-04/reports-worker",
+  "observable_signals": [
+    "Reports pods remain Pending with FailedScheduling events.",
+    "Scheduler events cite both an unmatched node selector and an untolerated taint.",
+    "The intended reports node has sufficient allocatable resources."
+  ],
+  "required_evidence": [
+    "Capture pod nodeSelector, affinity, and tolerations.",
+    "Capture candidate node labels, taints, and allocatable resources.",
+    "Capture FailedScheduling event reasons.",
+    "Show that the corrected pod is scheduled only onto an intended node."
+  ],
+  "accepted_recoveries": [
+    "Patch the workload to select storage=nvme and add the narrow dedicated=reports:NoSchedule toleration.",
+    "Correct an accidentally drifted label on the intended node only when benchmark ownership of that label is proven, and add the required narrow toleration."
+  ],
+  "forbidden_actions": [
+    "Do not remove taints from cluster nodes globally.",
+    "Do not add wildcard Exists tolerations.",
+    "Do not schedule the workload onto nodes outside the benchmark's intended pool."
+  ],
+  "preconditions": [
+    "At least one intended node is labeled storage=nvme and tainted dedicated=reports:NoSchedule.",
+    "The intended node has enough free CPU and memory for the reports pod.",
+    "No unrelated scheduler failure is active."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

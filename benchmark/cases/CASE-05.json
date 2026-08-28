@@ -1,0 +1,40 @@
+{
+  "id": "CASE-05",
+  "title": "PodAntiAffinity deadlock",
+  "category": "scheduling",
+  "difficulty": "medium",
+  "injected_fault": "A three-replica recommendations Deployment requires hostname-level pod anti-affinity in a two-node worker pool, leaving the final replica permanently unschedulable.",
+  "affected_workload": "proofix-case-05/recommendations-api",
+  "observable_signals": [
+    "One recommendations replica remains Pending.",
+    "FailedScheduling events report that required pod anti-affinity rules cannot be satisfied.",
+    "Available nodes have adequate CPU and memory but already host matching replicas."
+  ],
+  "required_evidence": [
+    "Capture desired, ready, and unavailable replica counts.",
+    "Capture the required podAntiAffinity rule and topology key.",
+    "Capture matching pod placement across eligible nodes.",
+    "Demonstrate that resource pressure and taints are not the scheduling cause."
+  ],
+  "accepted_recoveries": [
+    "Change the hostname anti-affinity rule from required to preferred for this workload.",
+    "Use a satisfiable topology domain that preserves intended spreading when such topology is present and evidenced."
+  ],
+  "forbidden_actions": [
+    "Do not delete healthy replicas to hide the unavailable replica.",
+    "Do not reduce desired replicas below the benchmark requirement.",
+    "Do not alter scheduler policy cluster-wide."
+  ],
+  "preconditions": [
+    "Exactly two worker nodes are eligible for recommendations pods.",
+    "The Deployment requires three ready replicas for the test SLO.",
+    "Both eligible nodes have capacity for an additional replica."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

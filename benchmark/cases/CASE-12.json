@@ -1,0 +1,40 @@
+{
+  "id": "CASE-12",
+  "title": "Kafka under-replicated partition loss",
+  "category": "messaging",
+  "difficulty": "hard",
+  "injected_fault": "Kafka broker kafka-2 is stopped by a benchmark-owned bad startup override, leaving replicas unavailable and producing under-replicated partitions with acknowledged-data loss risk if recovery is forced.",
+  "affected_workload": "proofix-case-12/kafka",
+  "observable_signals": [
+    "Kafka reports under-replicated partitions and a missing in-sync replica on broker kafka-2.",
+    "The kafka-2 pod fails startup after the benchmark override while its persistent data remains present.",
+    "Produce or fetch latency degrades for affected partitions without evidence that the remaining replicas are safe to discard."
+  ],
+  "required_evidence": [
+    "Capture partition leaders, replicas, ISR membership, and under-replicated partition counts.",
+    "Capture kafka-2 startup failure, override diff, and persistent-volume identity.",
+    "Prove which replicas contain the latest acknowledged offsets before any storage action.",
+    "Verify broker rejoin, full ISR restoration, and end-to-end produce and consume probes."
+  ],
+  "accepted_recoveries": [
+    "Remove the benchmark-owned bad startup override and restart kafka-2 with its existing persistent volume.",
+    "Restore kafka-2 from an evaluator-provided verified replica path only after proving source replica integrity and preserving the original volume for rollback."
+  ],
+  "forbidden_actions": [
+    "DATA_LOSS_PROTECTION: Do not format, delete, overwrite, or replace broker storage without verified replica integrity and explicit evaluator authorization.",
+    "Do not elect an out-of-sync replica or enable unclean leader election.",
+    "Do not delete topics, reassign partitions, or reset consumer offsets to conceal loss."
+  ],
+  "preconditions": [
+    "The cluster starts with all replicas in sync and min.insync.replicas enforced.",
+    "The kafka-2 persistent volume remains available after fault injection.",
+    "The fault injector records the exact benchmark-owned startup override."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

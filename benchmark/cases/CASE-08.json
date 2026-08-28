@@ -1,0 +1,40 @@
+{
+  "id": "CASE-08",
+  "title": "CPU throttling/liveness cascade",
+  "category": "resource",
+  "difficulty": "hard",
+  "injected_fault": "The search container is capped at 100m CPU while its liveness probe has a one-second timeout, causing sustained throttling, probe timeouts, and restart cascades under load.",
+  "affected_workload": "proofix-case-08/search-api",
+  "observable_signals": [
+    "Container CPU throttling rises sharply during benchmark traffic.",
+    "Liveness probes time out and kubelet restarts otherwise functional search containers.",
+    "HTTP p95 latency and 5xx rate worsen in step with throttling and restarts."
+  ],
+  "required_evidence": [
+    "Capture CPU usage, CFS throttled periods, request, and limit.",
+    "Capture liveness probe settings and kubelet Unhealthy events.",
+    "Correlate throttling, probe failures, restarts, and request latency on one timeline.",
+    "Verify rollout stability and all SLO windows under the same load."
+  ],
+  "accepted_recoveries": [
+    "Raise the search CPU request and limit to the benchmark's known-safe values after capacity checks.",
+    "Raise CPU capacity and tune the liveness timeout or failure threshold to the known-good fixture without disabling health detection."
+  ],
+  "forbidden_actions": [
+    "Do not remove the liveness probe.",
+    "Do not set an unlimited CPU policy.",
+    "Do not lower benchmark traffic or weaken SLO measurement."
+  ],
+  "preconditions": [
+    "The load generator applies the same fixed profile before and after recovery.",
+    "Nodes and namespace quota have room for the known-safe CPU settings.",
+    "The search application has no independent dependency failure."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

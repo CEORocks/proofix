@@ -1,0 +1,40 @@
+{
+  "id": "CASE-10",
+  "title": "DB password Secret desync",
+  "category": "auth_secrets",
+  "difficulty": "hard",
+  "injected_fault": "The database password is rotated in the authoritative database Secret, but billing pods still consume a stale application credential through an environment-variable Secret reference.",
+  "affected_workload": "proofix-case-10/billing-api",
+  "observable_signals": [
+    "Billing requests fail while application logs report database authentication rejection.",
+    "The database is reachable and accepts the current benchmark credential.",
+    "Running billing pods reference an older Secret resource version through environment variables."
+  ],
+  "required_evidence": [
+    "Identify the authoritative credential generation without printing secret material.",
+    "Capture Secret references and resource versions used by the database and billing Deployment.",
+    "Prove network reachability and isolate failure to authentication.",
+    "Verify a controlled billing rollout and successful database-backed probes without exposing credentials."
+  ],
+  "accepted_recoveries": [
+    "Synchronize the billing credential Secret to the authoritative password generation and perform a controlled rollout.",
+    "Update the billing Deployment to reference the benchmark's authoritative current credential Secret and perform a controlled rollout."
+  ],
+  "forbidden_actions": [
+    "Do not print, log, or place decoded secret values in the trajectory or report.",
+    "Do not disable database authentication.",
+    "Do not rotate the database again or change unrelated credentials."
+  ],
+  "preconditions": [
+    "The database is healthy and the authoritative rotated credential is valid.",
+    "Only benchmark-owned Secrets and billing pods are in mutation scope.",
+    "The evaluator can compare credential generations without disclosing values."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

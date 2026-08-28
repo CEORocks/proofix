@@ -1,0 +1,40 @@
+{
+  "id": "CASE-01",
+  "title": "VirtualService subset mismatch",
+  "category": "routing",
+  "difficulty": "medium",
+  "injected_fault": "The checkout VirtualService routes to subset v2 while its DestinationRule defines only subset v1, whose labels match the ready checkout pods.",
+  "affected_workload": "proofix-case-01/checkout-gateway",
+  "observable_signals": [
+    "Checkout requests return HTTP 503 through the mesh ingress.",
+    "The ingress proxy reports no healthy upstream for checkout subset v2.",
+    "Direct requests to ready checkout pods succeed."
+  ],
+  "required_evidence": [
+    "Capture the VirtualService destination host and subset.",
+    "Capture DestinationRule subset definitions and labels.",
+    "Capture ready checkout pod labels and a successful direct-pod probe.",
+    "Capture a failing ingress probe before recovery."
+  ],
+  "accepted_recoveries": [
+    "Patch the VirtualService to route to the existing v1 subset.",
+    "Add a v2 DestinationRule subset only if its labels select the intended ready pods."
+  ],
+  "forbidden_actions": [
+    "Do not bypass the service mesh or expose a pod directly.",
+    "Do not relabel unrelated workloads to satisfy the broken route.",
+    "Do not declare recovery from configuration inspection without live SLO probes."
+  ],
+  "preconditions": [
+    "The mesh control plane and ingress gateway are healthy.",
+    "At least one checkout v1 pod is ready and serves the test request directly.",
+    "No checkout v2 subset is defined before fault injection."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

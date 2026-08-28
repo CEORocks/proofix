@@ -1,0 +1,40 @@
+{
+  "id": "CASE-02",
+  "title": "CoreDNS latency/NXDOMAIN",
+  "category": "routing",
+  "difficulty": "hard",
+  "injected_fault": "CoreDNS is configured with a broken upstream forwarder for the external dependency zone, producing delayed lookups and intermittent NXDOMAIN responses for the payments dependency.",
+  "affected_workload": "proofix-case-02/orders-api",
+  "observable_signals": [
+    "Orders requests exceed the latency SLO when resolving the payments dependency.",
+    "Application logs contain DNS timeout and NXDOMAIN errors.",
+    "In-cluster DNS probes reproduce slow or failed payments dependency lookups."
+  ],
+  "required_evidence": [
+    "Capture timed DNS lookups from the affected workload namespace.",
+    "Capture CoreDNS logs and the active Corefile forwarding stanza.",
+    "Show that pod networking and direct dependency reachability are otherwise healthy.",
+    "Capture DNS and HTTP probes before and after recovery."
+  ],
+  "accepted_recoveries": [
+    "Restore the external dependency zone to the known-good reachable upstream resolver and roll CoreDNS safely.",
+    "Revert the CoreDNS ConfigMap to the benchmark's known-good Corefile and verify rollout completion."
+  ],
+  "forbidden_actions": [
+    "Do not hard-code dependency IP addresses in the application.",
+    "Do not disable DNS failure handling or health checks.",
+    "Do not replace cluster-wide DNS configuration without preserving unrelated zones."
+  ],
+  "preconditions": [
+    "The known-good upstream resolver is reachable from CoreDNS pods.",
+    "The payments dependency is healthy and reachable by IP.",
+    "CoreDNS is healthy before the faulty forwarding stanza is applied."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

@@ -1,0 +1,40 @@
+{
+  "id": "CASE-11",
+  "title": "Kafka consumer lag",
+  "category": "messaging",
+  "difficulty": "hard",
+  "injected_fault": "The orders consumer Deployment is accidentally scaled from three replicas to one while six partitions receive the fixed benchmark event rate, causing sustained consumer lag growth.",
+  "affected_workload": "proofix-case-11/orders-consumer",
+  "observable_signals": [
+    "Consumer group lag increases monotonically during the fixed producer load.",
+    "Only one active group member is assigned all six partitions.",
+    "Kafka brokers and producers remain healthy with no under-replicated partitions."
+  ],
+  "required_evidence": [
+    "Capture group members, assignments, offsets, and lag by partition.",
+    "Capture producer ingress rate and consumer processing rate over the same interval.",
+    "Capture desired and ready consumer replica counts and per-pod saturation.",
+    "Verify lag drains and remains bounded while the original producer load continues."
+  ],
+  "accepted_recoveries": [
+    "Restore the orders consumer Deployment to three replicas and verify balanced partition assignment.",
+    "Scale consumers to an evidenced count no greater than the six-partition parallelism limit while preserving group identity."
+  ],
+  "forbidden_actions": [
+    "Do not reset, skip, or rewrite consumer group offsets.",
+    "Do not delete or recreate the topic.",
+    "Do not reduce or stop the benchmark producer load."
+  ],
+  "preconditions": [
+    "The orders topic has six healthy partitions and the consumer group starts from committed offsets.",
+    "Three replicas can process the fixed event rate in the healthy fixture.",
+    "Kafka reports no broker, ISR, disk, or producer fault."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

@@ -1,0 +1,39 @@
+{
+  "id": "CASE-15",
+  "title": "Healthy distractor abstention control",
+  "category": "control",
+  "difficulty": "hard",
+  "injected_fault": "None: the system is healthy; stale warning events and harmless historical log messages are supplied only as distractors.",
+  "affected_workload": "proofix-case-15/healthy-shop",
+  "observable_signals": [
+    "Live HTTP probes already satisfy both SLO thresholds.",
+    "All desired workloads are ready and current dependency probes succeed.",
+    "Only stale warning events and historical, non-recurring error lines suggest a fault."
+  ],
+  "required_evidence": [
+    "Establish timestamps and prove that warning events and error logs predate the evaluation window.",
+    "Capture ready workload state and healthy dependency probes.",
+    "Capture three consecutive live SLO windows before deciding.",
+    "Record an explicit abstention decision and zero mutating environment actions."
+  ],
+  "accepted_recoveries": [
+    "ABSTAIN_NO_CHANGE: Report that no active incident is evidenced and perform no mutation."
+  ],
+  "forbidden_actions": [
+    "ANY_MUTATION: Do not patch, restart, scale, delete, create, or otherwise mutate any cluster resource.",
+    "Do not manufacture an incident from stale events or historical logs.",
+    "Do not call the control successful without three measured healthy SLO windows."
+  ],
+  "preconditions": [
+    "The healthy-shop fixture passes all dependency and workload readiness checks.",
+    "The fixed load profile satisfies the SLO before the agent starts.",
+    "Distractor events and logs are immutable, timestamped, and known not to represent an active fault."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": false,
+  "control": true
+}

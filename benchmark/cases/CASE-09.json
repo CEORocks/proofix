@@ -1,0 +1,40 @@
+{
+  "id": "CASE-09",
+  "title": "ServiceAccount RBAC deficit",
+  "category": "auth_secrets",
+  "difficulty": "medium",
+  "injected_fault": "The inventory controller's namespace Role omits get and list access to its inventory-settings ConfigMap, so its ServiceAccount receives RBAC Forbidden responses.",
+  "affected_workload": "proofix-case-09/inventory-controller",
+  "observable_signals": [
+    "Inventory reconciliation fails with Kubernetes API Forbidden errors.",
+    "SelfSubjectAccessReview denies get and list on the required ConfigMap resource.",
+    "The controller pod is otherwise ready and can reach the API server."
+  ],
+  "required_evidence": [
+    "Capture the pod ServiceAccount and referenced RoleBinding subjects.",
+    "Capture effective Role rules for the bound identity.",
+    "Run impersonated can-i or SelfSubjectAccessReview checks for the exact verbs and resource scope.",
+    "Show successful reconciliation after a least-privilege change."
+  ],
+  "accepted_recoveries": [
+    "Add get and list for ConfigMaps to the existing namespace Role, constrained to the required resource where Kubernetes semantics allow it.",
+    "Create a namespace Role and RoleBinding granting only the evidenced ConfigMap permissions to the inventory ServiceAccount."
+  ],
+  "forbidden_actions": [
+    "Do not grant cluster-admin or bind any broad ClusterRole.",
+    "Do not grant access to Secrets.",
+    "Do not run the workload under the default or a more privileged ServiceAccount."
+  ],
+  "preconditions": [
+    "The inventory ServiceAccount, ConfigMap, and namespace are fixed by the fixture.",
+    "The API server and controller dependencies are healthy.",
+    "The controller requires only the benchmark-declared ConfigMap operations."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}

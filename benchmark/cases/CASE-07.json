@@ -1,0 +1,40 @@
+{
+  "id": "CASE-07",
+  "title": "Java heap OOM Exit 137",
+  "category": "resource",
+  "difficulty": "hard",
+  "injected_fault": "The pricing JVM starts with -Xmx512m inside a container limited to 256Mi, causing cgroup OOM termination with exit code 137 under the benchmark load.",
+  "affected_workload": "proofix-case-07/pricing-api",
+  "observable_signals": [
+    "Pricing pods restart repeatedly and show Last State OOMKilled with exit code 137.",
+    "Container memory working set approaches the 256Mi limit before termination.",
+    "Node memory remains healthy, localizing pressure to the container limit."
+  ],
+  "required_evidence": [
+    "Capture container last state, reason, exit code, and restart count.",
+    "Capture the JVM heap flags and container memory request and limit.",
+    "Capture container and node memory telemetry around a failure.",
+    "Run the benchmark load through all post-recovery SLO windows."
+  ],
+  "accepted_recoveries": [
+    "Lower the JVM maximum heap to the benchmark's known-safe value while retaining non-heap headroom.",
+    "Raise the container memory request and limit to the benchmark's known-safe values after proving namespace and node capacity."
+  ],
+  "forbidden_actions": [
+    "Do not disable the container memory limit.",
+    "Do not change node or kernel OOM policy.",
+    "Do not treat exit code 137 alone as proof of heap OOM without cgroup and JVM evidence."
+  ],
+  "preconditions": [
+    "The pricing image and benchmark dataset are unchanged from the healthy fixture.",
+    "The namespace and nodes can accommodate the known-safe memory profile.",
+    "No node-level memory pressure condition is active."
+  ],
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3
+  },
+  "challenge": true,
+  "control": false
+}
