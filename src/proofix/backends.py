@@ -10,15 +10,38 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence, cast
 
 
+PARAMETERS_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "patch_type": {"type": ["string", "null"]},
+        "patch_json": {"type": ["string", "null"]},
+        "replicas": {"type": ["integer", "null"]},
+    },
+    "required": ["patch_type", "patch_json", "replicas"],
+    "additionalProperties": False,
+}
+
+ROLLBACK_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "operation": {"type": "string"},
+        "target": {"type": "string"},
+        "namespace": {"type": "string"},
+        "parameters": PARAMETERS_SCHEMA,
+    },
+    "required": ["operation", "target", "namespace", "parameters"],
+    "additionalProperties": False,
+}
+
 ACTION_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {
         "operation": {"type": "string"},
         "target": {"type": "string"},
         "namespace": {"type": "string"},
-        "parameters": {"type": "object", "additionalProperties": True},
+        "parameters": PARAMETERS_SCHEMA,
         "reversible": {"type": "boolean"},
-        "rollback": {"type": ["object", "null"], "additionalProperties": True},
+        "rollback": {"anyOf": [ROLLBACK_SCHEMA, {"type": "null"}]},
     },
     "required": [
         "operation",
@@ -31,6 +54,42 @@ ACTION_SCHEMA: dict[str, Any] = {
     "additionalProperties": False,
 }
 
+TEST_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "kind": {
+            "type": "string",
+            "enum": [
+                "kubectl_get",
+                "kubectl_describe",
+                "kubectl_logs",
+                "kubectl_auth_can_i",
+                "http_get",
+            ],
+        },
+        "target": {"type": ["string", "null"]},
+        "namespace": {"type": ["string", "null"]},
+        "pod": {"type": ["string", "null"]},
+        "container": {"type": ["string", "null"]},
+        "verb": {"type": ["string", "null"]},
+        "resource": {"type": ["string", "null"]},
+        "service_account": {"type": ["string", "null"]},
+        "url": {"type": ["string", "null"]},
+    },
+    "required": [
+        "kind",
+        "target",
+        "namespace",
+        "pod",
+        "container",
+        "verb",
+        "resource",
+        "service_account",
+        "url",
+    ],
+    "additionalProperties": False,
+}
+
 HYPOTHESIS_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {
@@ -39,10 +98,7 @@ HYPOTHESIS_SCHEMA: dict[str, Any] = {
         "confidence": {"type": "number", "minimum": 0, "maximum": 1},
         "supports": {"type": "array", "items": {"type": "string"}},
         "contradicts": {"type": "array", "items": {"type": "string"}},
-        "discriminating_test": {
-            "type": ["object", "null"],
-            "additionalProperties": True,
-        },
+        "discriminating_test": {"anyOf": [TEST_SCHEMA, {"type": "null"}]},
     },
     "required": [
         "id",
@@ -87,7 +143,7 @@ def schema_for(stage: str) -> dict[str, Any]:
                     "maxItems": 5,
                     "items": ACTION_SCHEMA,
                 },
-                "success_criteria": {"type": "object", "additionalProperties": True},
+                "success_criteria": _object_schema({"description": {"type": "string"}}),
                 "rollback_trigger": {"type": "string"},
             }
         )
@@ -113,12 +169,19 @@ def schema_for(stage: str) -> dict[str, Any]:
             }
         )
     if stage == "react":
+        claim = _object_schema(
+            {
+                "claim": {"type": "string"},
+                "evidence": {"type": "array", "items": {"type": "string"}},
+            }
+        )
         return _object_schema(
             {
                 "kind": {"type": "string", "enum": ["test", "action", "final"]},
-                "test": {"type": ["object", "null"], "additionalProperties": True},
+                "test": {"anyOf": [TEST_SCHEMA, {"type": "null"}]},
                 "action": {"anyOf": [ACTION_SCHEMA, {"type": "null"}]},
                 "answer": {"type": "string"},
+                "critical_claims": {"type": "array", "items": claim},
             }
         )
     raise ValueError(f"unsupported reasoning stage {stage!r}")
@@ -232,7 +295,10 @@ def _prompt(stage: str, context: Mapping[str, object]) -> str:
         "refine": "Rerank hypotheses using all test evidence. Keep evidence source strings exact.",
         "plan": "Plan the smallest reversible remediation. Never delete persistent data.",
         "close": "State only critical claims supported by exact evidence source strings in context.",
-        "react": "Take one generic ReAct step: a test, one reversible action, or a final answer.",
+        "react": (
+            "Take one generic ReAct step: a test, one reversible action, or a final answer. "
+            "For a final answer, attach critical claims to exact collected evidence source strings."
+        ),
     }[stage]
     return (
         "You are the bounded reasoning component of a Kubernetes incident benchmark. "

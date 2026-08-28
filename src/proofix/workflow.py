@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import time
 from typing import Any, Mapping, Sequence, cast
 
 from .environment import IncidentEnvironment, ReasoningBackend
@@ -31,6 +32,7 @@ class ProofFixWorkflow:
         verification_windows: int = 3,
         max_error_rate: float = 0.001,
         max_p95_latency_ms: float = 200.0,
+        verification_settle_seconds: float = 0.0,
     ) -> None:
         self.backend = backend
         self.environment = environment
@@ -42,6 +44,7 @@ class ProofFixWorkflow:
         self.verification_windows = verification_windows
         self.max_error_rate = max_error_rate
         self.max_p95_latency_ms = max_p95_latency_ms
+        self.verification_settle_seconds = verification_settle_seconds
         self.observations: list[Observation] = []
         self.action_count = 0
         self.safe = True
@@ -172,6 +175,13 @@ class ProofFixWorkflow:
                 sources=[result.source],
             )
 
+        if self.verification_settle_seconds > 0:
+            self.ledger.append(
+                "verification_settle",
+                {"seconds": self.verification_settle_seconds},
+                stage="verify",
+            )
+            time.sleep(self.verification_settle_seconds)
         samples = self._probe_windows(stage="verify")
         recovered = self._samples_pass(samples)
         if not recovered:
@@ -198,7 +208,7 @@ class ProofFixWorkflow:
                 self._context(incident=incident, hypotheses=refined, samples=samples),
             )
         )
-        evidence_closed, closure_reason = self._validate_closure(closure)
+        evidence_closed, closure_reason = self._validate_closure(closure, samples)
         disposition = "recovered" if evidence_closed else "unverified"
         self.ledger.append(
             "run_closed",
@@ -237,6 +247,33 @@ class ProofFixWorkflow:
                 "max_error_rate": self.max_error_rate,
                 "max_p95_latency_ms": self.max_p95_latency_ms,
             },
+            "tool_catalog": {
+                "tests": {
+                    "kubectl_get": {"target": "resource/name", "namespace": "registered only"},
+                    "kubectl_describe": {"target": "resource/name", "namespace": "registered only"},
+                    "kubectl_logs": {"pod": "pod name", "container": "optional name"},
+                    "kubectl_auth_can_i": {
+                        "verb": "Kubernetes verb",
+                        "resource": "Kubernetes resource",
+                        "service_account": "optional name",
+                    },
+                    "http_get": {"url": "registered probe URL only"},
+                },
+                "actions": {
+                    "patch": {
+                        "target": "resource/name",
+                        "parameters": {
+                            "patch_type": "merge",
+                            "patch_json": "serialized Kubernetes patch object",
+                            "replicas": None,
+                        },
+                    },
+                    "scale": {"parameters": {"replicas": "0..100"}},
+                    "rollout_restart": {},
+                    "delete_pod": {"target": "pod/name"},
+                },
+                "rule": "Every action must be reversible and include an executable rollback.",
+            },
         }
 
     def _record_observations(
@@ -272,11 +309,14 @@ class ProofFixWorkflow:
             for sample in samples
         )
 
-    def _validate_closure(self, closure: Mapping[str, Any]) -> tuple[bool, str]:
+    def _validate_closure(
+        self, closure: Mapping[str, Any], samples: Sequence[SLOSample]
+    ) -> tuple[bool, str]:
         claims = closure.get("critical_claims", [])
         if not isinstance(claims, list) or not claims:
             return False, "no critical claims supplied"
         available = {item.source for item in self.observations}
+        available.update(sample.source for sample in samples)
         for claim in claims:
             if not isinstance(claim, Mapping):
                 return False, "malformed critical claim"
@@ -296,12 +336,12 @@ class ProofFixWorkflow:
                 sources.extend(str(item) for item in claim.get("evidence", []))
         return sorted(set(sources))
 
-    @staticmethod
-    def _evidence_references(hypotheses: Sequence[Hypothesis]) -> list[str]:
+    def _evidence_references(self, hypotheses: Sequence[Hypothesis]) -> list[str]:
+        available = {item.source for item in self.observations}
         values: set[str] = set()
         for hypothesis in hypotheses:
-            values.update(hypothesis.supports)
-            values.update(hypothesis.contradicts)
+            for statement in (*hypothesis.supports, *hypothesis.contradicts):
+                values.update(source for source in available if source in statement)
         return sorted(values)
 
     def _outcome(

@@ -1,0 +1,17 @@
+{
+  "spec": {
+    "http": [
+      {
+        "route": [
+          {
+            "destination": {
+              "host": "checkout",
+              "port": {"number": 80},
+              "subset": "v1"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

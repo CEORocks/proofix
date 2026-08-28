@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import shlex
 import subprocess
 import time
 import urllib.error
@@ -26,6 +27,7 @@ class KubernetesConfig:
     probe_timeout_seconds: float = 2.0
     window_seconds: int = 10
     command_timeout_seconds: int = 30
+    command_prefix: tuple[str, ...] = ()
 
 
 class KubernetesEnvironment:
@@ -113,13 +115,23 @@ class KubernetesEnvironment:
         elif operation == "patch":
             patch_value = action.parameters.get("patch")
             if not isinstance(patch_value, Mapping):
-                raise ValueError("patch action requires an object in parameters.patch")
+                patch_json = action.parameters.get("patch_json")
+                if not isinstance(patch_json, str):
+                    raise ValueError("patch action requires parameters.patch_json")
+                decoded_patch = json.loads(patch_json)
+                if not isinstance(decoded_patch, dict):
+                    raise ValueError("parameters.patch_json must decode to an object")
+                patch_value = decoded_patch
             patch_type = str(action.parameters.get("patch_type", "merge"))
             if patch_type not in {"merge", "strategic", "json"}:
                 raise ValueError("unsupported Kubernetes patch type")
+            resource, separator, name = action.target.partition("/")
+            if not separator or not resource or not name:
+                raise ValueError("patch target must use resource/name form")
             output = self._kubectl(
                 "patch",
-                action.target,
+                resource,
+                name,
                 "-n",
                 action.namespace,
                 "--type",
@@ -127,6 +139,15 @@ class KubernetesEnvironment:
                 "-p",
                 json.dumps(dict(patch_value), separators=(",", ":")),
             )
+            if resource in {"deployment", "deployments", "deployment.apps", "deployments.apps"}:
+                output += self._kubectl(
+                    "rollout",
+                    "status",
+                    f"deployment/{name}",
+                    "-n",
+                    action.namespace,
+                    "--timeout=180s",
+                )
         elif operation == "rollout_restart":
             output = self._kubectl("rollout", "restart", action.target, "-n", action.namespace)
         elif operation == "scale":
@@ -243,15 +264,20 @@ class KubernetesEnvironment:
         value = json.loads(text)
         if not isinstance(value, dict):
             raise RuntimeError("kubectl returned a non-object JSON document")
-        return cast(dict[str, Any], value)
+        return cast(dict[str, Any], _sanitize_kubernetes(value))
 
     def _kubectl(self, *arguments: str) -> str:
-        command = ["kubectl"]
+        kubectl_command = ["kubectl"]
         if self.config.kubeconfig:
-            command.extend(["--kubeconfig", self.config.kubeconfig])
+            kubectl_command.extend(["--kubeconfig", self.config.kubeconfig])
         if self.config.context:
-            command.extend(["--context", self.config.context])
-        command.extend(arguments)
+            kubectl_command.extend(["--context", self.config.context])
+        kubectl_command.extend(arguments)
+        command = (
+            [*self.config.command_prefix, shlex.join(kubectl_command)]
+            if self.config.command_prefix
+            else kubectl_command
+        )
         completed = subprocess.run(
             command,
             text=True,
@@ -285,3 +311,25 @@ class KubernetesEnvironment:
         if not isinstance(result, str) or not result:
             raise ValueError(f"test requires a non-empty {key!r}")
         return result
+
+
+def _sanitize_kubernetes(value: object) -> object:
+    """Remove high-volume server metadata while retaining diagnostic state."""
+    if isinstance(value, list):
+        return [_sanitize_kubernetes(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+    cleaned: dict[str, object] = {}
+    for key, item in value.items():
+        if key in {"managedFields", "resourceVersion", "uid", "selfLink"}:
+            continue
+        if key == "annotations" and isinstance(item, dict):
+            annotations = {
+                annotation: annotation_value
+                for annotation, annotation_value in item.items()
+                if annotation != "kubectl.kubernetes.io/last-applied-configuration"
+            }
+            cleaned[key] = _sanitize_kubernetes(annotations)
+            continue
+        cleaned[str(key)] = _sanitize_kubernetes(item)
+    return cleaned

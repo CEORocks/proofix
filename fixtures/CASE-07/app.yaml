@@ -1,0 +1,177 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pricing-api-source
+  namespace: proofix-case-07
+data:
+  PricingServer.java: |
+    import com.sun.net.httpserver.HttpExchange;
+    import com.sun.net.httpserver.HttpServer;
+    import java.io.IOException;
+    import java.net.InetSocketAddress;
+    import java.nio.charset.StandardCharsets;
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.concurrent.Executors;
+    import java.util.concurrent.atomic.AtomicLong;
+
+    public final class PricingServer {
+        private static final int CHUNK_MIB = 8;
+        private static final double RETAIN_FRACTION = 0.70;
+        private static final List<byte[]> CACHE = new ArrayList<>();
+        private static final AtomicLong REQUESTS = new AtomicLong();
+
+        private PricingServer() {}
+
+        private static void reply(HttpExchange exchange, int status, String body)
+                throws IOException {
+            byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.getResponseHeaders().set("Cache-Control", "no-store");
+            exchange.sendResponseHeaders(status, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        }
+
+        private static synchronized long retainOneChunk() {
+            long maximum = Runtime.getRuntime().maxMemory();
+            long target = (long) (maximum * RETAIN_FRACTION);
+            long retained = (long) CACHE.size() * CHUNK_MIB * 1024L * 1024L;
+            if (retained < target) {
+                byte[] chunk = new byte[CHUNK_MIB * 1024 * 1024];
+                for (int offset = 0; offset < chunk.length; offset += 4096) {
+                    chunk[offset] = 1; // Fault every page into RSS; do not rely on lazy allocation.
+                }
+                CACHE.add(chunk);
+                retained += chunk.length;
+            }
+            return retained;
+        }
+
+        private static void price(HttpExchange exchange) throws IOException {
+            long retained = retainOneChunk();
+            long request = REQUESTS.incrementAndGet();
+            reply(exchange, 200, "{\"request\":" + request
+                    + ",\"price_cents\":1299,\"retained_bytes\":" + retained + "}\n");
+        }
+
+        private static void diagnostics(HttpExchange exchange) throws IOException {
+            Runtime runtime = Runtime.getRuntime();
+            long retained = (long) CACHE.size() * CHUNK_MIB * 1024L * 1024L;
+            reply(exchange, 200, "{\"max_heap_bytes\":" + runtime.maxMemory()
+                    + ",\"used_heap_bytes\":" + (runtime.totalMemory() - runtime.freeMemory())
+                    + ",\"retained_bytes\":" + retained
+                    + ",\"requests\":" + REQUESTS.get() + "}\n");
+        }
+
+        public static void main(String[] args) throws Exception {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            server.createContext("/healthz", exchange -> reply(exchange, 200, "{\"ok\":true}\n"));
+            server.createContext("/price", PricingServer::price);
+            server.createContext("/diagnostics", PricingServer::diagnostics);
+            server.setExecutor(Executors.newFixedThreadPool(4));
+            server.start();
+            System.out.println("pricing-api listening on :8080; maxHeap="
+                    + Runtime.getRuntime().maxMemory());
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricing-api
+  namespace: proofix-case-07
+  labels:
+    app.kubernetes.io/name: pricing-api
+    proofix.io/case: CASE-07
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pricing-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pricing-api
+        proofix.io/case: CASE-07
+      annotations:
+        proofix.io/profile: healthy-xmx128m
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: pricing-api
+          image: eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a
+          imagePullPolicy: IfNotPresent
+          command: ["java"]
+          args:
+            - -Xms32m
+            - -Xmx128m
+            - -XX:MaxMetaspaceSize=64m
+            - -XX:ReservedCodeCacheSize=32m
+            - -XX:+ExitOnOutOfMemoryError
+            - /app/PricingServer.java
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          volumeMounts:
+            - name: source
+              mountPath: /app
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: source
+          configMap:
+            name: pricing-api-source
+        - name: tmp
+          emptyDir:
+            sizeLimit: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricing-api
+  namespace: proofix-case-07
+  labels:
+    proofix.io/case: CASE-07
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: pricing-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30077
+

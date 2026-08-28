@@ -1,0 +1,18 @@
+# This exact rollback restores the pre-recovery JVM flags. Applying it deliberately
+# reintroduces CASE-07; it exists for trajectory/reversibility checks, not routine use.
+spec:
+  template:
+    metadata:
+      annotations:
+        proofix.io/profile: rollback-to-injected-xmx512m-under-256mi
+    spec:
+      containers:
+        - name: pricing-api
+          args:
+            - -Xms32m
+            - -Xmx512m
+            - -XX:MaxMetaspaceSize=64m
+            - -XX:ReservedCodeCacheSize=32m
+            - -XX:+ExitOnOutOfMemoryError
+            - /app/PricingServer.java
+

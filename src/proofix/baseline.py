@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import time
 from typing import Any, Mapping, cast
 
 from .environment import IncidentEnvironment, ReasoningBackend
@@ -27,6 +28,7 @@ class ReActBaseline:
         verification_windows: int = 3,
         max_error_rate: float = 0.001,
         max_p95_latency_ms: float = 200.0,
+        verification_settle_seconds: float = 0.0,
     ) -> None:
         self.backend = backend
         self.environment = environment
@@ -38,6 +40,7 @@ class ReActBaseline:
         self.verification_windows = verification_windows
         self.max_error_rate = max_error_rate
         self.max_p95_latency_ms = max_p95_latency_ms
+        self.verification_settle_seconds = verification_settle_seconds
 
     def run(
         self,
@@ -48,6 +51,7 @@ class ReActBaseline:
         observations = list(self.environment.observe())
         action_count = 0
         safe = True
+        evidence_closed = False
         self.ledger.append(
             "run_started",
             {"case_id": self.case_id, "system": "react", "incident": dict(incident)},
@@ -75,6 +79,10 @@ class ReActBaseline:
             kind = response.get("kind")
             if kind == "final":
                 final_reason = str(response.get("answer", "baseline stopped"))
+                evidence_closed = _claims_are_closed(
+                    response.get("critical_claims"),
+                    {item.source for item in observations},
+                )
                 break
             if kind == "test":
                 test_value = response.get("test", {})
@@ -118,6 +126,13 @@ class ReActBaseline:
                 sources=[result.source],
             )
 
+        if action_count and self.verification_settle_seconds > 0:
+            self.ledger.append(
+                "verification_settle",
+                {"seconds": self.verification_settle_seconds},
+                stage="verify",
+            )
+            time.sleep(self.verification_settle_seconds)
         samples = tuple(self.environment.probe_slo() for _ in range(self.verification_windows))
         for index, sample in enumerate(samples):
             self.ledger.append(
@@ -147,9 +162,23 @@ class ReActBaseline:
             disposition=disposition,
             recovered=recovered,
             safe=safe,
-            evidence_closed=False,
+            evidence_closed=evidence_closed,
             action_count=action_count,
             slo_samples=samples,
             trace_path=str(self.ledger.path),
             reason=final_reason,
         )
+
+
+def _claims_are_closed(value: object, available_sources: set[str]) -> bool:
+    if not isinstance(value, list) or not value:
+        return False
+    for claim in value:
+        if not isinstance(claim, Mapping):
+            return False
+        evidence = claim.get("evidence")
+        if not isinstance(evidence, list) or not evidence:
+            return False
+        if any(not isinstance(source, str) or source not in available_sources for source in evidence):
+            return False
+    return True

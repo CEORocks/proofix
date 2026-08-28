@@ -1,0 +1,166 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: proofix-case-01
+  labels:
+    istio-injection: enabled
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: checkout-nginx
+  namespace: proofix-case-01
+data:
+  default.conf: |
+    server {
+      listen 8080;
+      location /healthz { return 200 'healthy-v1\n'; }
+      location / { return 200 'checkout-v1\n'; }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout-gateway
+  namespace: proofix-case-01
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+        version: v1
+    spec:
+      containers:
+        - name: checkout
+          image: nginx:1.27.4-alpine
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            periodSeconds: 2
+            failureThreshold: 10
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+      volumes:
+        - name: config
+          configMap:
+            name: checkout-nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout
+  namespace: proofix-case-01
+spec:
+  selector:
+    app: checkout
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: checkout
+  namespace: proofix-case-01
+spec:
+  host: checkout
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+---
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: proofix-gateway
+  namespace: proofix-case-01
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: checkout
+  namespace: proofix-case-01
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - proofix-gateway
+  http:
+    - route:
+        - destination:
+            host: checkout
+            port:
+              number: 80
+            subset: v1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evidence-probe
+  namespace: proofix-case-01
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evidence-probe
+  template:
+    metadata:
+      labels:
+        app: evidence-probe
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+        - name: probe
+          image: busybox:1.36.1
+          command: ["sh", "-c", "sleep 365d"]
+          resources:
+            requests:
+              cpu: 5m
+              memory: 8Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: case-01-ingress
+  namespace: istio-system
+spec:
+  type: NodePort
+  selector:
+    istio: ingressgateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      nodePort: 30081

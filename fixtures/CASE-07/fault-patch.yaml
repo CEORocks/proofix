@@ -1,0 +1,16 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        proofix.io/profile: injected-xmx512m-under-256mi
+    spec:
+      containers:
+        - name: pricing-api
+          args:
+            - -Xms32m
+            - -Xmx512m
+            - -XX:MaxMetaspaceSize=64m
+            - -XX:ReservedCodeCacheSize=32m
+            - -XX:+ExitOnOutOfMemoryError
+            - /app/PricingServer.java
+

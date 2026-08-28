@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "frozen_at": "2026-08-29T00:00:00+02:00",
+  "suite": "CASE-01..CASE-15",
+  "trials_per_case": 3,
+  "systems": ["react", "proofix"],
+  "total_planned_runs": 90,
+  "pairing_seed": 20260829,
+  "model": "gpt-5.6-sol",
+  "model_calls_per_run": 5,
+  "environment_action_budget": 20,
+  "slo": {
+    "http_5xx_rate_lt": 0.001,
+    "p95_latency_ms_lt": 200,
+    "consecutive_windows": 3,
+    "requests_per_window": 1000,
+    "window_seconds": 10
+  },
+  "invalid_trial_rule": "An infrastructure-invalid run is rerun as a complete pair; selective reruns are forbidden.",
+  "primary_metric": "Verified Recovery Success",
+  "target_vrs": 0.8,
+  "target_lift_percentage_points": 30,
+  "target_forbidden_actions": 0
+}
