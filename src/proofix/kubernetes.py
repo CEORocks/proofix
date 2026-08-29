@@ -65,6 +65,12 @@ class KubernetesEnvironment:
         observations.append(
             self._observation("kubectl/get/nodes", self._kubectl_json("get", "nodes"))
         )
+        for resource in ("persistentvolumes", "volumeattachments.storage.k8s.io"):
+            observations.append(
+                self._observation(
+                    f"kubectl/get/{resource}", self._kubectl_json("get", resource)
+                )
+            )
         for namespace in self.config.additional_namespaces:
             for resource in ("pods", "deployments", "services", "configmaps", "events"):
                 observations.append(
@@ -81,9 +87,13 @@ class KubernetesEnvironment:
             target = self._required_string(test, "target")
             namespace = str(test.get("namespace", self.config.namespace))
             self._assert_namespace(namespace)
+            targets = [target]
+            resource, separator, names = target.partition("/")
+            if separator and "," in names:
+                targets = [f"{resource}/{name.strip()}" for name in names.split(",")]
             return self._observation(
                 f"kubectl/get/{target}",
-                self._kubectl_json("get", target, "-n", namespace),
+                self._kubectl_json("get", *targets, "-n", namespace),
             )
         if kind == "kubectl_describe":
             target = self._required_string(test, "target")
@@ -184,7 +194,71 @@ class KubernetesEnvironment:
         elif operation == "delete_pod":
             if not action.target.startswith(("pod/", "pods/")):
                 raise ValueError("delete_pod can target only an individual pod")
-            output = self._kubectl("delete", action.target, "-n", action.namespace)
+            pod = self._kubectl_json("get", action.target, "-n", action.namespace)
+            metadata = pod.get("metadata", {})
+            finalizers = metadata.get("finalizers", []) if isinstance(metadata, Mapping) else []
+            deletion_started = (
+                isinstance(metadata, Mapping) and bool(metadata.get("deletionTimestamp"))
+            )
+            held_termination = (
+                isinstance(finalizers, list)
+                and "proofix.io/hold-termination" in finalizers
+            )
+            if deletion_started and held_termination:
+                output = self._kubectl(
+                    "exec", action.target, "-n", action.namespace, "--", "kill", "-TERM", "1"
+                )
+                process_stopped = False
+                for _ in range(30):
+                    current = self._kubectl_json(
+                        "get", action.target, "-n", action.namespace
+                    )
+                    status = current.get("status", {})
+                    containers = (
+                        status.get("containerStatuses", [])
+                        if isinstance(status, Mapping)
+                        else []
+                    )
+                    process_stopped = bool(containers) and all(
+                        isinstance(container, Mapping)
+                        and isinstance(container.get("state"), Mapping)
+                        and "terminated" in container["state"]
+                        for container in containers
+                    )
+                    if process_stopped:
+                        break
+                    time.sleep(1)
+                if not process_stopped:
+                    raise RuntimeError(
+                        "held pod process did not stop; attachment hold was preserved"
+                    )
+                remaining = [
+                    value
+                    for value in finalizers
+                    if value != "proofix.io/hold-termination"
+                ]
+                output += self._kubectl(
+                    "patch",
+                    action.target,
+                    "-n",
+                    action.namespace,
+                    "--type",
+                    "merge",
+                    "-p",
+                    json.dumps({"metadata": {"finalizers": remaining}}),
+                )
+                output += self._kubectl(
+                    "delete",
+                    action.target,
+                    "-n",
+                    action.namespace,
+                    "--grace-period=5",
+                    "--wait=true",
+                    "--timeout=180s",
+                    "--ignore-not-found=true",
+                )
+            else:
+                output = self._kubectl("delete", action.target, "-n", action.namespace)
         elif operation == "sync_secret_and_rollout":
             output = self._sync_secret_and_rollout(action)
         elif operation == "replace_unbound_pvc":

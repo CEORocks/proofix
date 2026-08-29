@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import shlex
+import signal
 import socket
 import subprocess
 import time
@@ -177,42 +178,52 @@ class KubernetesPortForward:
     def __enter__(self) -> "KubernetesPortForward":
         if not self.service_name:
             raise ValueError("local Kubernetes transport requires service_name")
+        forward_command = [
+            "kubectl",
+            "--kubeconfig",
+            self.kubeconfig,
+            "-n",
+            self.namespace,
+            "port-forward",
+            f"service/{self.service_name}",
+            f"{self.local_port}:{self.service_port}",
+            "--address=127.0.0.1",
+        ]
         self.process = subprocess.Popen(
             [
-                "kubectl",
-                "--kubeconfig",
-                self.kubeconfig,
-                "-n",
-                self.namespace,
-                "port-forward",
-                f"service/{self.service_name}",
-                f"{self.local_port}:{self.service_port}",
-                "--address=127.0.0.1",
+                "bash",
+                "-c",
+                'while true; do "$@" || true; sleep 0.2; done',
+                "proofix-port-forward",
+                *forward_command,
             ],
             text=True,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
         )
-        deadline = time.monotonic() + 30
+        # Faulted services can legitimately have no Running endpoint until the
+        # agent repairs them. The supervisor keeps retrying while the workflow
+        # gathers Kubernetes evidence; a healthy endpoint becomes reachable
+        # automatically before SLO verification.
+        deadline = time.monotonic() + 2
         while time.monotonic() < deadline:
             if self.process.poll() is not None:
-                stderr = self.process.stderr.read() if self.process.stderr else ""
-                raise RuntimeError(f"kubectl port-forward failed: {stderr[-2000:]}")
+                raise RuntimeError("kubectl port-forward supervisor exited")
             try:
                 with socket.create_connection(("127.0.0.1", self.local_port), timeout=0.2):
                     return self
             except OSError:
                 time.sleep(0.2)
-        self.__exit__(None, None, None)
-        raise TimeoutError("kubectl port-forward did not become ready")
+        return self
 
     def __exit__(self, *_: object) -> None:
         if self.process and self.process.poll() is None:
-            self.process.terminate()
+            os.killpg(self.process.pid, signal.SIGTERM)
             try:
                 self.process.wait(timeout=5)
             except subprocess.TimeoutExpired:
-                self.process.kill()
+                os.killpg(self.process.pid, signal.SIGKILL)
                 self.process.wait(timeout=5)
 
 

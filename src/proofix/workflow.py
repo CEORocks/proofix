@@ -328,7 +328,10 @@ class ProofFixWorkflow:
                     },
                     "scale": {"parameters": {"replicas": "0..100"}},
                     "rollout_restart": {},
-                    "delete_pod": {"target": "pod/name"},
+                    "delete_pod": {
+                        "target": "pod/name",
+                        "guard": "for an already-Terminating pod with proofix.io/hold-termination, signal TERM, prove the process stopped, then release only that hold; abort if stop proof is absent",
+                    },
                     "sync_secret_and_rollout": {
                         "target": "secret/target-name",
                         "parameters": {

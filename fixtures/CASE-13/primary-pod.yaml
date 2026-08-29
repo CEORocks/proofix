@@ -11,11 +11,18 @@ spec:
   securityContext:
     fsGroup: 10001
     fsGroupChangePolicy: OnRootMismatch
-  terminationGracePeriodSeconds: 5
+  terminationGracePeriodSeconds: 300
   containers:
     - name: ledger
       image: python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f
       command: ["python", "/app/server.py"]
+      lifecycle:
+        preStop:
+          exec:
+            command:
+              - sh
+              - -c
+              - sleep 300
       ports: [{name: http, containerPort: 8080}]
       readinessProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 2}
       resources:

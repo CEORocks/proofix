@@ -84,7 +84,10 @@ class ReActBaseline:
                                 "patch": "resource/name with patch_type and patch_json",
                                 "scale": "target with replicas 0..100",
                                 "rollout_restart": "deployment/name",
-                                "delete_pod": "pod/name",
+                                "delete_pod": (
+                                    "pod/name; a Terminating proofix-held pod receives TERM, "
+                                    "must prove process stop, then releases only that hold"
+                                ),
                                 "sync_secret_and_rollout": (
                                     "secret/target with source_secret, key, deployment"
                                 ),

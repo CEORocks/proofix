@@ -8,6 +8,8 @@ if kubectl get namespace "${namespace}" >/dev/null 2>&1; then
     [[ -n "${pod}" ]] || continue
     kubectl patch -n "${namespace}" "${pod}" --type=merge \
       -p '{"metadata":{"finalizers":[]}}' >/dev/null || true
+    kubectl delete -n "${namespace}" "${pod}" --grace-period=1 --wait=false \
+      >/dev/null 2>&1 || true
   done < <(kubectl get pods -n "${namespace}" -o name 2>/dev/null || true)
 fi
 kubectl delete namespace "${namespace}" --ignore-not-found --wait=true >/dev/null
