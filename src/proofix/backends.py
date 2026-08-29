@@ -325,19 +325,29 @@ class AntigravityBackend:
             "--disable-slash-commands",
             "--model",
             self.model,
+            "--input-format",
+            "stream-json",
             "--output-format",
-            "json",
+            "stream-json",
             "--print-timeout",
             f"{self.timeout_seconds}s",
             "--json-schema",
             json.dumps(schema),
-            "--print",
-            _prompt(stage, context),
         ]
+        stream_input = json.dumps(
+            {
+                "event": "user",
+                "message": {
+                    "role": "user",
+                    "content": [{"type": "text", "text": _prompt(stage, context)}],
+                },
+            }
+        ) + "\n"
         with tempfile.TemporaryDirectory(prefix="proofix-reasoning-") as directory:
             try:
                 completed = subprocess.run(
                     command,
+                    input=stream_input,
                     text=True,
                     capture_output=True,
                     timeout=self.timeout_seconds,
@@ -360,9 +370,18 @@ class AntigravityBackend:
                 f"{detail or 'no diagnostic output'}"
             )
         try:
-            wrapper = json.loads(completed.stdout)
+            events = [
+                json.loads(line)
+                for line in completed.stdout.splitlines()
+                if line.strip().startswith("{")
+            ]
         except json.JSONDecodeError as exc:
-            raise RuntimeError("Antigravity did not produce a valid JSON wrapper") from exc
+            raise RuntimeError("Antigravity did not produce valid JSON events") from exc
+        if not events:
+            raise RuntimeError("Antigravity did not produce a result event")
+        wrapper = events[-1]
+        if isinstance(wrapper, dict) and wrapper.get("event") == "result":
+            wrapper = wrapper.get("result")
         if not isinstance(wrapper, dict):
             raise RuntimeError("Antigravity returned a non-object wrapper")
         if wrapper.get("status") != "SUCCESS":

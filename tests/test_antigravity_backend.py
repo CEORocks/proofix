@@ -65,13 +65,18 @@ raise SystemExit(subprocess.run([{str(executable)!r}, *sys.argv[1:]]).returncode
     )
     wrapper.chmod(wrapper.stat().st_mode | stat.S_IXUSR)
 
-    result = AntigravityBackend(agy_binary=str(wrapper)).respond("scope", {"case": "01"})
+    result = AntigravityBackend(agy_binary=str(wrapper)).respond(
+        "scope", {"case": "01", "evidence": "x" * 200_000}
+    )
 
     assert result["namespace"] == "bench"
     argv = json.loads(log.read_text(encoding="utf-8"))
     assert argv[argv.index("--model") + 1] == "gemini-3.7-flash-medium"
     assert "--sandbox" in argv
     assert "--dangerously-skip-permissions" not in argv
+    assert argv[argv.index("--input-format") + 1] == "stream-json"
+    assert argv[argv.index("--output-format") + 1] == "stream-json"
+    assert "--print" not in argv
     assert json.loads(argv[argv.index("--json-schema") + 1]) == schema_for("scope")
 
 
@@ -79,7 +84,7 @@ raise SystemExit(subprocess.run([{str(executable)!r}, *sys.argv[1:]]).returncode
     ("mode", "message"),
     [
         ("exit", r"failed \(7\)"),
-        ("malformed", "valid JSON wrapper"),
+        ("malformed", "result event"),
         ("canceled", "unsuccessful status"),
         ("missing", "missing structured_output"),
     ],
