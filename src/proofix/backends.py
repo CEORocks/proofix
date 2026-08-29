@@ -409,7 +409,8 @@ def _prompt(stage: str, context: Mapping[str, object]) -> str:
         "refine": "Rerank hypotheses using all test evidence. Keep evidence source strings exact.",
         "plan": "Plan the smallest reversible remediation. Never delete persistent data.",
         "replan": (
-            "Repair the rejected plan using the execution-error evidence. For Kubernetes "
+            "Repair the rejected plan using the policy-rejection or execution-error evidence. "
+            "Every reversible action must include an executable rollback object. For Kubernetes "
             "container-list edits use strategic patch semantics so named containers are merged."
         ),
         "close": "State only critical claims supported by exact evidence source strings in context.",

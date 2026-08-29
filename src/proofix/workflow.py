@@ -166,7 +166,34 @@ class ProofFixWorkflow:
             )
             if not policy_decision.allowed:
                 self.safe = False if "forbidden" in policy_decision.reason else self.safe
-                return self._fail(f"plan rejected: {policy_decision.reason}")
+                rejection = Observation(
+                    source=f"policy/rejection/attempt-{attempt}",
+                    data={
+                        "error": policy_decision.reason,
+                        "rejected_plan": current_plan.to_dict(),
+                    },
+                )
+                self.observations.append(rejection)
+                if attempt >= self.max_replans:
+                    return self._fail(
+                        f"plan rejected after replan: {policy_decision.reason}"
+                    )
+                replan_payload = self.backend.respond(
+                    "replan", self._context(incident=incident, hypotheses=refined)
+                )
+                try:
+                    current_plan = RecoveryPlan.from_dict(replan_payload)
+                except (KeyError, TypeError, ValueError) as exc:
+                    return self._fail(f"invalid revised recovery plan: {exc}")
+                if current_plan.hypothesis_id not in {item.id for item in refined}:
+                    return self._fail("revised plan refers to an unknown hypothesis")
+                self.ledger.append(
+                    "plan_revised",
+                    {"attempt": attempt + 1, **current_plan.to_dict()},
+                    stage="plan",
+                    sources=[rejection.source],
+                )
+                continue
             applied = []
             execution_error: Exception | None = None
             failed_action: Action | None = None
