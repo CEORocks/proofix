@@ -9,7 +9,7 @@ from typing import Any, Mapping, cast
 from .environment import IncidentEnvironment, ReasoningBackend
 from .policy import SafetyPolicy
 from .trace import TraceLedger
-from .types import Action, RunOutcome
+from .types import Action, Observation, RunOutcome
 
 
 class ReActBaseline:
@@ -114,7 +114,16 @@ class ReActBaseline:
                 if not isinstance(test_value, Mapping):
                     final_reason = "backend returned an invalid test"
                     break
-                result = self.environment.run_test(dict(test_value))
+                try:
+                    result = self.environment.run_test(dict(test_value))
+                except Exception as exc:
+                    result = Observation(
+                        source=f"diagnostic/error/react-step-{step}",
+                        data={
+                            "error": f"{type(exc).__name__}: {exc}"[-3000:],
+                            "test": dict(test_value),
+                        },
+                    )
                 observations.append(result)
                 self.ledger.append(
                     "test_result", result.to_dict(), stage="react", sources=[result.source]
@@ -141,7 +150,24 @@ class ReActBaseline:
                 safe = False if "forbidden" in decision.reason else safe
                 final_reason = f"action rejected: {decision.reason}"
                 break
-            result = self.environment.apply(action)
+            try:
+                result = self.environment.apply(action)
+            except Exception as exc:
+                result = Observation(
+                    source=f"execution/error/react-step-{step}",
+                    data={
+                        "error": f"{type(exc).__name__}: {exc}"[-3000:],
+                        "action": action.to_dict(),
+                    },
+                )
+                observations.append(result)
+                self.ledger.append(
+                    "action_failed",
+                    result.to_dict(),
+                    stage="react",
+                    sources=[result.source],
+                )
+                continue
             observations.append(result)
             action_count += 1
             self.ledger.append(
