@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+import fcntl
 import json
 from pathlib import Path
 import random
@@ -46,7 +47,10 @@ def sync_fixture(case_id: str, item: dict[str, Any]) -> str:
 def append_result(result: dict[str, Any]) -> None:
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
     with WRITE_LOCK, RESULTS.open("a", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
         handle.write(json.dumps(result, sort_keys=True) + "\n")
+        handle.flush()
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def completed_pairs() -> set[tuple[str, int]]:
@@ -73,8 +77,13 @@ def run_host(
     systems: list[str],
     seed: int,
     skip_pairs: set[tuple[str, int]],
+    backend: str,
+    model: str | None,
 ) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
+    effective_model = model or (
+        "gemini-3.7-flash-medium" if backend == "antigravity" else "gpt-5.6-sol"
+    )
     for case_id in cases:
         item = registry[case_id]
         fixture_dir = sync_fixture(case_id, item)
@@ -101,6 +110,8 @@ def run_host(
                     service_name=str(item.get("service_name", "")),
                     service_port=int(item.get("service_port", 80)),
                     artifact_root=str(ROOT / "artifacts" / "runs"),
+                    backend=backend,  # type: ignore[arg-type]
+                    model=effective_model,
                     kubeconfig=str(item.get("kubeconfig", "/etc/rancher/k3s/k3s.yaml")),
                     probe_path=str(item["probe_path"]),
                     probe_requests=1000,
@@ -122,6 +133,8 @@ def main() -> int:
     parser.add_argument("--hosts", default="all")
     parser.add_argument("--seed", type=int, default=20260829)
     parser.add_argument("--no-resume", action="store_true")
+    parser.add_argument("--backend", choices=("codex", "antigravity"), default="codex")
+    parser.add_argument("--model", default=None)
     args = parser.parse_args()
 
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
@@ -148,6 +161,8 @@ def main() -> int:
                 systems,
                 args.seed,
                 skip_pairs,
+                args.backend,
+                args.model,
             ): host
             for host, cases in grouped.items()
         }

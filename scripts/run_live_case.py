@@ -24,7 +24,8 @@ def main() -> int:
     parser.add_argument("--service-name", default="")
     parser.add_argument("--service-port", type=int, default=80)
     parser.add_argument("--local-port", type=int, required=True)
-    parser.add_argument("--model", default="gpt-5.6-sol")
+    parser.add_argument("--backend", choices=("codex", "antigravity"), default="codex")
+    parser.add_argument("--model", default=None)
     parser.add_argument("--kubeconfig", default="/etc/rancher/k3s/k3s.yaml")
     parser.add_argument("--probe-path", default="/")
     parser.add_argument("--probe-requests", type=int, default=1000)
@@ -32,6 +33,12 @@ def main() -> int:
     parser.add_argument("--verification-settle-seconds", type=float, default=5.0)
     args = parser.parse_args()
     values = vars(args)
+    if values["model"] is None:
+        values["model"] = (
+            "gemini-3.7-flash-medium"
+            if values["backend"] == "antigravity"
+            else "gpt-5.6-sol"
+        )
     values["additional_namespaces"] = tuple(values.pop("additional_namespace"))
     fixture_environment = []
     for item in values.pop("fixture_env"):

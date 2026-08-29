@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
-from .backends import CodexBackend
+from .backends import AntigravityBackend, CodexBackend
 from .baseline import ReActBaseline
 from .cases import load_case
 from .evaluator import evaluate_vrs
@@ -25,6 +25,7 @@ from .workflow import ProofFixWorkflow
 
 
 SystemName = Literal["react", "proofix"]
+BackendName = Literal["codex", "antigravity"]
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ class LiveRunConfig:
     service_name: str = ""
     service_port: int = 80
     artifact_root: str = "artifacts/runs"
+    backend: BackendName = "codex"
     model: str = "gpt-5.6-sol"
     kubeconfig: str = "/etc/rancher/k3s/k3s.yaml"
     probe_path: str = "/"
@@ -246,6 +248,11 @@ def run_live(config: LiveRunConfig) -> dict[str, Any]:
         environment=config.fixture_environment,
     )
     lifecycle: dict[str, str] = {}
+    effective_model = (
+        "gemini-3.7-flash-medium"
+        if config.backend == "antigravity" and config.model == "gpt-5.6-sol"
+        else config.model
+    )
     started = time.monotonic()
     try:
         lifecycle["install"] = fixture.run("install.sh")
@@ -288,7 +295,11 @@ def run_live(config: LiveRunConfig) -> dict[str, Any]:
             (run_dir / "initial-snapshot.json").write_text(
                 json.dumps(snapshot, indent=2, sort_keys=True) + "\n", encoding="utf-8"
             )
-            backend = CodexBackend(model=config.model)
+            backend = (
+                AntigravityBackend(model=effective_model)
+                if config.backend == "antigravity"
+                else CodexBackend(model=effective_model)
+            )
             policy = SafetyPolicy(
                 allowed_namespaces=[config.namespace, *config.additional_namespaces],
                 max_actions=20,
@@ -343,7 +354,8 @@ def run_live(config: LiveRunConfig) -> dict[str, Any]:
             "case_id": case_id,
             "system": config.system,
             "trial": config.trial,
-            "model": config.model,
+            "backend": config.backend,
+            "model": effective_model,
             "initial_snapshot_sha256": snapshot_hash,
             "elapsed_seconds": elapsed,
             "outcome": outcome.to_dict(),
@@ -357,7 +369,8 @@ def run_live(config: LiveRunConfig) -> dict[str, Any]:
             "case_id": case_id,
             "system": config.system,
             "trial": config.trial,
-            "model": config.model,
+            "backend": config.backend,
+            "model": effective_model,
             "elapsed_seconds": time.monotonic() - started,
             "infrastructure_error": f"{type(exc).__name__}: {exc}",
         }

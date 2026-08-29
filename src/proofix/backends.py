@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -300,6 +301,105 @@ class CodexBackend:
             if not isinstance(value, dict):
                 raise RuntimeError("Codex returned a non-object")
             return cast(Mapping[str, object], value)
+
+
+class AntigravityBackend:
+    """Use the authenticated Antigravity CLI as a constrained reasoning engine."""
+
+    def __init__(
+        self,
+        *,
+        model: str = "gemini-3.7-flash-medium",
+        timeout_seconds: int = 300,
+        agy_binary: str = "agy",
+    ) -> None:
+        self.model = model or "gemini-3.7-flash-medium"
+        self.timeout_seconds = timeout_seconds
+        self.agy_binary = agy_binary
+
+    def respond(self, stage: str, context: Mapping[str, object]) -> Mapping[str, object]:
+        schema = schema_for(stage)
+        command = [
+            self._resolve_binary(),
+            "--sandbox",
+            "--disable-slash-commands",
+            "--model",
+            self.model,
+            "--output-format",
+            "json",
+            "--print-timeout",
+            f"{self.timeout_seconds}s",
+            "--json-schema",
+            json.dumps(schema),
+            "--print",
+            _prompt(stage, context),
+        ]
+        with tempfile.TemporaryDirectory(prefix="proofix-reasoning-") as directory:
+            try:
+                completed = subprocess.run(
+                    command,
+                    text=True,
+                    capture_output=True,
+                    timeout=self.timeout_seconds,
+                    check=False,
+                    cwd=directory,
+                )
+            except subprocess.TimeoutExpired as exc:
+                raise RuntimeError(
+                    f"Antigravity reasoning timed out after {self.timeout_seconds} seconds"
+                ) from exc
+            except OSError as exc:
+                raise RuntimeError(
+                    f"Failed to execute Antigravity binary {self.agy_binary!r}: {exc}"
+                ) from exc
+
+        if completed.returncode != 0:
+            detail = completed.stderr[-3000:].strip() or completed.stdout[-1000:].strip()
+            raise RuntimeError(
+                f"Antigravity reasoning failed ({completed.returncode}): "
+                f"{detail or 'no diagnostic output'}"
+            )
+        try:
+            wrapper = json.loads(completed.stdout)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("Antigravity did not produce a valid JSON wrapper") from exc
+        if not isinstance(wrapper, dict):
+            raise RuntimeError("Antigravity returned a non-object wrapper")
+        if wrapper.get("status") != "SUCCESS":
+            wrapper_detail = wrapper.get("error") or wrapper.get("status")
+            raise RuntimeError(
+                f"Antigravity returned unsuccessful status: {wrapper_detail!r}"
+            )
+        if wrapper.get("structured_output") is None:
+            raise RuntimeError("Antigravity wrapper missing structured_output")
+        value = wrapper["structured_output"]
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError as exc:
+                raise RuntimeError(
+                    "Antigravity structured_output is not valid JSON"
+                ) from exc
+        if not isinstance(value, dict):
+            raise RuntimeError("Antigravity structured_output is not a JSON object")
+        for key in schema.get("required", []):
+            if key not in value:
+                raise RuntimeError(
+                    f"Antigravity structured_output missing required property {key!r}"
+                )
+        return cast(Mapping[str, object], value)
+
+    def _resolve_binary(self) -> str:
+        if "/" in self.agy_binary or Path(self.agy_binary).is_file():
+            return self.agy_binary
+        found = shutil.which(self.agy_binary)
+        if found:
+            return found
+        if self.agy_binary == "agy":
+            fallback = Path.home() / ".local" / "bin" / "agy"
+            if fallback.is_file():
+                return str(fallback)
+        return self.agy_binary
 
 
 def _prompt(stage: str, context: Mapping[str, object]) -> str:
