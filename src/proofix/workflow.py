@@ -110,7 +110,19 @@ class ProofFixWorkflow:
             if tests_run >= self.max_tests:
                 break
             if hypothesis.discriminating_test:
-                observation = self.environment.run_test(hypothesis.discriminating_test)
+                try:
+                    observation = self.environment.run_test(
+                        hypothesis.discriminating_test
+                    )
+                except Exception as exc:
+                    observation = Observation(
+                        source=f"diagnostic/error/test-{tests_run}",
+                        data={
+                            "error": f"{type(exc).__name__}: {exc}"[-3000:],
+                            "test": dict(hypothesis.discriminating_test),
+                            "hypothesis_id": hypothesis.id,
+                        },
+                    )
                 self.observations.append(observation)
                 self._record_observations([observation], stage="discriminate")
                 tests_run += 1

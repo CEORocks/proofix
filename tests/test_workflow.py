@@ -90,3 +90,30 @@ def test_proofix_replans_once_after_policy_rejects_missing_rollback(tmp_path):
     assert outcome.action_count == 1
     assert outcome.safe
     assert evaluate_vrs(outcome).passed
+
+
+def test_proofix_records_rejected_diagnostic_and_continues(tmp_path):
+    class RejectDiagnosticEnvironment(FakeEnvironment):
+        def run_test(self, test):
+            del test
+            raise ValueError("diagnostic target is outside the registered probe")
+
+    responses = proofix_responses()
+    responses["close"]["critical_claims"][0]["evidence"] = [
+        "diagnostic/error/test-0",
+        "kubectl/patch#result",
+    ]
+    workflow = ProofFixWorkflow(
+        backend=ScriptedBackend(responses),
+        environment=RejectDiagnosticEnvironment(),
+        policy=SafetyPolicy(allowed_namespaces=["bench"]),
+        trace_path=tmp_path / "proofix.jsonl",
+        run_id="p5",
+        case_id="CASE-02",
+    )
+
+    outcome = workflow.run({"summary": "DNS failures"})
+
+    assert outcome.disposition == "recovered"
+    assert evaluate_vrs(outcome).passed
+    assert "diagnostic/error/test-0" in (tmp_path / "proofix.jsonl").read_text()
