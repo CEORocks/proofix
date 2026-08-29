@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+token="$(gcloud auth print-access-token)"
+expiration="$(date -u -d '+50 minutes' '+%Y-%m-%dT%H:%M:%SZ')"
+python3 -c 'import json, sys; print(json.dumps({
+    "apiVersion": "client.authentication.k8s.io/v1beta1",
+    "kind": "ExecCredential",
+    "status": {"expirationTimestamp": sys.argv[1], "token": sys.argv[2]},
+}))' "${expiration}" "${token}"

@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rotate-db-password
+  namespace: proofix-case-10
+  labels:
+    proofix.io/case: CASE-10
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        proofix.io/case: CASE-10
+        proofix.io/purpose: credential-rotation
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: rotate
+          image: postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-ceu"]
+          args:
+            - |
+              printf "ALTER ROLE billing WITH PASSWORD '%s';\n" "${NEXT_PASSWORD}" \
+                | psql -v ON_ERROR_STOP=1 -h postgres -U billing -d billing >/dev/null 2>&1
+              generation_hash="$(printf '%s' "${NEXT_PASSWORD}" | sha256sum | awk '{print $1}')"
+              printf '{"rotation":"complete","generation_sha256":"%s"}\n' "${generation_hash}"
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            - name: NEXT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-next
+                  key: password
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 70

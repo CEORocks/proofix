@@ -15,6 +15,8 @@ MUTATING_OPERATIONS = frozenset(
         "rollout_restart",
         "scale",
         "delete_pod",
+        "sync_secret_and_rollout",
+        "replace_unbound_pvc",
         "cordon",
         "uncordon",
     }

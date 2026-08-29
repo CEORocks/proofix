@@ -1,0 +1,15 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        proofix.io/profile: recovered-3cpu
+    spec:
+      containers:
+        - name: search-api
+          resources:
+            requests:
+              cpu: "2"
+              memory: 128Mi
+            limits:
+              cpu: "3"
+              memory: 256Mi

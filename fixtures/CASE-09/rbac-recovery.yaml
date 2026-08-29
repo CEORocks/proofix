@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: inventory-settings-reader
+  namespace: proofix-case-09
+  labels:
+    proofix.io/case: CASE-09
+    proofix.io/profile: recovered-least-privilege
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["inventory-settings"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["list"]

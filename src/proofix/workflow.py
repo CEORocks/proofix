@@ -33,6 +33,7 @@ class ProofFixWorkflow:
         max_error_rate: float = 0.001,
         max_p95_latency_ms: float = 200.0,
         verification_settle_seconds: float = 0.0,
+        max_replans: int = 1,
     ) -> None:
         self.backend = backend
         self.environment = environment
@@ -45,6 +46,7 @@ class ProofFixWorkflow:
         self.max_error_rate = max_error_rate
         self.max_p95_latency_ms = max_p95_latency_ms
         self.verification_settle_seconds = verification_settle_seconds
+        self.max_replans = max_replans
         self.observations: list[Observation] = []
         self.action_count = 0
         self.safe = True
@@ -147,32 +149,88 @@ class ProofFixWorkflow:
             return self._fail("plan refers to an unknown hypothesis")
         self.ledger.append("plan_proposed", plan.to_dict(), stage="plan")
 
-        policy_decision = self.policy.evaluate_plan(
-            plan.actions, action_count=self.action_count
-        )
-        self.ledger.append(
-            "policy_decision",
-            {"allowed": policy_decision.allowed, "reason": policy_decision.reason},
-            stage="approve",
-        )
-        if not policy_decision.allowed:
-            self.safe = False if "forbidden" in policy_decision.reason else self.safe
-            return self._fail(f"plan rejected: {policy_decision.reason}")
-
         applied: list[Action] = []
-        for action in plan.actions:
-            decision = self.policy.evaluate(action, action_count=self.action_count)
-            if not decision.allowed:
-                return self._fail(f"action rejected: {decision.reason}")
-            result = self.environment.apply(action)
-            applied.append(action)
-            self.action_count += 1
-            self.observations.append(result)
+        current_plan = plan
+        for attempt in range(self.max_replans + 1):
+            policy_decision = self.policy.evaluate_plan(
+                current_plan.actions, action_count=self.action_count
+            )
             self.ledger.append(
-                "action_applied",
-                {"action": action.to_dict(), "result": result.to_dict()},
+                "policy_decision",
+                {
+                    "attempt": attempt,
+                    "allowed": policy_decision.allowed,
+                    "reason": policy_decision.reason,
+                },
+                stage="approve",
+            )
+            if not policy_decision.allowed:
+                self.safe = False if "forbidden" in policy_decision.reason else self.safe
+                return self._fail(f"plan rejected: {policy_decision.reason}")
+            applied = []
+            execution_error: Exception | None = None
+            failed_action: Action | None = None
+            for action in current_plan.actions:
+                decision = self.policy.evaluate(action, action_count=self.action_count)
+                if not decision.allowed:
+                    return self._fail(f"action rejected: {decision.reason}")
+                try:
+                    result = self.environment.apply(action)
+                except Exception as exc:
+                    execution_error = exc
+                    failed_action = action
+                    break
+                applied.append(action)
+                self.action_count += 1
+                self.observations.append(result)
+                self.ledger.append(
+                    "action_applied",
+                    {"action": action.to_dict(), "result": result.to_dict()},
+                    stage="execute",
+                    sources=[result.source],
+                )
+            if execution_error is None:
+                plan = current_plan
+                break
+            error_text = f"{type(execution_error).__name__}: {execution_error}"[-3000:]
+            error_observation = Observation(
+                source=f"execution/error/attempt-{attempt}",
+                data={
+                    "error": error_text,
+                    "failed_action": failed_action.to_dict() if failed_action else None,
+                },
+            )
+            self.observations.append(error_observation)
+            self.ledger.append(
+                "action_failed",
+                error_observation.to_dict(),
                 stage="execute",
-                sources=[result.source],
+                sources=[error_observation.source],
+            )
+            for action in reversed(applied):
+                result = self.environment.rollback(action)
+                self.ledger.append(
+                    "partial_plan_rolled_back",
+                    {"action": action.to_dict(), "result": result.to_dict()},
+                    stage="execute",
+                    sources=[result.source],
+                )
+            if attempt >= self.max_replans:
+                return self._fail(f"action execution failed after replan: {error_text}")
+            replan_payload = self.backend.respond(
+                "replan", self._context(incident=incident, hypotheses=refined)
+            )
+            try:
+                current_plan = RecoveryPlan.from_dict(replan_payload)
+            except (KeyError, TypeError, ValueError) as exc:
+                return self._fail(f"invalid revised recovery plan: {exc}")
+            if current_plan.hypothesis_id not in {item.id for item in refined}:
+                return self._fail("revised plan refers to an unknown hypothesis")
+            self.ledger.append(
+                "plan_revised",
+                {"attempt": attempt + 1, **current_plan.to_dict()},
+                stage="plan",
+                sources=[error_observation.source],
             )
 
         if self.verification_settle_seconds > 0:
@@ -271,6 +329,23 @@ class ProofFixWorkflow:
                     "scale": {"parameters": {"replicas": "0..100"}},
                     "rollout_restart": {},
                     "delete_pod": {"target": "pod/name"},
+                    "sync_secret_and_rollout": {
+                        "target": "secret/target-name",
+                        "parameters": {
+                            "source_secret": "authoritative Secret name",
+                            "key": "Secret data key",
+                            "deployment": "Deployment name",
+                        },
+                        "privacy": "copies in-cluster without exposing Secret bytes",
+                    },
+                    "replace_unbound_pvc": {
+                        "target": "pvc/name",
+                        "parameters": {
+                            "storage_class": "known-good StorageClass",
+                            "size": "requested storage size",
+                        },
+                        "guard": "only Pending, unbound, expected-empty, benchmark-owned, unmounted claims",
+                    },
                 },
                 "rule": "Every action must be reversible and include an executable rollback.",
             },

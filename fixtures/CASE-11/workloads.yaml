@@ -1,0 +1,252 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orders-app
+  namespace: proofix-case-11
+data:
+  requirements.txt: |
+    kafka-python==2.2.15 --hash=sha256:84c0993cd4f7f2f01e92d8104ea9bdf631aff72fc5e6ea62eb3bdf1d56528fc3
+  producer.py: |
+    import json
+    import os
+    import time
+    import urllib.error
+    import urllib.request
+
+    PROXY = os.environ["PROXY_URL"].rstrip("/")
+    RATE = int(os.environ.get("RECORDS_PER_SECOND", "42"))
+    TOPIC = "orders"
+
+    def post(path, payload):
+        request = urllib.request.Request(
+            PROXY + path,
+            data=json.dumps(payload).encode(),
+            headers={
+                "Content-Type": "application/vnd.kafka.json.v2+json",
+                "Accept": "application/vnd.kafka.v2+json",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=10) as response:
+            body = response.read()
+            if response.status not in (200, 204):
+                raise RuntimeError(f"produce status {response.status}: {body!r}")
+            return json.loads(body) if body else {}
+
+    sequence = 0
+    while True:
+        started = time.monotonic()
+        records = []
+        for _ in range(RATE):
+            records.append({
+                "partition": sequence % 6,
+                "value": {"order_id": f"order-{sequence:012d}", "sequence": sequence},
+            })
+            sequence += 1
+        try:
+            result = post(f"/topics/{TOPIC}", {"records": records})
+            errors = [item for item in result.get("offsets", []) if item.get("error_code")]
+            if errors:
+                raise RuntimeError(f"produce errors: {errors}")
+            print(json.dumps({"event": "produced", "count": RATE, "sequence": sequence}), flush=True)
+        except (OSError, urllib.error.HTTPError, RuntimeError) as error:
+            print(json.dumps({"event": "producer_error", "error": str(error)}), flush=True)
+            time.sleep(1)
+            continue
+        time.sleep(max(0.0, 1.0 - (time.monotonic() - started)))
+
+  consumer.py: |
+    import json
+    import os
+    import signal
+    import threading
+    import time
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from kafka import KafkaConsumer
+    from kafka.errors import KafkaError
+
+    BROKERS = os.environ["BOOTSTRAP_SERVERS"].split(",")
+    GROUP = "proofix-orders-v1"
+    INSTANCE = os.environ.get("HOSTNAME", "orders-consumer")
+    PROCESS_SECONDS = float(os.environ.get("PROCESS_SECONDS", "0.04"))
+    state = {"processed": 0, "errors": 0, "last_fetch": 0.0, "instance": INSTANCE}
+    stopping = False
+
+    class Health(BaseHTTPRequestHandler):
+        def do_GET(self):
+            healthy = state["last_fetch"] and time.monotonic() - state["last_fetch"] < 15
+            payload = json.dumps({**state, "healthy": bool(healthy)}).encode()
+            self.send_response(200 if healthy else 503)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+        def log_message(self, *_args):
+            return
+
+    def shutdown(*_args):
+        global stopping
+        stopping = True
+
+    signal.signal(signal.SIGTERM, shutdown)
+    server = ThreadingHTTPServer(("0.0.0.0", 8080), Health)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+
+    while not stopping:
+        consumer = None
+        try:
+            consumer = KafkaConsumer(
+                "orders",
+                bootstrap_servers=BROKERS,
+                group_id=GROUP,
+                client_id=INSTANCE,
+                enable_auto_commit=False,
+                auto_offset_reset="earliest",
+                max_poll_records=10,
+                request_timeout_ms=15000,
+                api_version_auto_timeout_ms=15000,
+            )
+            for _record in consumer:
+                if stopping:
+                    break
+                state["last_fetch"] = time.monotonic()
+                time.sleep(PROCESS_SECONDS)
+                consumer.commit()
+                state["processed"] += 1
+        except (KafkaError, OSError, ValueError) as error:
+            state["errors"] += 1
+            print(json.dumps({"event": "consumer_error", "instance": INSTANCE, "error": str(error)}), flush=True)
+            time.sleep(2)
+        finally:
+            if consumer is not None:
+                consumer.close(autocommit=False)
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-producer
+  namespace: proofix-case-11
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: orders-producer
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: orders-producer
+        proofix.io/case: CASE-11
+    spec:
+      containers:
+        - name: producer
+          image: mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f
+          command: ["python3", "/app/producer.py"]
+          env:
+            - name: PROXY_URL
+              value: http://redpanda:8082
+            - name: RECORDS_PER_SECOND
+              value: "42"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 48Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          volumeMounts:
+            - name: app
+              mountPath: /app
+      volumes:
+        - name: app
+          configMap:
+            name: orders-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-consumer
+  namespace: proofix-case-11
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: orders-consumer
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: orders-consumer
+        proofix.io/case: CASE-11
+    spec:
+      terminationGracePeriodSeconds: 15
+      initContainers:
+        - name: install-kafka-client
+          image: mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f
+          command: ["sh", "-ec"]
+          args:
+            - pip install --disable-pip-version-check --no-cache-dir --require-hashes --target /deps -r /app/requirements.txt
+          volumeMounts:
+            - name: app
+              mountPath: /app
+            - name: deps
+              mountPath: /deps
+      containers:
+        - name: consumer
+          image: mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f
+          command: ["python3", "/app/consumer.py"]
+          env:
+            - name: PYTHONPATH
+              value: /deps
+            - name: BOOTSTRAP_SERVERS
+              value: redpanda-0.redpanda.proofix-case-11.svc.cluster.local:9092
+            - name: PROCESS_SECONDS
+              value: "0.04"
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 48Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          volumeMounts:
+            - name: app
+              mountPath: /app
+            - name: deps
+              mountPath: /deps
+      volumes:
+        - name: app
+          configMap:
+            name: orders-app
+        - name: deps
+          emptyDir:
+            sizeLimit: 32Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-consumer
+  namespace: proofix-case-11
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: orders-consumer
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      nodePort: 30081

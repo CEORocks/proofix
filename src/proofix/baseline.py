@@ -72,6 +72,28 @@ class ReActBaseline:
                         "observations": [item.to_dict() for item in observations],
                         "step": step,
                         "remaining_actions": self.max_steps - action_count,
+                        "tool_catalog": {
+                            "tests": [
+                                "kubectl_get",
+                                "kubectl_describe",
+                                "kubectl_logs",
+                                "kubectl_auth_can_i",
+                                "http_get",
+                            ],
+                            "actions": {
+                                "patch": "resource/name with patch_type and patch_json",
+                                "scale": "target with replicas 0..100",
+                                "rollout_restart": "deployment/name",
+                                "delete_pod": "pod/name",
+                                "sync_secret_and_rollout": (
+                                    "secret/target with source_secret, key, deployment"
+                                ),
+                                "replace_unbound_pvc": (
+                                    "pvc/name with storage_class and size; guarded empty claims only"
+                                ),
+                            },
+                            "rule": "Every action must be reversible with executable rollback.",
+                        },
                     },
                 )
             )

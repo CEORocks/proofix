@@ -1,0 +1,140 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: proofix-case-12
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: kafka
+  ports:
+    - name: kafka
+      port: 9092
+    - name: admin
+      port: 9644
+    - name: rpc
+      port: 33145
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-admin
+  namespace: proofix-case-12
+spec:
+  type: NodePort
+  selector:
+    statefulset.kubernetes.io/pod-name: kafka-0
+  ports:
+    - name: admin
+      port: 9644
+      targetPort: admin
+      nodePort: 30082
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: proofix-case-12
+spec:
+  serviceName: kafka
+  replicas: 3
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kafka
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kafka
+        proofix.io/case: CASE-12
+    spec:
+      terminationGracePeriodSeconds: 45
+      containers:
+        - name: redpanda
+          image: mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              fqdn="${HOSTNAME}.kafka.${POD_NAMESPACE}.svc.cluster.local"
+              extra=""
+              if [ "${HOSTNAME}" = "kafka-2" ] && [ -s /etc/proofix/override/extra_args ]; then
+                extra="$(tr '\n' ' ' < /etc/proofix/override/extra_args)"
+              fi
+              exec rpk redpanda start \
+                --smp 1 \
+                --memory 768M \
+                --reserve-memory 0M \
+                --overprovisioned \
+                --check=false \
+                --default-log-level=warn \
+                --kafka-addr internal://0.0.0.0:9092 \
+                --advertise-kafka-addr "internal://${fqdn}:9092" \
+                --rpc-addr 0.0.0.0:33145 \
+                --advertise-rpc-addr "${fqdn}:33145" \
+                --seeds kafka-0.kafka.proofix-case-12.svc.cluster.local:33145,kafka-1.kafka.proofix-case-12.svc.cluster.local:33145,kafka-2.kafka.proofix-case-12.svc.cluster.local:33145 \
+                --set redpanda.empty_seed_starts_cluster=false \
+                ${extra}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - name: kafka
+              containerPort: 9092
+            - name: admin
+              containerPort: 9644
+            - name: rpc
+              containerPort: 33145
+          resources:
+            requests:
+              cpu: 500m
+              memory: 768Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /v1/status/ready
+              port: admin
+            failureThreshold: 90
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /v1/status/ready
+              port: admin
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /v1/status/ready
+              port: admin
+            initialDelaySeconds: 45
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/redpanda/data
+            - name: startup-override
+              mountPath: /etc/proofix/override
+              readOnly: true
+      volumes:
+        - name: startup-override
+          configMap:
+            name: kafka-startup-override
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          proofix.io/case: CASE-12
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 4Gi

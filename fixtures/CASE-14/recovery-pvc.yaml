@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: uploads
+  namespace: proofix-case-14
+  labels:
+    proofix.io/case: CASE-14
+    proofix.io/benchmark-owned: "true"
+    proofix.io/recovered: "true"
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: __GOOD_STORAGE_CLASS__
+  resources:
+    requests: {storage: 64Mi}

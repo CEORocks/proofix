@@ -1,0 +1,231 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: inventory-controller
+  namespace: proofix-case-09
+  labels:
+    proofix.io/case: CASE-09
+automountServiceAccountToken: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-settings
+  namespace: proofix-case-09
+  labels:
+    proofix.io/case: CASE-09
+data:
+  warehouse: eu-central
+  reconciliation_interval_seconds: "30"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-controller-source
+  namespace: proofix-case-09
+data:
+  InventoryServer.java: |
+    import com.sun.net.httpserver.HttpExchange;
+    import com.sun.net.httpserver.HttpServer;
+    import java.io.IOException;
+    import java.io.InputStream;
+    import java.net.InetSocketAddress;
+    import java.net.URI;
+    import java.net.http.HttpClient;
+    import java.net.http.HttpRequest;
+    import java.net.http.HttpResponse;
+    import java.nio.charset.StandardCharsets;
+    import java.nio.file.Files;
+    import java.nio.file.Path;
+    import java.security.KeyStore;
+    import java.security.cert.Certificate;
+    import java.security.cert.CertificateFactory;
+    import java.time.Duration;
+    import java.util.concurrent.Executors;
+    import javax.net.ssl.SSLContext;
+    import javax.net.ssl.TrustManagerFactory;
+
+    public final class InventoryServer {
+        private static final Path TOKEN = Path.of(
+                "/var/run/secrets/kubernetes.io/serviceaccount/token");
+        private static final Path CA = Path.of(
+                "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt");
+        private static HttpClient client;
+        private static URI settingsUri;
+
+        private InventoryServer() {}
+
+        private static SSLContext serviceAccountTls() throws Exception {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            Certificate certificate;
+            try (InputStream input = Files.newInputStream(CA)) {
+                certificate = factory.generateCertificate(input);
+            }
+            KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+            store.load(null);
+            store.setCertificateEntry("kubernetes-service-account-ca", certificate);
+            TrustManagerFactory managers = TrustManagerFactory.getInstance(
+                    TrustManagerFactory.getDefaultAlgorithm());
+            managers.init(store);
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, managers.getTrustManagers(), null);
+            return context;
+        }
+
+        private static void reply(HttpExchange exchange, int status, String body)
+                throws IOException {
+            byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.getResponseHeaders().set("Cache-Control", "no-store");
+            exchange.sendResponseHeaders(status, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        }
+
+        private static void inventory(HttpExchange exchange) throws IOException {
+            try {
+                String token = Files.readString(TOKEN, StandardCharsets.UTF_8).trim();
+                HttpRequest request = HttpRequest.newBuilder(settingsUri)
+                        .timeout(Duration.ofSeconds(2))
+                        .header("Authorization", "Bearer " + token)
+                        .header("Accept", "application/json")
+                        .GET().build();
+                HttpResponse<Void> response = client.send(
+                        request, HttpResponse.BodyHandlers.discarding());
+                if (response.statusCode() == 200) {
+                    reply(exchange, 200, "{\"ok\":true,\"reconciled\":true}\n");
+                } else {
+                    reply(exchange, 503, "{\"ok\":false,\"kubernetes_status\":"
+                            + response.statusCode() + "}\n");
+                }
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                reply(exchange, 503, "{\"ok\":false,\"error\":\"interrupted\"}\n");
+            } catch (Exception error) {
+                reply(exchange, 503, "{\"ok\":false,\"error\":\"api_request_failed\"}\n");
+            }
+        }
+
+        public static void main(String[] args) throws Exception {
+            String host = System.getenv("KUBERNETES_SERVICE_HOST");
+            String port = System.getenv().getOrDefault("KUBERNETES_SERVICE_PORT_HTTPS", "443");
+            settingsUri = URI.create("https://" + host + ":" + port
+                    + "/api/v1/namespaces/proofix-case-09/configmaps/inventory-settings");
+            client = HttpClient.newBuilder().sslContext(serviceAccountTls())
+                    .connectTimeout(Duration.ofSeconds(2)).build();
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            server.createContext("/healthz", exchange ->
+                    reply(exchange, 200, "{\"ok\":true}\n"));
+            server.createContext("/inventory", InventoryServer::inventory);
+            server.setExecutor(Executors.newFixedThreadPool(8));
+            server.start();
+            System.out.println("inventory-controller listening on :8080");
+        }
+    }
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: inventory-settings-reader
+  namespace: proofix-case-09
+  labels:
+    proofix.io/case: CASE-09
+subjects:
+  - kind: ServiceAccount
+    name: inventory-controller
+    namespace: proofix-case-09
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: inventory-settings-reader
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-controller
+  namespace: proofix-case-09
+  labels:
+    app.kubernetes.io/name: inventory-controller
+    proofix.io/case: CASE-09
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inventory-controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: inventory-controller
+        proofix.io/case: CASE-09
+    spec:
+      serviceAccountName: inventory-controller
+      automountServiceAccountToken: true
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: inventory-controller
+          image: eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a
+          imagePullPolicy: IfNotPresent
+          command: ["java"]
+          args: ["-Xms32m", "-Xmx128m", "/app/InventoryServer.java"]
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          volumeMounts:
+            - name: source
+              mountPath: /app
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: source
+          configMap:
+            name: inventory-controller-source
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-controller
+  namespace: proofix-case-09
+  labels:
+    proofix.io/case: CASE-09
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: inventory-controller
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30079

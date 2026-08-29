@@ -1,0 +1,14 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        proofix.io/profile: recovered-storage-selector-narrow-toleration
+    spec:
+      nodeSelector:
+        disk: null
+        storage: nvme
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: reports
+          effect: NoSchedule

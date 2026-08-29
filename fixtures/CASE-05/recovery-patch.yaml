@@ -1,0 +1,17 @@
+spec:
+  replicas: 2
+  template:
+    metadata:
+      annotations:
+        proofix.io/profile: recovered-preferred-hostname-anti-affinity
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: null
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: recommendations-api
+                topologyKey: kubernetes.io/hostname

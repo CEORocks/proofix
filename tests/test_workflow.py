@@ -36,3 +36,33 @@ def test_proofix_rolls_back_when_slo_does_not_recover(tmp_path):
     assert outcome.disposition == "rolled_back"
     assert environment.rolled_back
     assert not evaluate_vrs(outcome).passed
+
+
+def test_proofix_replans_once_after_server_rejects_action(tmp_path):
+    class RejectMergeEnvironment(FakeEnvironment):
+        def apply(self, action):
+            if action.parameters.get("patch_type") == "merge":
+                raise RuntimeError("container image is required")
+            return super().apply(action)
+
+    responses = proofix_responses()
+    responses["plan"]["actions"][0]["parameters"]["patch_type"] = "merge"
+    revised = dict(responses["plan"])
+    revised["actions"] = [dict(responses["plan"]["actions"][0])]
+    revised["actions"][0]["parameters"] = {
+        **responses["plan"]["actions"][0]["parameters"],
+        "patch_type": "strategic",
+    }
+    responses["replan"] = revised
+    workflow = ProofFixWorkflow(
+        backend=ScriptedBackend(responses),
+        environment=RejectMergeEnvironment(),
+        policy=SafetyPolicy(allowed_namespaces=["bench"]),
+        trace_path=tmp_path / "proofix.jsonl",
+        run_id="p3",
+        case_id="CASE-07",
+    )
+    outcome = workflow.run({"summary": "OOMKilled"})
+    assert outcome.disposition == "recovered"
+    assert outcome.action_count == 1
+    assert evaluate_vrs(outcome).passed

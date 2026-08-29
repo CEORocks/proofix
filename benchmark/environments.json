@@ -1,0 +1,17 @@
+{
+  "CASE-01": {"host": "node1", "namespace": "proofix-case-01", "selector": "app=checkout", "node_port": 30081, "local_port": 18101, "probe_path": "/", "settle_seconds": 5},
+  "CASE-02": {"host": "136.114.52.142", "namespace": "proofix-case-02", "selector": "app.kubernetes.io/name=dns-dependent-api", "node_port": 30072, "local_port": 18102, "probe_path": "/checkout", "settle_seconds": 20, "additional_namespaces": ["kube-system"]},
+  "CASE-03": {"host": "node1", "namespace": "proofix-case-03", "selector": "app.kubernetes.io/name=catalog-api", "node_port": 30073, "local_port": 18103, "probe_path": "/", "settle_seconds": 5},
+  "CASE-04": {"host": "node1", "namespace": "proofix-case-04", "selector": "app.kubernetes.io/name=reports-worker", "node_port": 30074, "local_port": 18104, "probe_path": "/", "settle_seconds": 5},
+  "CASE-05": {"host": "34.42.240.99", "namespace": "proofix-case-05", "selector": "app.kubernetes.io/name=recommendations-api", "node_port": 30075, "local_port": 18105, "probe_path": "/", "settle_seconds": 5},
+  "CASE-06": {"host": "34.42.240.99", "namespace": "proofix-case-06", "selector": "app.kubernetes.io/name=checkout-api", "node_port": 30076, "local_port": 18106, "probe_path": "/", "settle_seconds": 5},
+  "CASE-07": {"host": "34.42.240.99", "namespace": "proofix-case-07", "selector": "app.kubernetes.io/name=pricing-api", "node_port": 30077, "local_port": 18107, "probe_path": "/price", "settle_seconds": 5},
+  "CASE-08": {"host": "34.42.240.99", "namespace": "proofix-case-08", "selector": "app.kubernetes.io/name=search-api", "node_port": 30078, "local_port": 18108, "probe_path": "/search", "settle_seconds": 120},
+  "CASE-09": {"host": "node1", "namespace": "proofix-case-09", "selector": "app.kubernetes.io/name=inventory-controller", "node_port": 30079, "local_port": 18109, "probe_path": "/inventory", "settle_seconds": 10},
+  "CASE-10": {"host": "node1", "namespace": "proofix-case-10", "selector": "app.kubernetes.io/name=billing-api", "node_port": 30080, "local_port": 18110, "probe_path": "/billing", "settle_seconds": 10},
+  "CASE-11": {"host": "136.114.52.142", "namespace": "proofix-case-11", "selector": "app.kubernetes.io/name=orders-consumer", "node_port": 30081, "local_port": 18111, "probe_path": "/healthz", "settle_seconds": 60},
+  "CASE-12": {"host": "136.114.52.142", "namespace": "proofix-case-12", "selector": "statefulset.kubernetes.io/pod-name=kafka-0", "node_port": 30082, "local_port": 18112, "probe_path": "/v1/status/ready", "settle_seconds": 120},
+  "CASE-13": {"host": "local", "namespace": "proofix-case-13", "selector": "app.kubernetes.io/name=ledger-api", "node_port": 30113, "local_port": 18113, "probe_path": "/ledger", "settle_seconds": 120, "service_name": "ledger-api", "service_port": 80, "kubeconfig": "/home/ahmad_shakeelceo/.kube/config", "fixture_environment": {"PROOFIX_CASE13_STORAGE_CLASS": "standard-rwo"}},
+  "CASE-14": {"host": "136.114.52.142", "namespace": "proofix-case-14", "selector": "app.kubernetes.io/name=uploads-api", "node_port": 30114, "local_port": 18114, "probe_path": "/read", "settle_seconds": 30},
+  "CASE-15": {"host": "136.114.52.142", "namespace": "proofix-case-15", "selector": "app.kubernetes.io/name=healthy-shop", "node_port": 30115, "local_port": 18115, "probe_path": "/healthz", "settle_seconds": 5}
+}

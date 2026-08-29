@@ -1,0 +1,273 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: billing-api-source
+  namespace: proofix-case-10
+data:
+  BillingServer.java: |
+    import com.sun.net.httpserver.HttpExchange;
+    import com.sun.net.httpserver.HttpServer;
+    import java.io.IOException;
+    import java.net.InetSocketAddress;
+    import java.nio.charset.StandardCharsets;
+    import java.nio.file.Files;
+    import java.nio.file.Path;
+    import java.util.concurrent.Executors;
+
+    public final class BillingServer {
+        private static final Path DB_STATUS = Path.of("/state/db-status");
+
+        private BillingServer() {}
+
+        private static void reply(HttpExchange exchange, int status, String body)
+                throws IOException {
+            byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.getResponseHeaders().set("Cache-Control", "no-store");
+            exchange.sendResponseHeaders(status, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        }
+
+        private static void billing(HttpExchange exchange) throws IOException {
+            String status = Files.exists(DB_STATUS)
+                    ? Files.readString(DB_STATUS, StandardCharsets.UTF_8).trim()
+                    : "unavailable";
+            if (status.equals("ok")) {
+                reply(exchange, 200, "{\"ok\":true,\"database_auth\":\"accepted\"}\n");
+            } else {
+                reply(exchange, 503, "{\"ok\":false,\"database_auth\":\"rejected\"}\n");
+            }
+        }
+
+        public static void main(String[] args) throws Exception {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            server.createContext("/healthz", exchange ->
+                    reply(exchange, 200, "{\"ok\":true}\n"));
+            server.createContext("/billing", BillingServer::billing);
+            server.setExecutor(Executors.newFixedThreadPool(8));
+            server.start();
+            System.out.println("billing-api listening on :8080; credentials are never logged");
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: proofix-case-10
+  labels:
+    app.kubernetes.io/name: postgres
+    proofix.io/case: CASE-10
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+        proofix.io/case: CASE-10
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: postgres
+          image: postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_DB
+              value: billing
+            - name: POSTGRES_USER
+              value: billing
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+            - name: POSTGRES_INITDB_ARGS
+              value: --auth-host=scram-sha-256
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          ports:
+            - name: postgres
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "billing", "-d", "billing"]
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 30
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "billing", "-d", "billing"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          volumeMounts:
+            - name: database
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: database
+          emptyDir:
+            sizeLimit: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: proofix-case-10
+  labels:
+    proofix.io/case: CASE-10
+spec:
+  selector:
+    app.kubernetes.io/name: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-api
+  namespace: proofix-case-10
+  labels:
+    app.kubernetes.io/name: billing-api
+    proofix.io/case: CASE-10
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: billing-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: billing-api
+        proofix.io/case: CASE-10
+      annotations:
+        proofix.io/billing-secret-resource-version: pending
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: billing-api
+          image: eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a
+          imagePullPolicy: IfNotPresent
+          command: ["java"]
+          args: ["-Xms32m", "-Xmx128m", "/app/BillingServer.java"]
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          volumeMounts:
+            - name: source
+              mountPath: /app
+              readOnly: true
+            - name: state
+              mountPath: /state
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+        - name: db-auth-checker
+          image: postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-ceu"]
+          args:
+            - |
+              while true; do
+                if psql -h postgres -U billing -d billing -tAc 'SELECT 1' >/dev/null 2>&1; then
+                  printf 'ok\n' > /state/db-status.next
+                else
+                  printf 'auth_error\n' > /state/db-status.next
+                fi
+                mv /state/db-status.next /state/db-status
+                sleep 0.2
+              done
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: billing-credentials
+                  key: password
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 70
+          volumeMounts:
+            - name: state
+              mountPath: /state
+      volumes:
+        - name: source
+          configMap:
+            name: billing-api-source
+        - name: state
+          emptyDir:
+            sizeLimit: 1Mi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-api
+  namespace: proofix-case-10
+  labels:
+    proofix.io/case: CASE-10
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: billing-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30080

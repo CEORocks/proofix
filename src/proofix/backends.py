@@ -16,8 +16,22 @@ PARAMETERS_SCHEMA: dict[str, Any] = {
         "patch_type": {"type": ["string", "null"]},
         "patch_json": {"type": ["string", "null"]},
         "replicas": {"type": ["integer", "null"]},
+        "source_secret": {"type": ["string", "null"]},
+        "key": {"type": ["string", "null"]},
+        "deployment": {"type": ["string", "null"]},
+        "storage_class": {"type": ["string", "null"]},
+        "size": {"type": ["string", "null"]},
     },
-    "required": ["patch_type", "patch_json", "replicas"],
+    "required": [
+        "patch_type",
+        "patch_json",
+        "replicas",
+        "source_secret",
+        "key",
+        "deployment",
+        "storage_class",
+        "size",
+    ],
     "additionalProperties": False,
 }
 
@@ -132,7 +146,7 @@ def schema_for(stage: str) -> dict[str, Any]:
                 }
             }
         )
-    if stage == "plan":
+    if stage in {"plan", "replan"}:
         return _object_schema(
             {
                 "hypothesis_id": {"type": "string"},
@@ -294,6 +308,10 @@ def _prompt(stage: str, context: Mapping[str, object]) -> str:
         "hypothesize": "Produce competing, evidence-linked hypotheses and safe discriminating tests.",
         "refine": "Rerank hypotheses using all test evidence. Keep evidence source strings exact.",
         "plan": "Plan the smallest reversible remediation. Never delete persistent data.",
+        "replan": (
+            "Repair the rejected plan using the execution-error evidence. For Kubernetes "
+            "container-list edits use strategic patch semantics so named containers are merged."
+        ),
         "close": "State only critical claims supported by exact evidence source strings in context.",
         "react": (
             "Take one generic ReAct step: a test, one reversible action, or a final answer. "

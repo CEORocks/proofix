@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uploads-api-source
+  namespace: proofix-case-14
+data:
+  server.py: |
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    from pathlib import Path
+    import json
+    marker = Path("/data/evaluator-seed.txt")
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path.startswith("/seed"):
+                marker.write_text("proofix-case-14-seed\n", encoding="utf-8")
+            present = marker.exists() and marker.read_text(encoding="utf-8") == "proofix-case-14-seed\n"
+            status = 200 if self.path.startswith("/healthz") or present else 503
+            body = json.dumps({"ok": status == 200, "seed_present": present}).encode()
+            self.send_response(status); self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+        def log_message(self, *_args): return
+    ThreadingHTTPServer(("0.0.0.0", 8080), Handler).serve_forever()
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uploads-api
+  namespace: proofix-case-14
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app.kubernetes.io/name: uploads-api}}
+  template:
+    metadata: {labels: {app.kubernetes.io/name: uploads-api, proofix.io/case: CASE-14}}
+    spec:
+      containers:
+        - name: api
+          image: python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f
+          command: ["python", "/app/server.py"]
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /healthz, port: http}, periodSeconds: 2}
+          resources:
+            requests: {cpu: 20m, memory: 24Mi}
+            limits: {cpu: 250m, memory: 96Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: ["ALL"]}
+            runAsNonRoot: true
+            runAsUser: 10001
+          volumeMounts:
+            - {name: source, mountPath: /app, readOnly: true}
+            - {name: uploads, mountPath: /data}
+      volumes:
+        - name: source
+          configMap: {name: uploads-api-source}
+        - name: uploads
+          persistentVolumeClaim: {claimName: uploads}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: uploads-api, namespace: proofix-case-14}
+spec:
+  type: NodePort
+  selector: {app.kubernetes.io/name: uploads-api}
+  ports: [{name: http, port: 80, targetPort: http, nodePort: 30114}]

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-startup-override
+  namespace: proofix-case-12
+  labels:
+    proofix.io/case: CASE-12
+data:
+  extra_args: ""

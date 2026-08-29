@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: historical-distractors
+  namespace: proofix-case-15
+  labels:
+    proofix.io/distractor: "true"
+immutable: true
+data:
+  historical.log: |
+    2020-01-02T03:04:05Z ERROR checkout dependency timeout (resolved 2020-01-02T03:05:10Z)
+    2020-01-03T04:05:06Z WARN retry budget exceeded (historical maintenance test)
+---
+apiVersion: v1
+kind: Event
+metadata:
+  name: stale-backoff-distractor
+  namespace: proofix-case-15
+  labels:
+    proofix.io/distractor: "true"
+type: Warning
+reason: BackOff
+message: Historical fixture warning; resolved and intentionally stale.
+count: 3
+firstTimestamp: "2020-01-02T03:04:05Z"
+lastTimestamp: "2020-01-02T03:05:10Z"
+involvedObject:
+  apiVersion: apps/v1
+  kind: Deployment
+  name: healthy-shop
+  namespace: proofix-case-15
+source:
+  component: proofix-fixture

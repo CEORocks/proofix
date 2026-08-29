@@ -1,0 +1,165 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: search-api-source
+  namespace: proofix-case-08
+data:
+  SearchServer.java: |
+    import com.sun.net.httpserver.HttpExchange;
+    import com.sun.net.httpserver.HttpServer;
+    import java.io.IOException;
+    import java.lang.management.ManagementFactory;
+    import java.lang.management.ThreadMXBean;
+    import java.net.InetSocketAddress;
+    import java.nio.charset.StandardCharsets;
+    import java.util.concurrent.Executors;
+    import java.util.concurrent.atomic.AtomicLong;
+
+    public final class SearchServer {
+        private static final ThreadMXBean THREADS = ManagementFactory.getThreadMXBean();
+        private static final AtomicLong REQUESTS = new AtomicLong();
+        private static volatile long sink;
+
+        private SearchServer() {}
+
+        private static void burnCpuMicros(long microseconds) {
+            long started = THREADS.getCurrentThreadCpuTime();
+            long target = microseconds * 1_000L;
+            long value = sink + 1;
+            while (THREADS.getCurrentThreadCpuTime() - started < target) {
+                value = (value * 2862933555777941757L) + 3037000493L;
+                value ^= value >>> 17;
+            }
+            sink = value;
+        }
+
+        private static void reply(HttpExchange exchange, int status, String body)
+                throws IOException {
+            byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.getResponseHeaders().set("Cache-Control", "no-store");
+            exchange.sendResponseHeaders(status, bytes.length);
+            exchange.getResponseBody().write(bytes);
+            exchange.close();
+        }
+
+        private static void search(HttpExchange exchange) throws IOException {
+            burnCpuMicros(250);
+            reply(exchange, 200, "{\"ok\":true,\"request\":"
+                    + REQUESTS.incrementAndGet() + "}\n");
+        }
+
+        private static void health(HttpExchange exchange) throws IOException {
+            // Intentionally non-trivial: under the injected 100m cap this probe
+            // competes with request work and exceeds its one-second timeout.
+            burnCpuMicros(50_000);
+            reply(exchange, 200, "{\"ok\":true}\n");
+        }
+
+        public static void main(String[] args) throws Exception {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 128);
+            server.createContext("/search", SearchServer::search);
+            server.createContext("/healthz", SearchServer::health);
+            server.setExecutor(Executors.newFixedThreadPool(64));
+            server.start();
+            System.out.println("search-api listening on :8080");
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-api
+  namespace: proofix-case-08
+  labels:
+    app.kubernetes.io/name: search-api
+    proofix.io/case: CASE-08
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: search-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: search-api
+        proofix.io/case: CASE-08
+      annotations:
+        proofix.io/profile: healthy-3cpu
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: search-api
+          image: eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a
+          imagePullPolicy: IfNotPresent
+          command: ["java"]
+          args: ["-Xms32m", "-Xmx128m", "/app/SearchServer.java"]
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: "2"
+              memory: 128Mi
+            limits:
+              cpu: "3"
+              memory: 256Mi
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 15
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          volumeMounts:
+            - name: source
+              mountPath: /app
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: source
+          configMap:
+            name: search-api-source
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-api
+  namespace: proofix-case-08
+  labels:
+    proofix.io/case: CASE-08
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: search-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30078

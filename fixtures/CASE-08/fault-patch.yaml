@@ -1,0 +1,15 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        proofix.io/profile: injected-100m-cpu
+    spec:
+      containers:
+        - name: search-api
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi

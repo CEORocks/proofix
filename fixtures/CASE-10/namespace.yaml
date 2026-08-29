@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: proofix-case-10
+  labels:
+    proofix.io/case: CASE-10
+    proofix.io/ephemeral-fixture: "true"

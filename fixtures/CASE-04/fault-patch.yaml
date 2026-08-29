@@ -1,0 +1,9 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        proofix.io/profile: fault-disk-selector-no-toleration
+    spec:
+      nodeSelector:
+        disk: nvme
+      tolerations: []

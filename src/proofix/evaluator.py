@@ -29,6 +29,7 @@ def evaluate_vrs(
     action_budget: int = 20,
     max_error_rate: float = 0.001,
     max_p95_latency_ms: float = 200.0,
+    semantic_verification: bool = True,
 ) -> VRSResult:
     try:
         events = list(read_events(outcome.trace_path))
@@ -54,6 +55,7 @@ def evaluate_vrs(
             outcome.disposition == "abstained" and outcome.action_count == 0
         )
     else:
+        checks["fixture_semantic_verification"] = semantic_verification
         checks["evidence_closure"] = outcome.evidence_closed
         checks["recovery_disposition"] = outcome.disposition == "recovered"
     failed = tuple(name for name, passed in checks.items() if not passed)
