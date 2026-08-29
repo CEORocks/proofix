@@ -27,9 +27,8 @@ def parse_csv(value: str) -> list[str]:
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
-def sync_fixture(case_id: str, item: dict[str, Any]) -> str:
+def sync_fixture(case_id: str, host: str) -> str:
     local = ROOT / "fixtures" / case_id
-    host = str(item["host"])
     if host == "local":
         return str(local)
     remote = f"/tmp/proofix-{case_id.lower().replace('-', '')}"
@@ -79,14 +78,17 @@ def run_host(
     skip_pairs: set[tuple[str, int]],
     backend: str,
     model: str | None,
+    localize_host: bool,
+    kubeconfig_override: str | None,
 ) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
+    execution_host = "local" if localize_host else host
     effective_model = model or (
         "gemini-3.7-flash-medium" if backend == "antigravity" else "gpt-5.6-sol"
     )
     for case_id in cases:
         item = registry[case_id]
-        fixture_dir = sync_fixture(case_id, item)
+        fixture_dir = sync_fixture(case_id, execution_host)
         for trial in trials:
             if (case_id, trial) in skip_pairs:
                 continue
@@ -97,7 +99,7 @@ def run_host(
                     case_path=str(ROOT / "benchmark" / "cases" / f"{case_id}.json"),
                     system=system,  # type: ignore[arg-type]
                     trial=trial,
-                    host=host,
+                    host=execution_host,
                     remote_fixture_dir=fixture_dir,
                     namespace=str(item["namespace"]),
                     workload_selector=str(item["selector"]),
@@ -112,7 +114,8 @@ def run_host(
                     artifact_root=str(ROOT / "artifacts" / "runs"),
                     backend=backend,  # type: ignore[arg-type]
                     model=effective_model,
-                    kubeconfig=str(item.get("kubeconfig", "/etc/rancher/k3s/k3s.yaml")),
+                    kubeconfig=kubeconfig_override
+                    or str(item.get("kubeconfig", "/etc/rancher/k3s/k3s.yaml")),
                     probe_path=str(item["probe_path"]),
                     probe_requests=1000,
                     window_seconds=10,
@@ -135,6 +138,8 @@ def main() -> int:
     parser.add_argument("--no-resume", action="store_true")
     parser.add_argument("--backend", choices=("codex", "antigravity"), default="codex")
     parser.add_argument("--model", default=None)
+    parser.add_argument("--localize-host", action="store_true")
+    parser.add_argument("--kubeconfig-override", default=None)
     args = parser.parse_args()
 
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
@@ -163,6 +168,8 @@ def main() -> int:
                 skip_pairs,
                 args.backend,
                 args.model,
+                args.localize_host,
+                args.kubeconfig_override,
             ): host
             for host, cases in grouped.items()
         }
