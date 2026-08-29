@@ -37,7 +37,11 @@ def sync_fixture(case_id: str, host: str) -> str:
         check=True,
     )
     subprocess.run(
-        ["ssh", host, f"chmod +x {remote}/*.sh {remote}/*.py"],
+        [
+            "ssh",
+            host,
+            f"find {remote} -type f \\( -name '*.sh' -o -name '*.py' \\) -exec chmod +x {{}} +",
+        ],
         check=True,
     )
     return remote
