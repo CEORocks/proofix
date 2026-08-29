@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import pytest
@@ -45,3 +46,41 @@ def test_kubectl_get_expands_comma_separated_names(monkeypatch: pytest.MonkeyPat
     assert captured == [
         ("get", "pods/old", "pods/replacement", "-n", "application")
     ]
+
+
+def test_large_kubectl_json_is_parsed_before_bounded_item_selection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    environment = KubernetesEnvironment(
+        KubernetesConfig(
+            namespace="application",
+            probe_url="http://127.0.0.1:30000/",
+            workload_selector="app=example",
+        )
+    )
+    document = {
+        "apiVersion": "v1",
+        "kind": "List",
+        "metadata": {},
+        "items": [
+            {
+                "apiVersion": "v1",
+                "kind": "Event",
+                "metadata": {
+                    "name": f"event-{index:03d}",
+                    "creationTimestamp": f"2026-08-29T00:{index:02d}:00Z",
+                },
+                "message": "x" * 5_000,
+            }
+            for index in range(60)
+        ],
+    }
+    encoded = json.dumps(document)
+    assert len(encoded) > 200_000
+    monkeypatch.setattr(environment, "_run_kubectl", lambda *_args, **_kwargs: encoded)
+
+    result = environment._kubectl_json("get", "events")
+
+    assert len(result["items"]) == 50
+    assert result["metadata"]["proofixOriginalItemCount"] == 60
+    assert result["items"][0]["metadata"]["name"] == "event-010"

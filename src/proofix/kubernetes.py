@@ -503,41 +503,39 @@ class KubernetesEnvironment:
     def _kubectl_json(self, *arguments: str) -> dict[str, Any]:
         value = self._raw_kubectl_json(*arguments)
         _redact_secrets(value)
-        return cast(dict[str, Any], _sanitize_kubernetes(value))
+        sanitized = cast(dict[str, Any], _sanitize_kubernetes(value))
+        items = sanitized.get("items")
+        if isinstance(items, list) and len(items) > 50:
+            original_count = len(items)
+            items.sort(
+                key=lambda item: (
+                    str(item.get("metadata", {}).get("creationTimestamp", ""))
+                    if isinstance(item, Mapping)
+                    else "",
+                    str(item.get("metadata", {}).get("name", ""))
+                    if isinstance(item, Mapping)
+                    else "",
+                )
+            )
+            sanitized["items"] = items[-50:]
+            metadata = sanitized.setdefault("metadata", {})
+            if isinstance(metadata, dict):
+                metadata["proofixOriginalItemCount"] = original_count
+        return sanitized
 
     def _raw_kubectl_json(self, *arguments: str) -> dict[str, Any]:
-        text = self._kubectl(*arguments, "-o", "json")
+        text = self._run_kubectl((*arguments, "-o", "json"))
         value = json.loads(text)
         if not isinstance(value, dict):
             raise RuntimeError("kubectl returned a non-object JSON document")
         return cast(dict[str, Any], value)
 
     def _kubectl(self, *arguments: str) -> str:
-        kubectl_command = ["kubectl"]
-        if self.config.kubeconfig:
-            kubectl_command.extend(["--kubeconfig", self.config.kubeconfig])
-        if self.config.context:
-            kubectl_command.extend(["--context", self.config.context])
-        kubectl_command.extend(arguments)
-        command = (
-            [*self.config.command_prefix, shlex.join(kubectl_command)]
-            if self.config.command_prefix
-            else kubectl_command
-        )
-        completed = subprocess.run(
-            command,
-            text=True,
-            capture_output=True,
-            timeout=self.config.command_timeout_seconds,
-            check=False,
-        )
-        if completed.returncode != 0:
-            raise RuntimeError(
-                f"kubectl command failed ({completed.returncode}): {completed.stderr[-2000:].strip()}"
-            )
-        return completed.stdout[:200_000]
+        return self._run_kubectl(arguments)[:200_000]
 
-    def _kubectl_input(self, input_text: str, *arguments: str) -> str:
+    def _run_kubectl(
+        self, arguments: Sequence[str], *, input_text: str | None = None
+    ) -> str:
         kubectl_command = ["kubectl"]
         if self.config.kubeconfig:
             kubectl_command.extend(["--kubeconfig", self.config.kubeconfig])
@@ -561,7 +559,10 @@ class KubernetesEnvironment:
             raise RuntimeError(
                 f"kubectl command failed ({completed.returncode}): {completed.stderr[-2000:].strip()}"
             )
-        return completed.stdout[:200_000]
+        return completed.stdout
+
+    def _kubectl_input(self, input_text: str, *arguments: str) -> str:
+        return self._run_kubectl(arguments, input_text=input_text)[:200_000]
 
     def _observation(self, prefix: str, data: Mapping[str, Any]) -> Observation:
         return Observation(source=self._source(prefix, data), data=dict(data))
