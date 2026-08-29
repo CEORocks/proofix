@@ -3,6 +3,11 @@ set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"; require_tools
 if kubectl get pod ledger-primary -n "${namespace}" >/dev/null 2>&1; then
   deleting="$(kubectl get pod ledger-primary -n "${namespace}" -o jsonpath='{.metadata.deletionTimestamp}')"
+  if [[ -z "${deleting}" ]] && ! kubectl get pod ledger-replacement -n "${namespace}" >/dev/null 2>&1; then
+    run_load
+    echo "CASE-13 reset retained the healthy seeded primary"
+    exit 0
+  fi
   if [[ -n "${deleting}" ]]; then
     kubectl exec pod/ledger-primary -n "${namespace}" -- kill -TERM 1 || true
     for _ in $(seq 1 30); do
