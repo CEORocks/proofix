@@ -207,6 +207,7 @@ Every scenario enforces identical live SLO verification parameters:
 - [`submission_video.mp4`](submission_video.mp4) is the finished 300-second, 1080p H.264/AAC submission video with locally synthesized narration and burned-in captions.
 - [`submission_video.html`](submission_video.html) is a zero-dependency, self-playing HTML fallback with timed scenes, terminal comparisons, fullscreen controls, and the frozen metrics table.
 - `python3 tools/render_submission_video.py` deterministically regenerates both artifacts from `artifacts/benchmark/summary.json` using local `ffmpeg` and `ffprobe` executables.
+- `ELEVENLABS_API_KEY=<key> python3 tools/render_elevenlabs_audio.py` extracts the exact six narration blocks from `docs/VIDEO_SCRIPT.md`, synthesizes Adam with `eleven_multilingual_v2`, fits every scene to its frozen boundary, and writes the upgraded video to `artifacts/video-build/final_submission_video.mp4`. The key remains process-local and is never stored in the repository.
 
 The video covers the CASE-01 side-by-side recovery, the nine-stage evidence-closed state machine, the Incident Recovery Packet, and the full 90-run benchmark result without making claims beyond the frozen evidence.
 
