@@ -2,7 +2,7 @@
 
 > **"Don't trust the diagnosis. Trust the proof of recovery."**
 
-ProofFix is an evidence-closed, policy-gated Kubernetes incident recovery agent built for the **micro1 Frontier Engineering Challenge 2026**. It moves autonomously from an active production alert to a human-approvable **Incident Recovery Packet**, applies the smallest admissible reversible remediation in a disposable sandbox, and verifies whole-system service-level objectives (SLOs) under continuous live traffic before declaring recovery.
+ProofFix is an evidence-closed, policy-gated Kubernetes incident recovery agent. It moves autonomously from an active production alert to a human-approvable **Incident Recovery Packet**, applies the smallest admissible reversible remediation in a disposable sandbox, and verifies whole-system service-level objectives (SLOs) under continuous live traffic before declaring recovery.
 
 ---
 
