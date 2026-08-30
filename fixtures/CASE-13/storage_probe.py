@@ -19,10 +19,18 @@ def fault(timeout: int) -> int:
     end=time.time()+timeout
     while time.time()<end:
         events=get("events","-n",NS)["items"]; attachments=get("volumeattachments.storage.k8s.io")["items"]
-        messages=[e.get("message","") for e in events if e.get("involvedObject",{}).get("name")=="ledger-replacement"]
+        replacement_events=[e for e in events if e.get("involvedObject",{}).get("name")=="ledger-replacement"]
+        messages=[e.get("message","") for e in replacement_events]
+        reasons=[e.get("reason","") for e in replacement_events]
         relevant=[a for a in attachments if a.get("spec",{}).get("source",{}).get("persistentVolumeName")==pv]
-        if any("multi-attach" in m.lower() or "already" in m.lower() and "attach" in m.lower() for m in messages) and relevant:
-            print(json.dumps({"case_id":"CASE-13","status":"FAULT_VERIFIED","pv":pv,"events":messages,"volumeattachments":relevant},sort_keys=True)); return 0
+        attachment_conflict=any(
+            "multi-attach" in message.lower()
+            or ("already" in message.lower() and "attach" in message.lower())
+            or ("waiting for detach" in message.lower() and "already used" in message.lower())
+            for message in messages
+        ) or any(reason == "FailedAttachVolume" for reason in reasons)
+        if attachment_conflict and relevant:
+            print(json.dumps({"case_id":"CASE-13","status":"FAULT_VERIFIED","pv":pv,"events":messages,"event_reasons":reasons,"volumeattachments":relevant},sort_keys=True)); return 0
         time.sleep(2)
     print(json.dumps({"case_id":"CASE-13","status":"FAULT_NOT_OBSERVED","pv":pv},sort_keys=True)); return 1
 def main() -> int:

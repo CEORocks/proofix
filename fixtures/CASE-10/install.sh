@@ -22,5 +22,5 @@ kubectl apply -f "${fixture_dir}/app.yaml" >/dev/null
 wait_for_workloads
 roll_billing_for_secret_version
 wait_for_workloads
-python3 "${fixture_dir}/load.py" slo --base-url "${base_url}"
+run_load slo
 echo "CASE-10 installed healthy; generation_sha256=$(secret_hash db-credentials) db_secret_rv=$(secret_version db-credentials)"

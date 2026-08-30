@@ -1,0 +1,68 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-11",
+  "elapsed_seconds": 293.98642417404335,
+  "initial_snapshot_sha256": "439b4c2113b8d4a7c333e760a3a8f671f03ff1679ad5a100eba3a477f974c521",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 2,
+    "case_id": "CASE-11",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The incident occurred because the orders-consumer Deployment in namespace proofix-case-11 was scaled down from three replicas to one replica, leaving a single consumer pod to process all six topic partitions and causing consumer lag growth. The deployment has been restored and scaled back up to three replicas. All three consumer pods (orders-consumer-575c4bdbcf-hqlp6, orders-consumer-575c4bdbcf-q8xsg, and orders-consumer-575c4bdbcf-qzt6d) are running, ready, and actively processing the partitioned event stream.",
+    "recovered": false,
+    "run_id": "case-11-react-t3-20260830T035131Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.065795891918242,
+        "source": "slo/http-and-pods#b699f5879d2e",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 0.8671031100675464,
+        "source": "slo/http-and-pods#8ac2f971d634",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.0375850833952427,
+        "source": "slo/http-and-pods#c3619974321a",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-11-react-t3-20260830T035131Z/trajectory.jsonl"
+  },
+  "run_id": "case-11-react-t3-20260830T035131Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-11",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-11-react-t3-20260830T035131Z",
+    "system": "react"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-04",
+  "elapsed_seconds": 18.01824458700139,
+  "infrastructure_error": "ValueError: local Kubernetes transport requires service_name",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-04-react-t1-20260830T011706Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": false
+}

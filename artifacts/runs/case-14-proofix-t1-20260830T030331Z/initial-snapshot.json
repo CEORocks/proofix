@@ -1,0 +1,1019 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "generateName": "uploads-api-7c8dccf46b-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "uploads-api",
+              "pod-template-hash": "7c8dccf46b",
+              "proofix.io/case": "CASE-14"
+            },
+            "name": "uploads-api-7c8dccf46b-6tkhp",
+            "namespace": "proofix-case-14",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "uploads-api-7c8dccf46b"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "python",
+                  "/app/server.py"
+                ],
+                "image": "python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "api",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "96Mi"
+                  },
+                  "requests": {
+                    "cpu": "20m",
+                    "memory": "24Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "source",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/data",
+                    "name": "uploads"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-7prsb",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "uploads-api-source"
+                },
+                "name": "source"
+              },
+              {
+                "name": "uploads",
+                "persistentVolumeClaim": {
+                  "claimName": "uploads"
+                }
+              },
+              {
+                "name": "kube-api-access-7prsb",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:03:34Z",
+                "message": "0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found",
+                "observedGeneration": 1,
+                "reason": "Unschedulable",
+                "status": "False",
+                "type": "PodScheduled"
+              }
+            ],
+            "phase": "Pending",
+            "qosClass": "Burstable"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#89b684c90318"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "1"
+            },
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "generation": 1,
+            "name": "uploads-api",
+            "namespace": "proofix-case-14"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "uploads-api"
+              }
+            },
+            "strategy": {
+              "type": "Recreate"
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/name": "uploads-api",
+                  "proofix.io/case": "CASE-14"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "command": [
+                      "python",
+                      "/app/server.py"
+                    ],
+                    "image": "python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "api",
+                    "ports": [
+                      {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 2,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "250m",
+                        "memory": "96Mi"
+                      },
+                      "requests": {
+                        "cpu": "20m",
+                        "memory": "24Mi"
+                      }
+                    },
+                    "securityContext": {
+                      "allowPrivilegeEscalation": false,
+                      "capabilities": {
+                        "drop": [
+                          "ALL"
+                        ]
+                      },
+                      "runAsNonRoot": true,
+                      "runAsUser": 10001
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/app",
+                        "name": "source",
+                        "readOnly": true
+                      },
+                      {
+                        "mountPath": "/data",
+                        "name": "uploads"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 30,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "uploads-api-source"
+                    },
+                    "name": "source"
+                  },
+                  {
+                    "name": "uploads",
+                    "persistentVolumeClaim": {
+                      "claimName": "uploads"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-30T03:03:34Z",
+                "lastUpdateTime": "2026-08-30T03:03:34Z",
+                "message": "Deployment does not have minimum availability.",
+                "reason": "MinimumReplicasUnavailable",
+                "status": "False",
+                "type": "Available"
+              },
+              {
+                "lastTransitionTime": "2026-08-30T03:03:34Z",
+                "lastUpdateTime": "2026-08-30T03:03:34Z",
+                "message": "ReplicaSet \"uploads-api-7c8dccf46b\" is progressing.",
+                "reason": "ReplicaSetUpdated",
+                "status": "True",
+                "type": "Progressing"
+              }
+            ],
+            "observedGeneration": 1,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "unavailableReplicas": 1,
+            "updatedReplicas": 1
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#04b9b0a064d9"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "name": "uploads-api",
+            "namespace": "proofix-case-14"
+          },
+          "spec": {
+            "clusterIP": "10.43.121.182",
+            "clusterIPs": [
+              "10.43.121.182"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "http",
+                "nodePort": 30114,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": "http"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "uploads-api"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#f35d0fd45324"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-30T03:03:34Z"
+            },
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller"
+            },
+            "name": "uploads-api",
+            "namespace": "proofix-case-14"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#dd3a4bdd3b3e"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "metadata": {
+            "annotations": {
+              "volume.beta.kubernetes.io/storage-provisioner": "proofix.invalid/no-such-provisioner",
+              "volume.kubernetes.io/storage-provisioner": "proofix.invalid/no-such-provisioner"
+            },
+            "creationTimestamp": "2026-08-30T03:03:35Z",
+            "finalizers": [
+              "kubernetes.io/pvc-protection"
+            ],
+            "labels": {
+              "proofix.io/benchmark-owned": "true",
+              "proofix.io/case": "CASE-14",
+              "proofix.io/expected-empty": "true"
+            },
+            "name": "uploads",
+            "namespace": "proofix-case-14"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "64Mi"
+              }
+            },
+            "storageClassName": "proofix-case14-broken-local",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "phase": "Pending"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#11ef758e6c16"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODgwNTIzNTcwHhcNMjYwODMwMDAxMjM3WhcNMzYwODI3MDAxMjM3\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODgwNTIzNTcwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAAR6tHwmUoi5F4yDF03wAKTVNEFOsJisXRezvxACY4w2\n8+cT+0pQtkQfn0/4RwtfZAimLCIB63YpeXlNjCAbLrDWo0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUlaC3+Cc050REbeQcs5bf\n1EvFxkcwCgYIKoZIzj0EAwIDSAAwRQIhAPsFiBne0vB/5M83PKP9MwsaoTBHoGTr\nI1oYnvBZuDMYAiAmHbOvTi/NX05QuAmcMlIl3TkfMwbQs3VxZxTog3YmPQ==\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-30T03:03:32Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-14"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "server.py": "from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer\nfrom pathlib import Path\nimport json\nmarker = Path(\"/data/evaluator-seed.txt\")\nclass Handler(BaseHTTPRequestHandler):\n    def do_GET(self):\n        if self.path.startswith(\"/seed\"):\n            marker.write_text(\"proofix-case-14-seed\\n\", encoding=\"utf-8\")\n        present = marker.exists() and marker.read_text(encoding=\"utf-8\") == \"proofix-case-14-seed\\n\"\n        status = 200 if self.path.startswith(\"/healthz\") or present else 503\n        body = json.dumps({\"ok\": status == 200, \"seed_present\": present}).encode()\n        self.send_response(status); self.send_header(\"Content-Length\", str(len(body))); self.end_headers(); self.wfile.write(body)\n    def log_message(self, *_args): return\nThreadingHTTPServer((\"0.0.0.0\", 8080), Handler).serve_forever()\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "name": "uploads-api-source",
+            "namespace": "proofix-case-14"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#1cab19211508"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:32Z",
+            "name": "default",
+            "namespace": "proofix-case-14"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#c51922c8db3c"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:03:34.215537Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "uploads-api-7c8dccf46b-6tkhp",
+            "namespace": "proofix-case-14"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: persistentvolumeclaim \"uploads\" not found. not found",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "name": "uploads-api-7c8dccf46b-6tkhp.18d076332bc0a648",
+            "namespace": "proofix-case-14"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:03:35.081455Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "uploads-api-7c8dccf46b-6tkhp",
+            "namespace": "proofix-case-14"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:35Z",
+            "name": "uploads-api-7c8dccf46b-6tkhp.18d076335f5d8389",
+            "namespace": "proofix-case-14"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:03:35.097418Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "uploads-api-7c8dccf46b-6tkhp",
+            "namespace": "proofix-case-14"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. not found",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:35Z",
+            "name": "uploads-api-7c8dccf46b-6tkhp.18d0763360511663",
+            "namespace": "proofix-case-14"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:03:34Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "uploads-api-7c8dccf46b",
+            "namespace": "proofix-case-14"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:03:34Z",
+          "message": "Created pod: uploads-api-7c8dccf46b-6tkhp",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "name": "uploads-api-7c8dccf46b.18d076332bb26a9b",
+            "namespace": "proofix-case-14"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:03:34Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "uploads-api",
+            "namespace": "proofix-case-14"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:03:34Z",
+          "message": "Scaled up replica set uploads-api-7c8dccf46b from 0 to 1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:34Z",
+            "name": "uploads-api.18d076332930fa91",
+            "namespace": "proofix-case-14"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:03:35Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "uploads",
+            "namespace": "proofix-case-14"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:03:39Z",
+          "message": "Waiting for a volume to be created either by the external provisioner 'proofix.invalid/no-such-provisioner' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:03:35Z",
+            "name": "uploads.18d07633615d6d8a",
+            "namespace": "proofix-case-14"
+          },
+          "reason": "ExternalProvisioning",
+          "reportingComponent": "persistentvolume-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "persistentvolume-controller"
+          },
+          "type": "Normal"
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/events#d79b4f602209"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "10.128.0.4",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"82:58:8a:a6:78:89\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "10.128.0.4",
+              "k3s.io/hostname": "vm-2",
+              "k3s.io/internal-ip": "10.128.0.4",
+              "k3s.io/node-args": "[\"server\"]",
+              "k3s.io/node-config-hash": "HKLO67SPSTTSQ2KPLIB43EJEGV4CNWV52ISWRWMJ5WLI4GJHBULQ====",
+              "k3s.io/node-env": "{\"K3S_KUBECONFIG_MODE\":\"644\"}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-30T01:12:49Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "vm-2",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s"
+            },
+            "name": "vm-2"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://vm-2"
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "10.128.0.4",
+                "type": "InternalIP"
+              },
+              {
+                "address": "vm-2",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "4",
+              "ephemeral-storage": "98672037811",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "4",
+              "ephemeral-storage": "101430960Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-30T03:00:53Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T03:00:53Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T03:00:53Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T03:00:53Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "docker.io/rancher/klipper-helm@sha256:5425a2b4613d2458dbdff99218e8d487ebb59c20e7a941f061c0777070f0aac1",
+                  "docker.io/rancher/klipper-helm:v0.13.3-build20260727"
+                ],
+                "sizeBytes": 74172006
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-library-traefik@sha256:4299bbed850421258fc5448c2e0e6ad350981d4d335a68de11b92448aedbefe5",
+                  "docker.io/rancher/mirrored-library-traefik:3.7.8"
+                ],
+                "sizeBytes": 54509210
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc"
+                ],
+                "sizeBytes": 20824433
+              },
+              {
+                "names": [
+                  "docker.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f"
+                ],
+                "sizeBytes": 17271797
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/rancher/klipper-lb@sha256:910944bb0bd94f060a82a56ca1ea1c577d3e49b3473a093a47a985f32e92d94a",
+                  "docker.io/rancher/klipper-lb:v0.4.17"
+                ],
+                "sizeBytes": 5280144
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-library-busybox@sha256:101b4afd76732482eff9b95cae5f94bcf295e521fbec4e01b69c5421f3f3f3e5",
+                  "docker.io/rancher/mirrored-library-busybox:1.37.0"
+                ],
+                "sizeBytes": 2151353
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "2918bfb4-229e-4e44-92c2-b099fc458649",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-1066-gcp",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "42a63ad41fc7521a98bcf4bb680cadd7",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 22.04.5 LTS",
+              "swap": {
+                "capacity": 8383578112
+              },
+              "systemUUID": "42a63ad4-1fc7-521a-98bc-f4bb680cadd7"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#d7b18710553a"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

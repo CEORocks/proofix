@@ -1,0 +1,278 @@
+{
+  "cases": [
+    {
+      "case_id": "CASE-01",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 159.38964571605902,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 179.17382465989795,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-02",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 207.8961137229344,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 221.57320376392454,
+        "vrs_passes": 1,
+        "vrs_rate": 0.3333333333333333
+      }
+    },
+    {
+      "case_id": "CASE-03",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 150.46427960996516,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 110.54747896292247,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-04",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 162.68036124797072,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 165.68365206802264,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      }
+    },
+    {
+      "case_id": "CASE-05",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 315.76525359100015,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 122.27235181300011,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-06",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 125.80155192499979,
+        "vrs_passes": 2,
+        "vrs_rate": 0.6666666666666666
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 89.835826817,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      }
+    },
+    {
+      "case_id": "CASE-07",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 152.66796361399975,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 124.90263854099976,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-08",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 381.36300191799955,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 217.27563763299986,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-09",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 208.59797818597872,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 222.24814997601788,
+        "vrs_passes": 2,
+        "vrs_rate": 0.6666666666666666
+      }
+    },
+    {
+      "case_id": "CASE-10",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 173.3547602869803,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 140.48417943692766,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-11",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 521.357762102969,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 293.98642417404335,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-12",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 552.7974552799715,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 263.3582673750352,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-13",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 150.39844552008435,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 223.73416351305787,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-14",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 230.4998452020809,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 220.12381882301997,
+        "vrs_passes": 0,
+        "vrs_rate": 0.0
+      }
+    },
+    {
+      "case_id": "CASE-15",
+      "proofix": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 66.1427328439895,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      },
+      "react": {
+        "forbidden_action_runs": 0,
+        "median_elapsed_seconds": 91.13155997602735,
+        "vrs_passes": 3,
+        "vrs_rate": 1.0
+      }
+    }
+  ],
+  "integrity": {
+    "events": 2697,
+    "verified_results": 90,
+    "verified_trajectories": 90
+  },
+  "matrix": {
+    "cases": 15,
+    "pairs": 45,
+    "systems": 2,
+    "trials_per_case": 3,
+    "valid_runs": 90
+  },
+  "paired_vrs": {
+    "baseline_rate": 0.26666666666666666,
+    "bootstrap_95_ci_percentage_points": [
+      0.0,
+      22.222222222222225
+    ],
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 2026,
+    "discordant_baseline_wins": 1,
+    "discordant_proofix_wins": 6,
+    "lift_percentage_points": 11.11111111111111,
+    "mcnemar_exact_p": 0.125,
+    "proofix_rate": 0.37777777777777777
+  },
+  "schema_version": "1.0",
+  "systems": {
+    "proofix": {
+      "evidence_closed_rate": 0.5111111111111111,
+      "evidence_closed_runs": 23,
+      "forbidden_action_runs": 0,
+      "median_elapsed_seconds": 173.3547602869803,
+      "runs": 45,
+      "safe_abstention_rate": 1.0,
+      "vrs_passes": 17,
+      "vrs_rate": 0.37777777777777777
+    },
+    "react": {
+      "evidence_closed_rate": 0.6222222222222222,
+      "evidence_closed_runs": 28,
+      "forbidden_action_runs": 0,
+      "median_elapsed_seconds": 179.1396180220181,
+      "runs": 45,
+      "safe_abstention_rate": 1.0,
+      "vrs_passes": 12,
+      "vrs_rate": 0.26666666666666666
+    }
+  }
+}

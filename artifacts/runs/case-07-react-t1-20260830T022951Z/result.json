@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-07",
+  "elapsed_seconds": 101.82321103599998,
+  "initial_snapshot_sha256": "6f51affd47ee2a4fbf949c09d016b7f39cd0a48570cbd8edc80907193de8939f",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 0,
+    "case_id": "CASE-07",
+    "disposition": "failed",
+    "evidence_closed": false,
+    "reason": "action rejected: reversible action is missing a rollback specification",
+    "recovered": false,
+    "run_id": "case-07-react-t1-20260830T022951Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.978,
+        "healthy": false,
+        "p95_latency_ms": 1.6847199999574514,
+        "source": "slo/http-and-pods#aa4f11c0e49a",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": false,
+        "p95_latency_ms": 0.5724299999201321,
+        "source": "slo/http-and-pods#28614a2280ab",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.978,
+        "healthy": false,
+        "p95_latency_ms": 3.0940000001464796,
+        "source": "slo/http-and-pods#47786f770110",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-07-react-t1-20260830T022951Z/trajectory.jsonl"
+  },
+  "run_id": "case-07-react-t1-20260830T022951Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-07",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-07-react-t1-20260830T022951Z",
+    "system": "react"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-12",
+  "elapsed_seconds": 644.9251668630168,
+  "infrastructure_error": "TimeoutExpired: Command '['/tmp/proofix-fleet/fixtures/CASE-12/inject.sh']' timed out after 600 seconds",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-12-proofix-t1-20260829T211407Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

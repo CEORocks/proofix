@@ -56,20 +56,19 @@ def append_result(result: dict[str, Any]) -> None:
         fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
-def completed_pairs() -> set[tuple[str, int]]:
+def completed_keys() -> set[tuple[str, str, int]]:
     if not RESULTS.exists():
         return set()
-    states: dict[tuple[str, int], dict[str, bool]] = defaultdict(dict)
+    completed: set[tuple[str, str, int]] = set()
     for line in RESULTS.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         row = json.loads(line)
-        key = (str(row["case_id"]), int(row["trial"]))
-        states[key][str(row["system"])] = bool(row.get("valid"))
-    return {
-        key for key, systems in states.items()
-        if systems.get("react") and systems.get("proofix")
-    }
+        if bool(row.get("valid")):
+            completed.add(
+                (str(row["case_id"]), str(row["system"]), int(row["trial"]))
+            )
+    return completed
 
 
 def run_host(
@@ -79,7 +78,7 @@ def run_host(
     trials: list[int],
     systems: list[str],
     seed: int,
-    skip_pairs: set[tuple[str, int]],
+    skip_keys: set[tuple[str, str, int]],
     backend: str,
     model: str | None,
     localize_host: bool,
@@ -94,11 +93,11 @@ def run_host(
         item = registry[case_id]
         fixture_dir = sync_fixture(case_id, execution_host)
         for trial in trials:
-            if (case_id, trial) in skip_pairs:
-                continue
             order = list(systems)
             random.Random(seed + int(case_id[-2:]) * 100 + trial).shuffle(order)
             for system in order:
+                if (case_id, system, trial) in skip_keys:
+                    continue
                 config = LiveRunConfig(
                     case_path=str(ROOT / "benchmark" / "cases" / f"{case_id}.json"),
                     system=system,  # type: ignore[arg-type]
@@ -157,7 +156,7 @@ def main() -> int:
         if selected_hosts is None or host in selected_hosts:
             grouped[host].append(case_id)
 
-    skip_pairs = set() if args.no_resume else completed_pairs()
+    skip_keys = set() if args.no_resume else completed_keys()
     all_results: list[dict[str, Any]] = []
     with ThreadPoolExecutor(max_workers=max(1, len(grouped))) as pool:
         futures = {
@@ -169,7 +168,7 @@ def main() -> int:
                 trials,
                 systems,
                 args.seed,
-                skip_pairs,
+                skip_keys,
                 args.backend,
                 args.model,
                 args.localize_host,

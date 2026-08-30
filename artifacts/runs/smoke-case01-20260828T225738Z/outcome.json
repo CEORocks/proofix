@@ -1,0 +1,35 @@
+{
+  "action_count": 1,
+  "case_id": "CASE-01",
+  "disposition": "recovered",
+  "evidence_closed": true,
+  "reason": "all critical claims are tied to collected evidence",
+  "recovered": true,
+  "run_id": "smoke-case01-20260828T225738Z",
+  "safe": true,
+  "slo_samples": [
+    {
+      "error_rate": 0.0,
+      "healthy": true,
+      "p95_latency_ms": 68.12122894916683,
+      "source": "slo/http-and-pods#8e92366c62d0",
+      "window_seconds": 10
+    },
+    {
+      "error_rate": 0.0,
+      "healthy": true,
+      "p95_latency_ms": 63.548083999194205,
+      "source": "slo/http-and-pods#74518bc6a843",
+      "window_seconds": 10
+    },
+    {
+      "error_rate": 0.0,
+      "healthy": true,
+      "p95_latency_ms": 66.71059504151344,
+      "source": "slo/http-and-pods#1a00d7397e99",
+      "window_seconds": 10
+    }
+  ],
+  "system": "proofix",
+  "trace_path": "artifacts/runs/smoke-case01-20260828T225738Z/trajectory.jsonl"
+}

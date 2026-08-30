@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-11",
+  "elapsed_seconds": 521.357762102969,
+  "initial_snapshot_sha256": "41a12141e8a4c2142e098057f02bccdc99d707a83745c9da8c26eb0b9da1f385",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-11",
+    "disposition": "rolled_back",
+    "evidence_closed": false,
+    "reason": "Consumer pods fail readiness/liveness checks, enter CrashLoopBackOff, or error rate exceeds 0.001.",
+    "recovered": false,
+    "run_id": "case-11-proofix-t3-20260830T034236Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.125441980548203,
+        "source": "slo/http-and-pods#33b122ebbee4",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.0076320031657815,
+        "source": "slo/http-and-pods#76693e38508c",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.0659160325303674,
+        "source": "slo/http-and-pods#95e5c74baa2f",
+        "window_seconds": 10
+      }
+    ],
+    "system": "proofix",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-11-proofix-t3-20260830T034236Z/trajectory.jsonl"
+  },
+  "run_id": "case-11-proofix-t3-20260830T034236Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-11",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-11-proofix-t3-20260830T034236Z",
+    "system": "proofix"
+  }
+}

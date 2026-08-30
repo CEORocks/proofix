@@ -1,0 +1,66 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-08",
+  "elapsed_seconds": 217.27563763299986,
+  "initial_snapshot_sha256": "9cf2b250d9f6e3a07ad7e5451924167f5f0998fb51a0f2f925b0e3cfe16dd6d0",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 0,
+    "case_id": "CASE-08",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "Root Cause Analysis:\n1. Resource Starvation and CPU Throttling: The deployment `proofix-case-08/search-api` was injected with an aggressive CPU request and limit of 100m (`injected-100m-cpu`).\n2. Liveness Probe Cascade: The Java application's `/healthz` endpoint executes CPU-intensive work (`burnCpuMicros(50_000)`). Under benchmark search traffic, the container experiences severe CFS CPU throttling against its 100m limit. As a result, the probe cannot complete within its configured 1-second timeout (`timeoutSeconds: 1`, `failureThreshold: 2`), leading to repeated probe failures (`context deadline exceeded`).\n3. Restart Loops & Degradation: After reaching the failure threshold, kubelet kills and restarts the container (observed exit code 143, restart count 3), precipitating an availability dip and latency spike.\n4. Capacity Verification & Recovery: Node `vm-4` has 4 allocatable CPUs with no resource pressure. Remediation requires raising the search container's CPU request and limit to known-safe levels (e.g. 500m request / 1000m limit) and adjusting the liveness probe timeout (e.g. 3s timeout, failureThreshold 3) without disabling health monitoring.",
+    "recovered": true,
+    "run_id": "case-08-react-t2-20260830T024846Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 89.11785300006159,
+        "source": "slo/http-and-pods#69de7283985f",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 75.19162500011589,
+        "source": "slo/http-and-pods#1a7df2f0acda",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 75.41526499971951,
+        "source": "slo/http-and-pods#7efd6082f91d",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-08-react-t2-20260830T024846Z/trajectory.jsonl"
+  },
+  "run_id": "case-08-react-t2-20260830T024846Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 2,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-08",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": false,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "fixture_semantic_verification"
+    ],
+    "passed": false,
+    "run_id": "case-08-react-t2-20260830T024846Z",
+    "system": "react"
+  }
+}

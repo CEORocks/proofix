@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-10",
+  "elapsed_seconds": 19.987636195030063,
+  "infrastructure_error": "RuntimeError: fixture install.sh failed (1): billing-api port-forward exited before becoming ready",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-10-proofix-t1-20260830T014850Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

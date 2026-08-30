@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-14",
+  "elapsed_seconds": 220.12381882301997,
+  "initial_snapshot_sha256": "e8c5b5924d87032f1b58880d96602939f28bf964f0dabaeee8e033624b4466c3",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-14",
+    "disposition": "failed",
+    "evidence_closed": false,
+    "reason": "step budget exhausted",
+    "recovered": false,
+    "run_id": "case-14-react-t2-20260829T222025Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 6.409693975001574,
+        "source": "slo/http-and-pods#89dc07982e71",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 6.339885992929339,
+        "source": "slo/http-and-pods#3073b0683538",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 6.44526001997292,
+        "source": "slo/http-and-pods#efc97c6bf71a",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-14-react-t2-20260829T222025Z/trajectory.jsonl"
+  },
+  "run_id": "case-14-react-t2-20260829T222025Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 2,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-14",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-14-react-t2-20260829T222025Z",
+    "system": "react"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-07",
+  "elapsed_seconds": 124.90263854099976,
+  "initial_snapshot_sha256": "e87e70a518a22a78040ae817c3718563f469519e4ede6813af6e3347fb3ff1ec",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-07",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The pricing-api pod was repeatedly crashing with exit code 137 (OOMKilled) because the JVM maximum heap was configured to -Xmx512m within a container memory limit of 256Mi. Under load, PricingServer retained memory chunks scaled to maxMemory, exceeding the cgroup memory limit and causing OOM termination. Node vm-4 remained healthy without node memory pressure. The deployment was patched and successfully rolled out to resolve the heap and container memory limit mismatch.",
+    "recovered": false,
+    "run_id": "case-07-react-t2-20260830T023417Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.044,
+        "healthy": true,
+        "p95_latency_ms": 5.650560000049154,
+        "source": "slo/http-and-pods#6897f7a36d5f",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 5.155930000000808,
+        "source": "slo/http-and-pods#31663d5a2707",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 5.091539999739325,
+        "source": "slo/http-and-pods#f108cb809f24",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-07-react-t2-20260830T023417Z/trajectory.jsonl"
+  },
+  "run_id": "case-07-react-t2-20260830T023417Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 2,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-07",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-07-react-t2-20260830T023417Z",
+    "system": "react"
+  }
+}

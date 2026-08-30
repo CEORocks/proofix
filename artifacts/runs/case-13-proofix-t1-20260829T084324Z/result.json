@@ -1,0 +1,11 @@
+{
+  "case_id": "CASE-13",
+  "elapsed_seconds": 80.26787984394468,
+  "infrastructure_error": "RuntimeError: kubectl port-forward failed: error: unable to forward port because pod is not running. Current status=Pending\n",
+  "model": "gpt-5.6-sol",
+  "run_id": "case-13-proofix-t1-20260829T084324Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

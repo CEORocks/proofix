@@ -1,0 +1,64 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-04",
+  "elapsed_seconds": 165.68365206802264,
+  "initial_snapshot_sha256": "1093e1728b47bbbb1f71a60347e95a3900aa8c86698ec13305dc8fda2ad8c252",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-04",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "The reports-worker deployment was unschedulable because its pod template required an invalid nodeSelector (disk=nvme) and lacked the dedicated=reports:NoSchedule toleration required by the intended node (node1). The deployment was patched to target nodeSelector storage=nvme and include the narrow toleration for dedicated=reports:NoSchedule. The replacement pod reports-worker-79bbd64df8-hsfg9 was successfully scheduled onto node1 and is Running and Ready.",
+    "recovered": true,
+    "run_id": "case-04-react-t1-20260830T012133Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 12.583187082782388,
+        "source": "slo/http-and-pods#dca822e63daa",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 12.636437080800533,
+        "source": "slo/http-and-pods#6e72c1c38f83",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 17.261038068681955,
+        "source": "slo/http-and-pods#569b303216fb",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/root/proofix-fleet/artifacts/runs/case-04-react-t1-20260830T012133Z/trajectory.jsonl"
+  },
+  "run_id": "case-04-react-t1-20260830T012133Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-04",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [],
+    "passed": true,
+    "run_id": "case-04-react-t1-20260830T012133Z",
+    "system": "react"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-13",
+  "elapsed_seconds": 319.38432715903036,
+  "infrastructure_error": "RemoteDisconnected: Remote end closed connection without response",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-13-proofix-t3-20260829T185257Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 3,
+  "valid": false
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-05",
+  "elapsed_seconds": 307.45973664400026,
+  "infrastructure_error": "RuntimeError: kubectl command failed (1): error: timed out waiting for the condition",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-05-proofix-t2-20260830T032818Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 2,
+  "valid": false
+}

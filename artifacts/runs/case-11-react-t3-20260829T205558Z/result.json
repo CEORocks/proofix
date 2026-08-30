@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-11",
+  "elapsed_seconds": 250.44693060801364,
+  "infrastructure_error": "RuntimeError: fixture install.sh failed (1): error: timed out waiting for the condition",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-11-react-t3-20260829T205558Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": false
+}

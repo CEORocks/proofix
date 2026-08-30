@@ -1,0 +1,68 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-11",
+  "elapsed_seconds": 312.4843797639478,
+  "initial_snapshot_sha256": "c4bf7a58812e08a02f5952095c54dd71c728abc457be4a8476af1d5e292f4069",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 2,
+    "case_id": "CASE-11",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The incident was caused by the orders-consumer Deployment in namespace proofix-case-11 being scaled down from 3 replicas to 1 replica, leaving a single consumer pod to process all 6 partitions against the fixed benchmark producer load. The deployment was restored to 3 replicas, resulting in 3 ready and running consumer pods that balance partition consumption and drain consumer lag.",
+    "recovered": false,
+    "run_id": "case-11-react-t2-20260830T033723Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 0.9872509399428964,
+        "source": "slo/http-and-pods#f5ad0cdc2a3b",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.139000989496708,
+        "source": "slo/http-and-pods#53be71c64ed3",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.0410579852759838,
+        "source": "slo/http-and-pods#819f0cfe1169",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-11-react-t2-20260830T033723Z/trajectory.jsonl"
+  },
+  "run_id": "case-11-react-t2-20260830T033723Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 2,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-11",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-11-react-t2-20260830T033723Z",
+    "system": "react"
+  }
+}

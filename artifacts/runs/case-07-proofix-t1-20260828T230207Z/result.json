@@ -1,0 +1,11 @@
+{
+  "case_id": "CASE-07",
+  "elapsed_seconds": 158.06746578996535,
+  "infrastructure_error": "RuntimeError: kubectl command failed (1): The Deployment \"pricing-api\" is invalid: spec.template.spec.containers[0].image: Required value",
+  "model": "gpt-5.6-sol",
+  "run_id": "case-07-proofix-t1-20260828T230207Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

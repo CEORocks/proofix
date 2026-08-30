@@ -1,0 +1,13 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 320.1866626710398,
+  "infrastructure_error": "RuntimeError: Antigravity wrapper missing structured_output",
+  "infrastructure_traceback": "Traceback (most recent call last):\n  File \"/tmp/proofix-fleet/src/proofix/runner.py\", line 309, in run_live\n    outcome = ProofFixWorkflow(\n  File \"/tmp/proofix-fleet/src/proofix/workflow.py\", line 259, in run\n    replan_payload = self.backend.respond(\n  File \"/tmp/proofix-fleet/src/proofix/backends.py\", line 399, in respond\n    raise RuntimeError(\"Antigravity wrapper missing structured_output\")\nRuntimeError: Antigravity wrapper missing structured_output\n",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-02-proofix-t2-20260830T030235Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 2,
+  "valid": false
+}

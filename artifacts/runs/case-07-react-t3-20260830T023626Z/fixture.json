@@ -1,0 +1,3 @@
+{
+  "final_reset": "deployment.apps/pricing-api patched (no change)\ndeployment \"pricing-api\" successfully rolled out\npod/pricing-api-6f486fb95f-pnzk4 condition met\nCASE-07 recovery applied: -Xmx128m retained under the 256Mi cgroup limit\n"
+}

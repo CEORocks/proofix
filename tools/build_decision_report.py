@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
@@ -13,7 +12,6 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import (
     BaseDocTemplate,
     Frame,
-    KeepTogether,
     PageBreak,
     PageTemplate,
     Paragraph,
@@ -332,7 +330,8 @@ for item in [
     "One command for setup, baseline, ProofFix, evaluation, and report generation; expected output and runtime documented.",
     "Quick replay target under 15 minutes; full 90-run benchmark target under two hours on four runners.",
     "No credentials in submission; environment variables documented; all public/synthetic data and licenses enumerated.",
-]: story.append(bullet(item))
+]:
+    story.append(bullet(item))
 story += [PageBreak()]
 
 story += [P("72-hour execution roadmap", "H1x")]
@@ -381,7 +380,8 @@ for item in [
     "Recognizable scenario patterns may still encourage overfitting; target variants and gold-label isolation reduce but do not eliminate it.",
     "Human review time is reported only if a qualified reviewer can score blinded packets consistently.",
     "HackerEarth's deeper dynamic tabs were blocked from this VM by its anonymous/VPN IP gate; the supplied 10-page rulebook controls detailed requirements.",
-]: story.append(bullet(item))
+]:
+    story.append(bullet(item))
 
 story += [P("Sources and provenance", "H2x")]
 sources = [

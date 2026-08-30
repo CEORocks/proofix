@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 37.16566007002257,
+  "infrastructure_error": "RuntimeError: Failed to execute Antigravity binary 'agy': [Errno 7] Argument list too long: '/home/ahmad_shakeelceo/.local/bin/agy'",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-02-react-t2-20260829T134147Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 2,
+  "valid": false
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-12",
+  "elapsed_seconds": 693.5935187970754,
+  "infrastructure_error": "TimeoutExpired: Command '['/tmp/proofix-fleet/fixtures/CASE-12/inject.sh']' timed out after 600 seconds",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-12-react-t3-20260829T214734Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": false
+}

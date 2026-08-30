@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-05",
+  "elapsed_seconds": 319.9782502529997,
+  "initial_snapshot_sha256": "287ecc57148d32f034926a1e357c9b6836d38bb9ef64e0a139460cdb4d4a1222",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-05",
+    "disposition": "failed",
+    "evidence_closed": false,
+    "reason": "The deployment fails to progress, pods enter a crashloop or error state, or the error rate exceeds the SLO threshold.; rollback incomplete: RuntimeError: kubectl command failed (1): error: timed out waiting for the condition",
+    "recovered": false,
+    "run_id": "case-05-proofix-t3-20260830T054204Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.034,
+        "healthy": true,
+        "p95_latency_ms": 4.806110000572517,
+        "source": "slo/http-and-pods#070b77d51424",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.85443999968993,
+        "source": "slo/http-and-pods#193e55316933",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.8595500011288095,
+        "source": "slo/http-and-pods#7e044d06f94f",
+        "window_seconds": 10
+      }
+    ],
+    "system": "proofix",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-05-proofix-t3-20260830T054204Z/trajectory.jsonl"
+  },
+  "run_id": "case-05-proofix-t3-20260830T054204Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-05",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-05-proofix-t3-20260830T054204Z",
+    "system": "proofix"
+  }
+}

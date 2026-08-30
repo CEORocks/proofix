@@ -8,7 +8,7 @@ require_single_node_k3s
 kubectl delete namespace "${namespace}" --ignore-not-found --wait=true >/dev/null
 kubectl apply -f "${fixture_dir}/namespace.yaml"
 kubectl apply -f "${fixture_dir}/broker.yaml"
-kubectl rollout status statefulset/redpanda -n "${namespace}" --timeout=300s
+kubectl rollout status statefulset/redpanda -n "${namespace}" --timeout=480s
 
 if ! rpk_exec topic list --format json | python3 -c 'import json,sys; raise SystemExit(0 if "orders" in str(json.load(sys.stdin)) else 1)'; then
   rpk_exec topic create orders --partitions 6 --replicas 1 \

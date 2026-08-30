@@ -1,0 +1,3195 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "proofix.io/billing-secret-resource-version": "111439"
+            },
+            "creationTimestamp": "2026-08-30T01:57:05Z",
+            "generateName": "billing-api-7c4fc8d579-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "billing-api",
+              "pod-template-hash": "7c4fc8d579",
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "billing-api-7c4fc8d579"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "args": [
+                  "-Xms32m",
+                  "-Xmx128m",
+                  "/app/BillingServer.java"
+                ],
+                "command": [
+                  "java"
+                ],
+                "image": "eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 5,
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "billing-api",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 15,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "96Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "source",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/state",
+                    "name": "state",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-4ts28",
+                    "readOnly": true
+                  }
+                ]
+              },
+              {
+                "args": [
+                  "while true; do\n  if psql -h postgres -U billing -d billing -tAc 'SELECT 1' >/dev/null 2>&1; then\n    printf 'ok\\n' > /state/db-status.next\n  else\n    printf 'auth_error\\n' > /state/db-status.next\n  fi\n  mv /state/db-status.next /state/db-status\n  sleep 0.2\ndone\n"
+                ],
+                "command": [
+                  "/bin/sh",
+                  "-ceu"
+                ],
+                "env": [
+                  {
+                    "name": "PGPASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "key": "password",
+                        "name": "billing-credentials"
+                      }
+                    }
+                  }
+                ],
+                "image": "postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "db-auth-checker",
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 70
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/state",
+                    "name": "state"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-4ts28",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "node1",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 5,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "billing-api-source"
+                },
+                "name": "source"
+              },
+              {
+                "emptyDir": {
+                  "sizeLimit": "1Mi"
+                },
+                "name": "state"
+              },
+              {
+                "emptyDir": {
+                  "sizeLimit": "64Mi"
+                },
+                "name": "tmp"
+              },
+              {
+                "name": "kube-api-access-4ts28",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "75m",
+              "memory": "128Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:06Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:06Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:09Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:09Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:05Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "50m",
+                  "memory": "96Mi"
+                },
+                "containerID": "containerd://ba1b76ab96763db414d78cc5ec8b3d32a0607d8e8aea899ea74fb71e74d990d3",
+                "image": "sha256:d917205ca8b1eee432ed6e60f1fbd74a41600559b406c7d201c75dce2f18efe1",
+                "imageID": "docker.io/library/eclipse-temurin@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                "lastState": {},
+                "name": "billing-api",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "96Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-30T01:57:06Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "source",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/state",
+                    "name": "state",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-4ts28",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              },
+              {
+                "allocatedResources": {
+                  "cpu": "25m",
+                  "memory": "32Mi"
+                },
+                "containerID": "containerd://b1aa1681bd5f9112e131a81fc731acc4c13a0f36e3f768497bc1dbafb855b60a",
+                "image": "sha256:89ec47deeeddac28eb60b5672a456c54213ff4528f8752fda7f7c2a0e4ead36a",
+                "imageID": "docker.io/library/postgres@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                "lastState": {},
+                "name": "db-auth-checker",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-30T01:57:06Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 70,
+                    "supplementalGroups": [
+                      70
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/state",
+                    "name": "state"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-4ts28",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "144.202.3.93",
+            "hostIPs": [
+              {
+                "ip": "144.202.3.93"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.82",
+            "podIPs": [
+              {
+                "ip": "10.42.0.82"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "750m",
+                "memory": "384Mi"
+              },
+              "requests": {
+                "cpu": "53m",
+                "memory": "128Mi"
+              }
+            },
+            "startTime": "2026-08-30T01:57:06Z"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "generateName": "postgres-54c94d6444-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "postgres",
+              "pod-template-hash": "54c94d6444",
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "postgres-54c94d6444-znsxf",
+            "namespace": "proofix-case-10",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "postgres-54c94d6444"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "POSTGRES_DB",
+                    "value": "billing"
+                  },
+                  {
+                    "name": "POSTGRES_USER",
+                    "value": "billing"
+                  },
+                  {
+                    "name": "POSTGRES_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "key": "password",
+                        "name": "db-credentials"
+                      }
+                    }
+                  },
+                  {
+                    "name": "POSTGRES_INITDB_ARGS",
+                    "value": "--auth-host=scram-sha-256"
+                  },
+                  {
+                    "name": "PGDATA",
+                    "value": "/var/lib/postgresql/data/pgdata"
+                  }
+                ],
+                "image": "postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "exec": {
+                    "command": [
+                      "pg_isready",
+                      "-U",
+                      "billing",
+                      "-d",
+                      "billing"
+                    ]
+                  },
+                  "failureThreshold": 5,
+                  "initialDelaySeconds": 10,
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 2
+                },
+                "name": "postgres",
+                "ports": [
+                  {
+                    "containerPort": 5432,
+                    "name": "postgres",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "pg_isready",
+                      "-U",
+                      "billing",
+                      "-d",
+                      "billing"
+                    ]
+                  },
+                  "failureThreshold": 30,
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "512Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/postgresql/data",
+                    "name": "database"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-tdqjg",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "node1",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 10,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "emptyDir": {
+                  "sizeLimit": "1Gi"
+                },
+                "name": "database"
+              },
+              {
+                "name": "kube-api-access-tdqjg",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:56:59Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:56:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:01Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:01Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:56:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://3ac06593b9a733271c9630441a913c9e29fbc125a809ce1910ce76d0b717e517",
+                "image": "sha256:89ec47deeeddac28eb60b5672a456c54213ff4528f8752fda7f7c2a0e4ead36a",
+                "imageID": "docker.io/library/postgres@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                "lastState": {},
+                "name": "postgres",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "512Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-30T01:56:59Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4,
+                      6,
+                      10,
+                      11,
+                      20,
+                      26,
+                      27
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/postgresql/data",
+                    "name": "database"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-tdqjg",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "144.202.3.93",
+            "hostIPs": [
+              {
+                "ip": "144.202.3.93"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.80",
+            "podIPs": [
+              {
+                "ip": "10.42.0.80"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "512Mi"
+              },
+              "requests": {
+                "cpu": "79m",
+                "memory": "128Mi"
+              }
+            },
+            "startTime": "2026-08-30T01:56:58Z"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:18Z",
+            "generateName": "rotate-db-password-",
+            "generation": 1,
+            "labels": {
+              "batch.kubernetes.io/controller-uid": "af8f5cd4-c0ed-4efc-b398-7e8c97c98c3c",
+              "batch.kubernetes.io/job-name": "rotate-db-password",
+              "controller-uid": "af8f5cd4-c0ed-4efc-b398-7e8c97c98c3c",
+              "job-name": "rotate-db-password",
+              "proofix.io/case": "CASE-10",
+              "proofix.io/purpose": "credential-rotation"
+            },
+            "name": "rotate-db-password-tbwtr",
+            "namespace": "proofix-case-10",
+            "ownerReferences": [
+              {
+                "apiVersion": "batch/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "Job",
+                "name": "rotate-db-password"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "args": [
+                  "printf \"ALTER ROLE billing WITH PASSWORD '%s';\\n\" \"${NEXT_PASSWORD}\" \\\n  | psql -v ON_ERROR_STOP=1 -h postgres -U billing -d billing >/dev/null 2>&1\ngeneration_hash=\"$(printf '%s' \"${NEXT_PASSWORD}\" | sha256sum | awk '{print $1}')\"\nprintf '{\"rotation\":\"complete\",\"generation_sha256\":\"%s\"}\\n' \"${generation_hash}\"\n"
+                ],
+                "command": [
+                  "/bin/sh",
+                  "-ceu"
+                ],
+                "env": [
+                  {
+                    "name": "PGPASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "key": "password",
+                        "name": "db-credentials"
+                      }
+                    }
+                  },
+                  {
+                    "name": "NEXT_PASSWORD",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "key": "password",
+                        "name": "db-credentials-next"
+                      }
+                    }
+                  }
+                ],
+                "image": "postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "rotate",
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 70
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-c9ffl",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "node1",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Never",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "kube-api-access-c9ffl",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "25m",
+              "memory": "32Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:21Z",
+                "observedGeneration": 1,
+                "status": "False",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:18Z",
+                "observedGeneration": 1,
+                "reason": "PodCompleted",
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:20Z",
+                "observedGeneration": 1,
+                "reason": "PodCompleted",
+                "status": "False",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:20Z",
+                "observedGeneration": 1,
+                "reason": "PodCompleted",
+                "status": "False",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:57:18Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "25m",
+                  "memory": "32Mi"
+                },
+                "containerID": "containerd://d112bcb7173c61c3d75a20589c22c3236c4212c24aec02dd631c05acc8f6c963",
+                "image": "sha256:89ec47deeeddac28eb60b5672a456c54213ff4528f8752fda7f7c2a0e4ead36a",
+                "imageID": "docker.io/library/postgres@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                "lastState": {},
+                "name": "rotate",
+                "ready": false,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": false,
+                "state": {
+                  "terminated": {
+                    "containerID": "containerd://d112bcb7173c61c3d75a20589c22c3236c4212c24aec02dd631c05acc8f6c963",
+                    "exitCode": 0,
+                    "finishedAt": "2026-08-30T01:57:19Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-08-30T01:57:19Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 70,
+                    "supplementalGroups": [
+                      70
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-c9ffl",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "144.202.3.93",
+            "hostIPs": [
+              {
+                "ip": "144.202.3.93"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Succeeded",
+            "podIP": "10.42.0.83",
+            "podIPs": [
+              {
+                "ip": "10.42.0.83"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "memory": "32Mi"
+              }
+            },
+            "startTime": "2026-08-30T01:57:18Z"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#25358e7ff276"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "2"
+            },
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "generation": 2,
+            "labels": {
+              "app.kubernetes.io/name": "billing-api",
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "billing-api",
+            "namespace": "proofix-case-10"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "billing-api"
+              }
+            },
+            "strategy": {
+              "rollingUpdate": {
+                "maxSurge": "25%",
+                "maxUnavailable": "25%"
+              },
+              "type": "RollingUpdate"
+            },
+            "template": {
+              "metadata": {
+                "annotations": {
+                  "proofix.io/billing-secret-resource-version": "111439"
+                },
+                "labels": {
+                  "app.kubernetes.io/name": "billing-api",
+                  "proofix.io/case": "CASE-10"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-Xms32m",
+                      "-Xmx128m",
+                      "/app/BillingServer.java"
+                    ],
+                    "command": [
+                      "java"
+                    ],
+                    "image": "eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "initialDelaySeconds": 5,
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "name": "billing-api",
+                    "ports": [
+                      {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 15,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 2,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "500m",
+                        "memory": "256Mi"
+                      },
+                      "requests": {
+                        "cpu": "50m",
+                        "memory": "96Mi"
+                      }
+                    },
+                    "securityContext": {
+                      "allowPrivilegeEscalation": false,
+                      "capabilities": {
+                        "drop": [
+                          "ALL"
+                        ]
+                      },
+                      "readOnlyRootFilesystem": true,
+                      "runAsNonRoot": true,
+                      "runAsUser": 10001
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/app",
+                        "name": "source",
+                        "readOnly": true
+                      },
+                      {
+                        "mountPath": "/state",
+                        "name": "state",
+                        "readOnly": true
+                      },
+                      {
+                        "mountPath": "/tmp",
+                        "name": "tmp"
+                      }
+                    ]
+                  },
+                  {
+                    "args": [
+                      "while true; do\n  if psql -h postgres -U billing -d billing -tAc 'SELECT 1' >/dev/null 2>&1; then\n    printf 'ok\\n' > /state/db-status.next\n  else\n    printf 'auth_error\\n' > /state/db-status.next\n  fi\n  mv /state/db-status.next /state/db-status\n  sleep 0.2\ndone\n"
+                    ],
+                    "command": [
+                      "/bin/sh",
+                      "-ceu"
+                    ],
+                    "env": [
+                      {
+                        "name": "PGPASSWORD",
+                        "valueFrom": {
+                          "secretKeyRef": {
+                            "key": "password",
+                            "name": "billing-credentials"
+                          }
+                        }
+                      }
+                    ],
+                    "image": "postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "db-auth-checker",
+                    "resources": {
+                      "limits": {
+                        "cpu": "250m",
+                        "memory": "128Mi"
+                      },
+                      "requests": {
+                        "cpu": "25m",
+                        "memory": "32Mi"
+                      }
+                    },
+                    "securityContext": {
+                      "allowPrivilegeEscalation": false,
+                      "capabilities": {
+                        "drop": [
+                          "ALL"
+                        ]
+                      },
+                      "readOnlyRootFilesystem": true,
+                      "runAsNonRoot": true,
+                      "runAsUser": 70
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/state",
+                        "name": "state"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 5,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "billing-api-source"
+                    },
+                    "name": "source"
+                  },
+                  {
+                    "emptyDir": {
+                      "sizeLimit": "1Mi"
+                    },
+                    "name": "state"
+                  },
+                  {
+                    "emptyDir": {
+                      "sizeLimit": "64Mi"
+                    },
+                    "name": "tmp"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-30T01:57:04Z",
+                "lastUpdateTime": "2026-08-30T01:57:04Z",
+                "message": "Deployment has minimum availability.",
+                "reason": "MinimumReplicasAvailable",
+                "status": "True",
+                "type": "Available"
+              },
+              {
+                "lastTransitionTime": "2026-08-30T01:56:58Z",
+                "lastUpdateTime": "2026-08-30T01:57:09Z",
+                "message": "ReplicaSet \"billing-api-7c4fc8d579\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              }
+            ],
+            "observedGeneration": 2,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "updatedReplicas": 1
+          }
+        },
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "1"
+            },
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "postgres",
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "postgres",
+            "namespace": "proofix-case-10"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "postgres"
+              }
+            },
+            "strategy": {
+              "type": "Recreate"
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/name": "postgres",
+                  "proofix.io/case": "CASE-10"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "env": [
+                      {
+                        "name": "POSTGRES_DB",
+                        "value": "billing"
+                      },
+                      {
+                        "name": "POSTGRES_USER",
+                        "value": "billing"
+                      },
+                      {
+                        "name": "POSTGRES_PASSWORD",
+                        "valueFrom": {
+                          "secretKeyRef": {
+                            "key": "password",
+                            "name": "db-credentials"
+                          }
+                        }
+                      },
+                      {
+                        "name": "POSTGRES_INITDB_ARGS",
+                        "value": "--auth-host=scram-sha-256"
+                      },
+                      {
+                        "name": "PGDATA",
+                        "value": "/var/lib/postgresql/data/pgdata"
+                      }
+                    ],
+                    "image": "postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                      "exec": {
+                        "command": [
+                          "pg_isready",
+                          "-U",
+                          "billing",
+                          "-d",
+                          "billing"
+                        ]
+                      },
+                      "failureThreshold": 5,
+                      "initialDelaySeconds": 10,
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 2
+                    },
+                    "name": "postgres",
+                    "ports": [
+                      {
+                        "containerPort": 5432,
+                        "name": "postgres",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "exec": {
+                        "command": [
+                          "pg_isready",
+                          "-U",
+                          "billing",
+                          "-d",
+                          "billing"
+                        ]
+                      },
+                      "failureThreshold": 30,
+                      "periodSeconds": 2,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "1",
+                        "memory": "512Mi"
+                      },
+                      "requests": {
+                        "cpu": "100m",
+                        "memory": "128Mi"
+                      }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/var/lib/postgresql/data",
+                        "name": "database"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 10,
+                "volumes": [
+                  {
+                    "emptyDir": {
+                      "sizeLimit": "1Gi"
+                    },
+                    "name": "database"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-30T01:57:01Z",
+                "lastUpdateTime": "2026-08-30T01:57:01Z",
+                "message": "Deployment has minimum availability.",
+                "reason": "MinimumReplicasAvailable",
+                "status": "True",
+                "type": "Available"
+              },
+              {
+                "lastTransitionTime": "2026-08-30T01:56:58Z",
+                "lastUpdateTime": "2026-08-30T01:57:01Z",
+                "message": "ReplicaSet \"postgres-54c94d6444\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              }
+            ],
+            "observedGeneration": 1,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "updatedReplicas": 1
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#1b95cf7e773a"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "labels": {
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "billing-api",
+            "namespace": "proofix-case-10"
+          },
+          "spec": {
+            "clusterIP": "10.43.237.36",
+            "clusterIPs": [
+              "10.43.237.36"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "http",
+                "nodePort": 30080,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": "http"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "billing-api"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "labels": {
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "postgres",
+            "namespace": "proofix-case-10"
+          },
+          "spec": {
+            "clusterIP": "10.43.95.247",
+            "clusterIPs": [
+              "10.43.95.247"
+            ],
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "postgres",
+                "port": 5432,
+                "protocol": "TCP",
+                "targetPort": "postgres"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "postgres"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#a9b661f7c2d9"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "billing-api",
+            "namespace": "proofix-case-10"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "ip": "10.42.0.82",
+                  "nodeName": "node1",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "billing-api-7c4fc8d579-mqgs6",
+                    "namespace": "proofix-case-10"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "http",
+                  "port": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-30T01:57:01Z"
+            },
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+              "proofix.io/case": "CASE-10"
+            },
+            "name": "postgres",
+            "namespace": "proofix-case-10"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "ip": "10.42.0.80",
+                  "nodeName": "node1",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "postgres-54c94d6444-znsxf",
+                    "namespace": "proofix-case-10"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "postgres",
+                  "port": 5432,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#225affc841b5"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "BillingServer.java": "import com.sun.net.httpserver.HttpExchange;\nimport com.sun.net.httpserver.HttpServer;\nimport java.io.IOException;\nimport java.net.InetSocketAddress;\nimport java.nio.charset.StandardCharsets;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.concurrent.Executors;\n\npublic final class BillingServer {\n    private static final Path DB_STATUS = Path.of(\"/state/db-status\");\n\n    private BillingServer() {}\n\n    private static void reply(HttpExchange exchange, int status, String body)\n            throws IOException {\n        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);\n        exchange.getResponseHeaders().set(\"Content-Type\", \"application/json\");\n        exchange.getResponseHeaders().set(\"Cache-Control\", \"no-store\");\n        exchange.sendResponseHeaders(status, bytes.length);\n        exchange.getResponseBody().write(bytes);\n        exchange.close();\n    }\n\n    private static void billing(HttpExchange exchange) throws IOException {\n        String status = Files.exists(DB_STATUS)\n                ? Files.readString(DB_STATUS, StandardCharsets.UTF_8).trim()\n                : \"unavailable\";\n        if (status.equals(\"ok\")) {\n            reply(exchange, 200, \"{\\\"ok\\\":true,\\\"database_auth\\\":\\\"accepted\\\"}\\n\");\n        } else {\n            reply(exchange, 503, \"{\\\"ok\\\":false,\\\"database_auth\\\":\\\"rejected\\\"}\\n\");\n        }\n    }\n\n    public static void main(String[] args) throws Exception {\n        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);\n        server.createContext(\"/healthz\", exchange ->\n                reply(exchange, 200, \"{\\\"ok\\\":true}\\n\"));\n        server.createContext(\"/billing\", BillingServer::billing);\n        server.setExecutor(Executors.newFixedThreadPool(8));\n        server.start();\n        System.out.println(\"billing-api listening on :8080; credentials are never logged\");\n    }\n}\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "billing-api-source",
+            "namespace": "proofix-case-10"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca-crl.pem": ""
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:57Z",
+            "labels": {
+              "istio.io/config": "true"
+            },
+            "name": "istio-ca-crl",
+            "namespace": "proofix-case-10"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "root-cert.pem": "-----BEGIN CERTIFICATE-----\nMIIC/DCCAeSgAwIBAgIQYghIc8CR+NC78QQfxHNhYjANBgkqhkiG9w0BAQsFADAY\nMRYwFAYDVQQKEw1jbHVzdGVyLmxvY2FsMB4XDTI2MDgyODIyNDYyOVoXDTM2MDgy\nNTIyNDYyOVowGDEWMBQGA1UEChMNY2x1c3Rlci5sb2NhbDCCASIwDQYJKoZIhvcN\nAQEBBQADggEPADCCAQoCggEBAN4Kd52GdQORqJC5EfTC5fBJCGVRVXqPDHSCGySL\nmVq6g6q3c5tM1ZSAtwCWlJBbR0atuwyWzhtvzK2zv8Xiw6hFaN5IvvI6P8CYeGwC\nPNjqaAITQNnXu8s2NZn1OvuZIvfH2TEhdcRdiNGhGmb8GPlphCcgnvAhSh2K7QHs\nR68qNjkP1hrjQ5gKST8CNPSPKH//NFuRuxD/s2GWYsVb32WJ5oXIALjsllBPafwC\nLNwxHv2v67KTgFxfSBBCGtw92jWLAxxfODNryGCkkq4qbldyvFBQQMFDnC58SGt3\ndxCLG4YLkYcKH/7oIOS8wOSJFX+YdMPcSG1V474prc+JR8kCAwEAAaNCMEAwDgYD\nVR0PAQH/BAQDAgIEMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFAIC9zsRi3x0\nI0lrxaZ84jvRH2oVMA0GCSqGSIb3DQEBCwUAA4IBAQC2E70HBIH8tfZdn6RHv5uY\nvVhsNCz1MC6X+4/fJbGZhXsUFgQj79BH/I7qXmr+lI4GpkoDy4NXD18BQoZJIrAQ\nZIalEv+LbYb1d2PYx2UurmP7qUB7qdJxU7l1qaoVPpNwqol9kGVIIXapNijFxOB5\ngflEUKuyC7XMJsjK8hV+QCalX8ViofgIxLWwATCe2FA1joxpqYPZk2fAQkoQoT0U\nl+LXJi/JvK0QLTcwGrzUt/0CtXpLeQgpDiTaLc+O8NjXRhzTzRv3D8Bd7VCgR4Du\nlkYTGdfKnieyhwaAP9F4Xv4i+e9WiJFVKqugvlkMt9upnsYVOuTgt5gCqnXlY9g9\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:57Z",
+            "labels": {
+              "istio.io/config": "true"
+            },
+            "name": "istio-ca-root-cert",
+            "namespace": "proofix-case-10"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdjCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODc5NTcwNzEwHhcNMjYwODI4MjE0NDMxWhcNMzYwODI1MjE0NDMx\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODc5NTcwNzEwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAAQivTJ+Au7VNNzVHoDf2k85hDWUzfP0r+XOBDtE254A\n+AzFcwRjoJBCem5RjjsfwsSn/Q3hYxZQgOTInMAP95D/o0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUWxESyzpuNGBhOqKCK75k\nsdDnc+MwCgYIKoZIzj0EAwIDRwAwRAIgR1swBetat9YKIGtYxom0qSzTAJFm/uV3\n1zO6z2+DRjoCIHIxVsFbRl8DtzvVe9crt0KGJfcZAbF6GivWMc+9su9v\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-30T01:56:57Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-10"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#de0fbecfc10f"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:57Z",
+            "name": "default",
+            "namespace": "proofix-case-10"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#dd4e5e2107dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "password": {
+              "bytes": 32,
+              "sha256": "934cbf7bb7b91fed79c674af2724accfbb9b7eef43e486e0cf403d8f7e42d95d"
+            }
+          },
+          "kind": "Secret",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "billing-credentials",
+            "namespace": "proofix-case-10",
+            "proofixResourceVersion": "111439"
+          },
+          "type": "Opaque"
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "password": {
+              "bytes": 32,
+              "sha256": "85fa0a1605612a939a9833476512254a7b20d4bb30d95446ac838d1b18f8702f"
+            }
+          },
+          "kind": "Secret",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "db-credentials",
+            "namespace": "proofix-case-10",
+            "proofixResourceVersion": "111604"
+          },
+          "type": "Opaque"
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "password": {
+              "bytes": 32,
+              "sha256": "85fa0a1605612a939a9833476512254a7b20d4bb30d95446ac838d1b18f8702f"
+            }
+          },
+          "kind": "Secret",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:57:18Z",
+            "name": "db-credentials-next",
+            "namespace": "proofix-case-10",
+            "proofixResourceVersion": "111576"
+          },
+          "type": "Opaque"
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "password": {
+              "bytes": 32,
+              "sha256": "934cbf7bb7b91fed79c674af2724accfbb9b7eef43e486e0cf403d8f7e42d95d"
+            }
+          },
+          "kind": "Secret",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "stale-credential-snapshot",
+            "namespace": "proofix-case-10",
+            "proofixResourceVersion": "111441"
+          },
+          "type": "Opaque"
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#c9568771bbb8"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:56:58.827835Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-10/billing-api-788c8f7977-p9kz9 to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d07290ec167c1a",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d072911f545010",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d0729120509695",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d072912558ab8b",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{db-auth-checker}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container image \"postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d072912568796b",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{db-auth-checker}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d0729127330f2d",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{db-auth-checker}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d072912e62fcd8",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 3,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:02Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.81:8080/healthz\": dial tcp 10.42.0.81:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d072912ee76d60",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:09Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:09Z",
+          "message": "Stopping container billing-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:09Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d072936233434f",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:09Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{db-auth-checker}",
+            "kind": "Pod",
+            "name": "billing-api-788c8f7977-p9kz9",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:09Z",
+          "message": "Stopping container db-auth-checker",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:09Z",
+            "name": "billing-api-788c8f7977-p9kz9.18d072936234fff5",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:58Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-api-788c8f7977",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:58Z",
+          "message": "Created pod: billing-api-788c8f7977-p9kz9",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "billing-api-788c8f7977.18d07290eb85deea",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:09Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-api-788c8f7977",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:09Z",
+          "message": "Deleted pod: billing-api-788c8f7977-p9kz9",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:09Z",
+            "name": "billing-api-788c8f7977.18d0729362132714",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:57:05.996699Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-10/billing-api-7c4fc8d579-mqgs6 to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:05Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d072929762a36c",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:06Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:06Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d07292b4ab8ead",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:06Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:06Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d07292b59cd139",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:06Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:06Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d07292b950f91f",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{db-auth-checker}",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:06Z",
+          "message": "Container image \"postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:06Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d07292b95b6c90",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{db-auth-checker}",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:06Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:06Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d07292ba8cd32f",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{db-auth-checker}",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:06Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:06Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d07292be9c1736",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{billing-api}",
+            "kind": "Pod",
+            "name": "billing-api-7c4fc8d579-mqgs6",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:07Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.82:8080/healthz\": dial tcp 10.42.0.82:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:06Z",
+            "name": "billing-api-7c4fc8d579-mqgs6.18d07292befe44a6",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:05Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "billing-api-7c4fc8d579",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:05Z",
+          "message": "Created pod: billing-api-7c4fc8d579-mqgs6",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:05Z",
+            "name": "billing-api-7c4fc8d579.18d0729297244bbd",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:58Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "billing-api",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:58Z",
+          "message": "Scaled up replica set billing-api-788c8f7977 from 0 to 1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "billing-api.18d07290eac94ac3",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:05Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "billing-api",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:05Z",
+          "message": "Scaled up replica set billing-api-7c4fc8d579 from 0 to 1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:05Z",
+            "name": "billing-api.18d0729296d871af",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:09Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "billing-api",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:09Z",
+          "message": "Scaled down replica set billing-api-788c8f7977 from 1 to 0",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:09Z",
+            "name": "billing-api.18d0729361d29b22",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:56:58.822262Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "postgres-54c94d6444-znsxf",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-10/postgres-54c94d6444-znsxf to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "postgres-54c94d6444-znsxf.18d07290ebc189cb",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{postgres}",
+            "kind": "Pod",
+            "name": "postgres-54c94d6444-znsxf",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container image \"postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "postgres-54c94d6444-znsxf.18d072911cf0ac68",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{postgres}",
+            "kind": "Pod",
+            "name": "postgres-54c94d6444-znsxf",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "postgres-54c94d6444-znsxf.18d072911f62ffce",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:59Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{postgres}",
+            "kind": "Pod",
+            "name": "postgres-54c94d6444-znsxf",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:59Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:59Z",
+            "name": "postgres-54c94d6444-znsxf.18d07291245a120f",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:01Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{postgres}",
+            "kind": "Pod",
+            "name": "postgres-54c94d6444-znsxf",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:01Z",
+          "message": "Readiness probe failed: /var/run/postgresql:5432 - rejecting connections\n",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:01Z",
+            "name": "postgres-54c94d6444-znsxf.18d07291a7001798",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:58Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "postgres-54c94d6444",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:58Z",
+          "message": "Created pod: postgres-54c94d6444-znsxf",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "postgres-54c94d6444.18d07290eb737f8a",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:56:58Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "postgres",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:56:58Z",
+          "message": "Scaled up replica set postgres-54c94d6444 from 0 to 1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:56:58Z",
+            "name": "postgres.18d07290e975286b",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:57:18.360440Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "rotate-db-password-tbwtr",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-10/rotate-db-password-tbwtr to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:18Z",
+            "name": "rotate-db-password-tbwtr.18d0729578525ef7",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{rotate}",
+            "kind": "Pod",
+            "name": "rotate-db-password-tbwtr",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:19Z",
+          "message": "Container image \"postgres:16.4-alpine@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:19Z",
+            "name": "rotate-db-password-tbwtr.18d072959e9ee515",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{rotate}",
+            "kind": "Pod",
+            "name": "rotate-db-password-tbwtr",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:19Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:19Z",
+            "name": "rotate-db-password-tbwtr.18d072959f9942d9",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{rotate}",
+            "kind": "Pod",
+            "name": "rotate-db-password-tbwtr",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:19Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:19Z",
+            "name": "rotate-db-password-tbwtr.18d07295a490d56c",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:18Z",
+          "involvedObject": {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "name": "rotate-db-password",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:18Z",
+          "message": "Created pod: rotate-db-password-tbwtr",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:18Z",
+            "name": "rotate-db-password.18d072957814e3d5",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "job-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "job-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:57:22Z",
+          "involvedObject": {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "name": "rotate-db-password",
+            "namespace": "proofix-case-10"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:57:22Z",
+          "message": "Job completed",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:57:22Z",
+            "name": "rotate-db-password.18d072966a2a9da1",
+            "namespace": "proofix-case-10"
+          },
+          "reason": "Completed",
+          "reportingComponent": "job-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "job-controller"
+          },
+          "type": "Normal"
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/events#c929b9ab5f49"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "144.202.3.93",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"da:85:b3:22:3f:d1\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "144.202.3.93",
+              "k3s.io/hostname": "node1",
+              "k3s.io/internal-ip": "144.202.3.93",
+              "k3s.io/node-args": "[\"server\",\"--disable\",\"traefik\",\"--write-kubeconfig-mode\",\"644\"]",
+              "k3s.io/node-config-hash": "Y735WCEK5OA7WRV7XHI7EBVBQNG2C7ABWJO2R25H2YIAEAJQVALA====",
+              "k3s.io/node-env": "{}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-28T22:44:37Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "node1",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s"
+            },
+            "name": "node1"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://node1"
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "144.202.3.93",
+                "type": "InternalIP"
+              },
+              {
+                "address": "node1",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "8",
+              "ephemeral-storage": "334228502881",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16369476Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "8",
+              "ephemeral-storage": "343573708Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16369476Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-30T01:55:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T01:55:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T01:55:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T01:55:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "docker.io/library/eclipse-temurin@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a"
+                ],
+                "sizeBytes": 196246833
+              },
+              {
+                "names": [
+                  "docker.io/library/postgres@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c"
+                ],
+                "sizeBytes": 99175927
+              },
+              {
+                "names": [
+                  "registry.istio.io/release/proxyv2@sha256:43b6aeab7428470d3d0ea6b6f0bc217e5b36df2b279bba337643df48590226d9",
+                  "registry.istio.io/release/proxyv2:1.30.4"
+                ],
+                "sizeBytes": 88165018
+              },
+              {
+                "names": [
+                  "registry.istio.io/release/pilot@sha256:c236c1df5cc127fe193e5a17d8ece9cdd0dc17c5d89b4e20baf01d464f029dce",
+                  "registry.istio.io/release/pilot:1.30.4"
+                ],
+                "sizeBytes": 72480540
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:4ff102c5d78d254a6f0da062b3cf39eaf07f01eec0927fd21e219d0af8bc0591",
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                  "docker.io/library/nginx:1.27.4-alpine"
+                ],
+                "sizeBytes": 20834790
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/rancher/klipper-lb@sha256:910944bb0bd94f060a82a56ca1ea1c577d3e49b3473a093a47a985f32e92d94a",
+                  "docker.io/rancher/klipper-lb:v0.4.17"
+                ],
+                "sizeBytes": 5280144
+              },
+              {
+                "names": [
+                  "docker.io/library/busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662",
+                  "docker.io/library/busybox:1.36.1"
+                ],
+                "sizeBytes": 2217006
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "18e7b522-bdff-446d-81c7-f920736096ce",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-138-generic",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "7c7400346644496f9a0a5e57ec700823",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 24.04.4 LTS",
+              "swap": {
+                "capacity": 16971100160
+              },
+              "systemUUID": "2e6a969f-8c46-4da2-add3-8c0fc373745e"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#a8a0cbb5f6df"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

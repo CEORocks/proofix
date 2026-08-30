@@ -21,6 +21,9 @@ kubectl wait --for=condition=complete job/rotate-db-password \
 kubectl logs job/rotate-db-password -n "${namespace}"
 create_secret_from_file db-credentials "${credential_dir}/next"
 
+start_fixture_forward
+trap 'stop_fixture_forward; rm -rf -- "${credential_dir}"' EXIT
+
 for _ in $(seq 1 45); do
   if python3 "${fixture_dir}/load.py" fault --base-url "${base_url}" >/dev/null; then
     echo "CASE-10 fault active: db_generation_sha256=$(secret_hash db-credentials) db_secret_rv=$(secret_version db-credentials) billing_generation_sha256=$(secret_hash billing-credentials) billing_secret_rv=$(secret_version billing-credentials)"

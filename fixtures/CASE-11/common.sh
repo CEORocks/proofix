@@ -51,7 +51,7 @@ rpk_exec() {
 }
 
 wait_for_workloads() {
-  kubectl rollout status statefulset/redpanda -n "${namespace}" --timeout=300s
-  kubectl rollout status deployment/orders-producer -n "${namespace}" --timeout=180s
-  kubectl rollout status deployment/orders-consumer -n "${namespace}" --timeout=180s
+  kubectl rollout status statefulset/redpanda -n "${namespace}" --timeout=480s
+  kubectl rollout status deployment/orders-producer -n "${namespace}" --timeout=300s
+  kubectl rollout status deployment/orders-consumer -n "${namespace}" --timeout=300s
 }

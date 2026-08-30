@@ -1,0 +1,19 @@
+{
+  "artifact_root": "artifacts/runs",
+  "case_path": "benchmark/cases/CASE-07.json",
+  "host": "34.42.240.99",
+  "kubeconfig": "/etc/rancher/k3s/k3s.yaml",
+  "local_port": 18077,
+  "max_model_calls": 5,
+  "model": "gpt-5.6-sol",
+  "namespace": "proofix-case-07",
+  "node_port": 30077,
+  "probe_path": "/price",
+  "probe_requests": 1000,
+  "remote_fixture_dir": "/opt/proofix/fixtures/CASE-07",
+  "system": "proofix",
+  "trial": 1,
+  "verification_settle_seconds": 5.0,
+  "window_seconds": 10,
+  "workload_selector": "app.kubernetes.io/name=pricing-api"
+}

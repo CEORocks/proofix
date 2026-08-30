@@ -1,0 +1,64 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-09",
+  "elapsed_seconds": 203.4453768869862,
+  "initial_snapshot_sha256": "09fa13f95f95cf787f3fefcd0dfbb2ee01374c3a04b379e0b8179b8b2d92992d",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-09",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "The RBAC deficit affecting inventory-controller has been identified and resolved. The inventory-controller pod runs with ServiceAccount inventory-controller bound to Role inventory-settings-reader via RoleBinding inventory-settings-reader in namespace proofix-case-09. The Role originally lacked permissions for the inventory-settings ConfigMap. The Role was patched with the required ConfigMap permissions, and auth can-i verification confirmed get access on configmaps/inventory-settings is now allowed for the inventory-controller ServiceAccount.",
+    "recovered": true,
+    "run_id": "case-09-react-t3-20260829T192938Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 50.718353944830596,
+        "source": "slo/http-and-pods#28c89b6420f8",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 49.02529495302588,
+        "source": "slo/http-and-pods#f9c0d06ee3fe",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 49.88700000103563,
+        "source": "slo/http-and-pods#d08b0713c973",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/root/proofix-fleet/artifacts/runs/case-09-react-t3-20260829T192938Z/trajectory.jsonl"
+  },
+  "run_id": "case-09-react-t3-20260829T192938Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-09",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [],
+    "passed": true,
+    "run_id": "case-09-react-t3-20260829T192938Z",
+    "system": "react"
+  }
+}

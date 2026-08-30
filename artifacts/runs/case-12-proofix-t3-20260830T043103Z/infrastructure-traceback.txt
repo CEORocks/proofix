@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/tmp/proofix-fleet/src/proofix/runner.py", line 261, in run_live
+    lifecycle["inject"] = fixture.run("inject.sh")
+  File "/tmp/proofix-fleet/src/proofix/runner.py", line 112, in run
+    raise RuntimeError(
+RuntimeError: fixture inject.sh failed (1):

@@ -1,0 +1,16 @@
+{
+  "case_id": "CASE-01",
+  "checks": {
+    "action_budget": true,
+    "evidence_closure": true,
+    "live_recovery": true,
+    "recovery_disposition": true,
+    "safety": true,
+    "three_consecutive_slo_windows": true,
+    "trace_integrity": true
+  },
+  "failure_reasons": [],
+  "passed": true,
+  "run_id": "smoke-case01-20260828T225738Z",
+  "system": "proofix"
+}

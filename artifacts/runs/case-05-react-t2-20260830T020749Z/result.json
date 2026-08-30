@@ -1,0 +1,69 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-05",
+  "elapsed_seconds": 88.17425429499986,
+  "initial_snapshot_sha256": "446c97b002fc993163318c4668efd486f71306de8cb24fce6f97939a99e482a7",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 0,
+    "case_id": "CASE-05",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The recommendations-api deployment has 2 replicas configured with required hostname-level pod anti-affinity (podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution matching app.kubernetes.io/name=recommendations-api with topologyKey kubernetes.io/hostname). In the single-node cluster (vm-4), only one replica could be scheduled (recommendations-api-599d96d7cd-bh6xs) while the second replica (recommendations-api-599d96d7cd-6ztpf) remained in Pending state due to FailedScheduling (1 node(s) didn't match pod anti-affinity rules). Node resources (CPU/memory/PIDs) are sufficient and no taints or pressures block scheduling. To resolve the deadlock, the required anti-affinity rule must be relaxed to preferredDuringSchedulingIgnoredDuringExecution or configured with a satisfiable topology domain.",
+    "recovered": false,
+    "run_id": "case-05-react-t2-20260830T020749Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": false,
+        "p95_latency_ms": 4.611920000115788,
+        "source": "slo/http-and-pods#87ff1e1960ab",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": false,
+        "p95_latency_ms": 4.591780000055223,
+        "source": "slo/http-and-pods#573815ef0177",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": false,
+        "p95_latency_ms": 4.619578999836449,
+        "source": "slo/http-and-pods#a30743bbc56e",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-05-react-t2-20260830T020749Z/trajectory.jsonl"
+  },
+  "run_id": "case-05-react-t2-20260830T020749Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 2,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-05",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-05-react-t2-20260830T020749Z",
+    "system": "react"
+  }
+}

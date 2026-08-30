@@ -1,0 +1,13 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-14",
+  "elapsed_seconds": 78.92389414389618,
+  "infrastructure_error": "RuntimeError: Failed to execute Antigravity binary 'agy': [Errno 2] No such file or directory: 'agy'",
+  "infrastructure_traceback": "Traceback (most recent call last):\n  File \"/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/src/proofix/backends.py\", line 351, in respond\n    completed = subprocess.run(\n  File \"/usr/lib/python3.10/subprocess.py\", line 503, in run\n    with Popen(*popenargs, **kwargs) as process:\n  File \"/usr/lib/python3.10/subprocess.py\", line 971, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.10/subprocess.py\", line 1863, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'agy'\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/src/proofix/runner.py\", line 309, in run_live\n    outcome = ProofFixWorkflow(\n  File \"/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/src/proofix/workflow.py\", line 66, in run\n    scope = dict(self.backend.respond(\"scope\", {\"incident\": dict(incident)}))\n  File \"/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/src/proofix/backends.py\", line 365, in respond\n    raise RuntimeError(\nRuntimeError: Failed to execute Antigravity binary 'agy': [Errno 2] No such file or directory: 'agy'\n",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-14-proofix-t2-20260830T030047Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 2,
+  "valid": false
+}

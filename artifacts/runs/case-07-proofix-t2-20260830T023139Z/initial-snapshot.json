@@ -1,0 +1,2409 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "proofix.io/profile": "injected-xmx512m-under-256mi"
+            },
+            "creationTimestamp": "2026-08-30T02:31:46Z",
+            "generateName": "pricing-api-b7c588f79-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "pricing-api",
+              "pod-template-hash": "b7c588f79",
+              "proofix.io/case": "CASE-07"
+            },
+            "name": "pricing-api-b7c588f79-6jfp7",
+            "namespace": "proofix-case-07",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "pricing-api-b7c588f79"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "args": [
+                  "-Xms32m",
+                  "-Xmx512m",
+                  "-XX:MaxMetaspaceSize=64m",
+                  "-XX:ReservedCodeCacheSize=32m",
+                  "-XX:+ExitOnOutOfMemoryError",
+                  "/app/PricingServer.java"
+                ],
+                "command": [
+                  "java"
+                ],
+                "image": "eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 10,
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "pricing-api",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 15,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "128Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "source",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-9qc5p",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "vm-4",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 5,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "pricing-api-source"
+                },
+                "name": "source"
+              },
+              {
+                "emptyDir": {
+                  "sizeLimit": "128Mi"
+                },
+                "name": "tmp"
+              },
+              {
+                "name": "kube-api-access-9qc5p",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "50m",
+              "memory": "128Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T02:31:47Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T02:31:46Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T02:31:55Z",
+                "message": "containers with unready status: [pricing-api]",
+                "observedGeneration": 1,
+                "reason": "ContainersNotReady",
+                "status": "False",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T02:31:55Z",
+                "message": "containers with unready status: [pricing-api]",
+                "observedGeneration": 1,
+                "reason": "ContainersNotReady",
+                "status": "False",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T02:31:46Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "50m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://a69a62540676ebbfb903a891c15f153a49282763890c5f55665b3f86a1fa800b",
+                "image": "sha256:d917205ca8b1eee432ed6e60f1fbd74a41600559b406c7d201c75dce2f18efe1",
+                "imageID": "docker.io/library/eclipse-temurin@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://a69a62540676ebbfb903a891c15f153a49282763890c5f55665b3f86a1fa800b",
+                    "exitCode": 137,
+                    "finishedAt": "2026-08-30T02:31:55Z",
+                    "reason": "OOMKilled",
+                    "startedAt": "2026-08-30T02:31:51Z"
+                  }
+                },
+                "name": "pricing-api",
+                "ready": false,
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 1,
+                "started": false,
+                "state": {
+                  "waiting": {
+                    "message": "back-off 10s restarting failed container=pricing-api pod=pricing-api-b7c588f79-6jfp7_proofix-case-07(63b59a94-d5c7-4770-adc4-9525b5d8c31d)",
+                    "reason": "CrashLoopBackOff"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "source",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-9qc5p",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.5",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.5"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.113",
+            "podIPs": [
+              {
+                "ip": "10.42.0.113"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "28m",
+                "memory": "128Mi"
+              }
+            },
+            "startTime": "2026-08-30T02:31:46Z"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#8c155ba7e339"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "26"
+            },
+            "creationTimestamp": "2026-08-28T22:55:27Z",
+            "generation": 26,
+            "labels": {
+              "app.kubernetes.io/name": "pricing-api",
+              "proofix.io/case": "CASE-07"
+            },
+            "name": "pricing-api",
+            "namespace": "proofix-case-07"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "pricing-api"
+              }
+            },
+            "strategy": {
+              "type": "Recreate"
+            },
+            "template": {
+              "metadata": {
+                "annotations": {
+                  "proofix.io/profile": "injected-xmx512m-under-256mi"
+                },
+                "labels": {
+                  "app.kubernetes.io/name": "pricing-api",
+                  "proofix.io/case": "CASE-07"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "args": [
+                      "-Xms32m",
+                      "-Xmx512m",
+                      "-XX:MaxMetaspaceSize=64m",
+                      "-XX:ReservedCodeCacheSize=32m",
+                      "-XX:+ExitOnOutOfMemoryError",
+                      "/app/PricingServer.java"
+                    ],
+                    "command": [
+                      "java"
+                    ],
+                    "image": "eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "initialDelaySeconds": 10,
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "name": "pricing-api",
+                    "ports": [
+                      {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 15,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 2,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "1",
+                        "memory": "256Mi"
+                      },
+                      "requests": {
+                        "cpu": "50m",
+                        "memory": "128Mi"
+                      }
+                    },
+                    "securityContext": {
+                      "allowPrivilegeEscalation": false,
+                      "capabilities": {
+                        "drop": [
+                          "ALL"
+                        ]
+                      },
+                      "readOnlyRootFilesystem": true,
+                      "runAsNonRoot": true,
+                      "runAsUser": 10001
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/app",
+                        "name": "source",
+                        "readOnly": true
+                      },
+                      {
+                        "mountPath": "/tmp",
+                        "name": "tmp"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 5,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "pricing-api-source"
+                    },
+                    "name": "source"
+                  },
+                  {
+                    "emptyDir": {
+                      "sizeLimit": "128Mi"
+                    },
+                    "name": "tmp"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-28T22:55:27Z",
+                "lastUpdateTime": "2026-08-29T00:40:23Z",
+                "message": "ReplicaSet \"pricing-api-7fc9fcf496\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              },
+              {
+                "lastTransitionTime": "2026-08-30T02:31:55Z",
+                "lastUpdateTime": "2026-08-30T02:31:55Z",
+                "message": "Deployment does not have minimum availability.",
+                "reason": "MinimumReplicasUnavailable",
+                "status": "False",
+                "type": "Available"
+              }
+            ],
+            "observedGeneration": 26,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "unavailableReplicas": 1,
+            "updatedReplicas": 1
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#64a326ad577e"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-28T22:55:27Z",
+            "labels": {
+              "proofix.io/case": "CASE-07"
+            },
+            "name": "pricing-api",
+            "namespace": "proofix-case-07"
+          },
+          "spec": {
+            "clusterIP": "10.43.15.11",
+            "clusterIPs": [
+              "10.43.15.11"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "http",
+                "nodePort": 30077,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": "http"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "pricing-api"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#1c663a5e7838"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-30T02:31:55Z"
+            },
+            "creationTimestamp": "2026-08-28T22:55:27Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+              "proofix.io/case": "CASE-07"
+            },
+            "name": "pricing-api",
+            "namespace": "proofix-case-07"
+          },
+          "subsets": [
+            {
+              "notReadyAddresses": [
+                {
+                  "ip": "10.42.0.113",
+                  "nodeName": "vm-4",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "pricing-api-b7c588f79-6jfp7",
+                    "namespace": "proofix-case-07"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "http",
+                  "port": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#483d9e2496d8"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdjCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODc5NTcwODIwHhcNMjYwODI4MjE0NDQyWhcNMzYwODI1MjE0NDQy\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODc5NTcwODIwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAAQaabUxaANfZMaCH32YEj+RReQ6iKcqD8GXp3GevYlW\n9na6qPvR4OiiajovUDKvONU2pSu7DPVZuuAnZn+cxJvWo0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUFogYoJHwIjmwfL826bsh\n8O7tqpIwCgYIKoZIzj0EAwIDRwAwRAIgP8hQperT/9sMRRbSYCWC0nDqCICYasMz\nero42g0j4wQCIGGCaMgMDItsUBeirdT4eOaboq/lFR6611rTiUb4lE6W\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-28T22:55:27Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-07"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "PricingServer.java": "import com.sun.net.httpserver.HttpExchange;\nimport com.sun.net.httpserver.HttpServer;\nimport java.io.IOException;\nimport java.net.InetSocketAddress;\nimport java.nio.charset.StandardCharsets;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.concurrent.Executors;\nimport java.util.concurrent.atomic.AtomicLong;\n\npublic final class PricingServer {\n    private static final int CHUNK_MIB = 8;\n    private static final double RETAIN_FRACTION = 0.70;\n    private static final List<byte[]> CACHE = new ArrayList<>();\n    private static final AtomicLong REQUESTS = new AtomicLong();\n\n    private PricingServer() {}\n\n    private static void reply(HttpExchange exchange, int status, String body)\n            throws IOException {\n        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);\n        exchange.getResponseHeaders().set(\"Content-Type\", \"application/json\");\n        exchange.getResponseHeaders().set(\"Cache-Control\", \"no-store\");\n        exchange.sendResponseHeaders(status, bytes.length);\n        exchange.getResponseBody().write(bytes);\n        exchange.close();\n    }\n\n    private static synchronized long retainOneChunk() {\n        long maximum = Runtime.getRuntime().maxMemory();\n        long target = (long) (maximum * RETAIN_FRACTION);\n        long retained = (long) CACHE.size() * CHUNK_MIB * 1024L * 1024L;\n        if (retained < target) {\n            byte[] chunk = new byte[CHUNK_MIB * 1024 * 1024];\n            for (int offset = 0; offset < chunk.length; offset += 4096) {\n                chunk[offset] = 1; // Fault every page into RSS; do not rely on lazy allocation.\n            }\n            CACHE.add(chunk);\n            retained += chunk.length;\n        }\n        return retained;\n    }\n\n    private static void price(HttpExchange exchange) throws IOException {\n        long retained = retainOneChunk();\n        long request = REQUESTS.incrementAndGet();\n        reply(exchange, 200, \"{\\\"request\\\":\" + request\n                + \",\\\"price_cents\\\":1299,\\\"retained_bytes\\\":\" + retained + \"}\\n\");\n    }\n\n    private static void diagnostics(HttpExchange exchange) throws IOException {\n        Runtime runtime = Runtime.getRuntime();\n        long retained = (long) CACHE.size() * CHUNK_MIB * 1024L * 1024L;\n        reply(exchange, 200, \"{\\\"max_heap_bytes\\\":\" + runtime.maxMemory()\n                + \",\\\"used_heap_bytes\\\":\" + (runtime.totalMemory() - runtime.freeMemory())\n                + \",\\\"retained_bytes\\\":\" + retained\n                + \",\\\"requests\\\":\" + REQUESTS.get() + \"}\\n\");\n    }\n\n    public static void main(String[] args) throws Exception {\n        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);\n        server.createContext(\"/healthz\", exchange -> reply(exchange, 200, \"{\\\"ok\\\":true}\\n\"));\n        server.createContext(\"/price\", PricingServer::price);\n        server.createContext(\"/diagnostics\", PricingServer::diagnostics);\n        server.setExecutor(Executors.newFixedThreadPool(4));\n        server.start();\n        System.out.println(\"pricing-api listening on :8080; maxHeap=\"\n                + Runtime.getRuntime().maxMemory());\n    }\n}\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-28T22:55:27Z",
+            "name": "pricing-api-source",
+            "namespace": "proofix-case-07"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#aca0c341bf28"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-28T22:55:27Z",
+            "name": "default",
+            "namespace": "proofix-case-07"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#fa0695e00738"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-qnrcm",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:47Z",
+          "message": "Stopping container pricing-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:47Z",
+            "name": "pricing-api-b7c588f79-qnrcm.18d0745b46835737",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:47Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-b7c588f79",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:47Z",
+          "message": "Deleted pod: pricing-api-b7c588f79-qnrcm",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:47Z",
+            "name": "pricing-api-b7c588f79.18d0745b465dc52b",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T02:29:48.036244Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-qcdql",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-07/pricing-api-6f486fb95f-qcdql to vm-4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:48Z",
+            "name": "pricing-api-6f486fb95f-qcdql.18d0745b6a0e3006",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-4",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:48Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-qcdql",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:48Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:48Z",
+            "name": "pricing-api-6f486fb95f-qcdql.18d0745b88cdae59",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:48Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-qcdql",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:48Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:48Z",
+            "name": "pricing-api-6f486fb95f-qcdql.18d0745b8a5cb96b",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:48Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-qcdql",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:48Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:48Z",
+            "name": "pricing-api-6f486fb95f-qcdql.18d0745b8e60ee9e",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:48Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-qcdql",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:49Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.108:8080/healthz\": dial tcp 10.42.0.108:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:48Z",
+            "name": "pricing-api-6f486fb95f-qcdql.18d0745b8e97e46c",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:48Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:48Z",
+          "message": "Created pod: pricing-api-6f486fb95f-qcdql",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:48Z",
+            "name": "pricing-api-6f486fb95f.18d0745b697c9fd8",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T02:29:52.582046Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-g442b",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-07/pricing-api-6f486fb95f-g442b to vm-4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:52Z",
+            "name": "pricing-api-6f486fb95f-g442b.18d0745c7901adba",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-4",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:52Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-qcdql",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:52Z",
+          "message": "Stopping container pricing-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:52Z",
+            "name": "pricing-api-6f486fb95f-qcdql.18d0745c6a531422",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:52Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:52Z",
+          "message": "Deleted pod: pricing-api-6f486fb95f-qcdql",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:52Z",
+            "name": "pricing-api-6f486fb95f.18d0745c6a497ad4",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:52Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:52Z",
+          "message": "Created pod: pricing-api-6f486fb95f-g442b",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:52Z",
+            "name": "pricing-api-6f486fb95f.18d0745c78c65198",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:53Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-g442b",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:53Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:53Z",
+            "name": "pricing-api-6f486fb95f-g442b.18d0745c9aa1c45d",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:53Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-g442b",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:53Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:53Z",
+            "name": "pricing-api-6f486fb95f-g442b.18d0745c9c7118d1",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:53Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-g442b",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:53Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:53Z",
+            "name": "pricing-api-6f486fb95f-g442b.18d0745ca0e62407",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:53Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-g442b",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:54Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.109:8080/healthz\": dial tcp 10.42.0.109:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:53Z",
+            "name": "pricing-api-6f486fb95f-g442b.18d0745ca14cb5eb",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:57Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-g442b",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:57Z",
+          "message": "Stopping container pricing-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:57Z",
+            "name": "pricing-api-6f486fb95f-g442b.18d0745d8dea224f",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:57Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:57Z",
+          "message": "Deleted pod: pricing-api-6f486fb95f-g442b",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:57Z",
+            "name": "pricing-api-6f486fb95f.18d0745d8d36129c",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T02:29:57.814593Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-4bkjt",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-07/pricing-api-b7c588f79-4bkjt to vm-4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:57Z",
+            "name": "pricing-api-b7c588f79-4bkjt.18d0745db0e3f6e7",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-4",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:57Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-b7c588f79",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:29:57Z",
+          "message": "Created pod: pricing-api-b7c588f79-4bkjt",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:57Z",
+            "name": "pricing-api-b7c588f79.18d0745db06978c7",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 4,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-4bkjt",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:20Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:58Z",
+            "name": "pricing-api-b7c588f79-4bkjt.18d0745dcfed4ce6",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 4,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-4bkjt",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:20Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:58Z",
+            "name": "pricing-api-b7c588f79-4bkjt.18d0745dd180d030",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 4,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-4bkjt",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:20Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:58Z",
+            "name": "pricing-api-b7c588f79-4bkjt.18d0745dd5503abd",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 9,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:29:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-4bkjt",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:23Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.110:8080/healthz\": dial tcp 10.42.0.110:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:29:58Z",
+            "name": "pricing-api-b7c588f79-4bkjt.18d0745dd5c61ee5",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 8,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:30:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-4bkjt",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:28Z",
+          "message": "Back-off restarting failed container pricing-api in pod pricing-api-b7c588f79-4bkjt_proofix-case-07(5acbda86-bd3c-47f5-9107-17b29ad9971e)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:30:06Z",
+            "name": "pricing-api-b7c588f79-4bkjt.18d0745fa82b0415",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "BackOff",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:33Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-b7c588f79",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:33Z",
+          "message": "Deleted pod: pricing-api-b7c588f79-4bkjt",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:33Z",
+            "name": "pricing-api-b7c588f79.18d0747402aadf4b",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T02:31:34.511218Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-xb2gz",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-07/pricing-api-6f486fb95f-xb2gz to vm-4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:34Z",
+            "name": "pricing-api-6f486fb95f-xb2gz.18d0747434755ea9",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-4",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:34Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:34Z",
+          "message": "Created pod: pricing-api-6f486fb95f-xb2gz",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:34Z",
+            "name": "pricing-api-6f486fb95f.18d0747433fb1500",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:35Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-xb2gz",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:35Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:35Z",
+            "name": "pricing-api-6f486fb95f-xb2gz.18d07474891860d4",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:35Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-xb2gz",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:35Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:35Z",
+            "name": "pricing-api-6f486fb95f-xb2gz.18d074748abeba8b",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:36Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-xb2gz",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:36Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:36Z",
+            "name": "pricing-api-6f486fb95f-xb2gz.18d074748ec92884",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:36Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-xb2gz",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:36Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.111:8080/healthz\": dial tcp 10.42.0.111:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:36Z",
+            "name": "pricing-api-6f486fb95f-xb2gz.18d074748f0757da",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T02:31:40.674609Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-m4wnv",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-07/pricing-api-6f486fb95f-m4wnv to vm-4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:40Z",
+            "name": "pricing-api-6f486fb95f-m4wnv.18d07475a3d340bc",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-4",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-xb2gz",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:40Z",
+          "message": "Stopping container pricing-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:40Z",
+            "name": "pricing-api-6f486fb95f-xb2gz.18d07475921bafd4",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-xb2gz",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:40Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.111:8080/healthz\": read tcp 10.42.0.1:46454->10.42.0.111:8080: read: connection reset by peer",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:40Z",
+            "name": "pricing-api-6f486fb95f-xb2gz.18d074759a9552c1",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:40Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:40Z",
+          "message": "Deleted pod: pricing-api-6f486fb95f-xb2gz",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:40Z",
+            "name": "pricing-api-6f486fb95f.18d0747591ecc3f4",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:40Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:40Z",
+          "message": "Created pod: pricing-api-6f486fb95f-m4wnv",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:40Z",
+            "name": "pricing-api-6f486fb95f.18d07475a3188485",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-m4wnv",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:41Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:41Z",
+            "name": "pricing-api-6f486fb95f-m4wnv.18d07475c2535d35",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-m4wnv",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:41Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:41Z",
+            "name": "pricing-api-6f486fb95f-m4wnv.18d07475c3ce85ee",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-m4wnv",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:41Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:41Z",
+            "name": "pricing-api-6f486fb95f-m4wnv.18d07475c7912279",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-m4wnv",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:41Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.112:8080/healthz\": dial tcp 10.42.0.112:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:41Z",
+            "name": "pricing-api-6f486fb95f-m4wnv.18d07475c7e61261",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:46Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-6f486fb95f-m4wnv",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:46Z",
+          "message": "Stopping container pricing-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:46Z",
+            "name": "pricing-api-6f486fb95f-m4wnv.18d07476edbea029",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:46Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-6f486fb95f",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:46Z",
+          "message": "Deleted pod: pricing-api-6f486fb95f-m4wnv",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:46Z",
+            "name": "pricing-api-6f486fb95f.18d07476ed9a0a89",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T02:31:46.815395Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-6jfp7",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-07/pricing-api-b7c588f79-6jfp7 to vm-4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:46Z",
+            "name": "pricing-api-b7c588f79-6jfp7.18d0747711d83a4a",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-4",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:46Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "pricing-api-b7c588f79",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:46Z",
+          "message": "Created pod: pricing-api-b7c588f79-6jfp7",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:46Z",
+            "name": "pricing-api-b7c588f79.18d0747711a97d2c",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-6jfp7",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:51Z",
+          "message": "Container image \"eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:47Z",
+            "name": "pricing-api-b7c588f79-6jfp7.18d0747730a1c277",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-6jfp7",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:51Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:47Z",
+            "name": "pricing-api-b7c588f79-6jfp7.18d07477320a89fe",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-6jfp7",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:51Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:47Z",
+            "name": "pricing-api-b7c588f79-6jfp7.18d0747735f71c69",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-6jfp7",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:52Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.113:8080/healthz\": dial tcp 10.42.0.113:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:47Z",
+            "name": "pricing-api-b7c588f79-6jfp7.18d0747736469bf8",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 3,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T02:31:55Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{pricing-api}",
+            "kind": "Pod",
+            "name": "pricing-api-b7c588f79-6jfp7",
+            "namespace": "proofix-case-07"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T02:31:57Z",
+          "message": "Back-off restarting failed container pricing-api in pod pricing-api-b7c588f79-6jfp7_proofix-case-07(63b59a94-d5c7-4770-adc4-9525b5d8c31d)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T02:31:55Z",
+            "name": "pricing-api-b7c588f79-6jfp7.18d074791b3e8163",
+            "namespace": "proofix-case-07"
+          },
+          "reason": "BackOff",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-4",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-4"
+          },
+          "type": "Warning"
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "proofixOriginalItemCount": 95
+      }
+    },
+    "source": "kubectl/get/events#c01c7c552220"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "10.128.0.5",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"ea:a6:56:e1:eb:61\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "10.128.0.5",
+              "k3s.io/hostname": "vm-4",
+              "k3s.io/internal-ip": "10.128.0.5",
+              "k3s.io/node-args": "[\"server\",\"--disable\",\"traefik\",\"--write-kubeconfig-mode\",\"644\"]",
+              "k3s.io/node-config-hash": "Y735WCEK5OA7WRV7XHI7EBVBQNG2C7ABWJO2R25H2YIAEAJQVALA====",
+              "k3s.io/node-env": "{}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-28T22:44:50Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "vm-4",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s"
+            },
+            "name": "vm-4"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://vm-4"
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "10.128.0.5",
+                "type": "InternalIP"
+              },
+              {
+                "address": "vm-4",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "4",
+              "ephemeral-storage": "49243346087",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "4",
+              "ephemeral-storage": "50620216Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-30T02:27:10Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T02:27:10Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T02:27:10Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T02:27:10Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "docker.io/library/eclipse-temurin@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a"
+                ],
+                "sizeBytes": 196246833
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc"
+                ],
+                "sizeBytes": 20824433
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/library/busybox@sha256:b7f3d86d6e84fc17718c48bcde1450807faa2d56704205c697b4bd5df7b9e29f"
+                ],
+                "sizeBytes": 2207471
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "0842b053-a4d8-4644-99d7-706232c1c669",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-1066-gcp",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "0bb3bc6bebb4c96098b2214a00049d3a",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 22.04.5 LTS",
+              "swap": {
+                "capacity": 8383578112
+              },
+              "systemUUID": "0bb3bc6b-ebb4-c960-98b2-214a00049d3a"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#df9c8468c1fb"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

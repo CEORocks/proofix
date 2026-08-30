@@ -1,0 +1,48 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 96.71130827406887,
+  "initial_snapshot_sha256": "b0e44afcc7dbfe8e294bca08880a41230e73b9681c3c4aae636d06a3caaa548b",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 0,
+    "case_id": "CASE-02",
+    "disposition": "failed",
+    "evidence_closed": false,
+    "reason": "plan rejected: reversible action is missing a rollback specification",
+    "recovered": false,
+    "run_id": "case-02-proofix-t1-20260829T133857Z",
+    "safe": true,
+    "slo_samples": [],
+    "system": "proofix",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-02-proofix-t1-20260829T133857Z/trajectory.jsonl"
+  },
+  "run_id": "case-02-proofix-t1-20260829T133857Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-02",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-02-proofix-t1-20260829T133857Z",
+    "system": "proofix"
+  }
+}

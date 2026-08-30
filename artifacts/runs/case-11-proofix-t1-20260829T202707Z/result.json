@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-11",
+  "elapsed_seconds": 254.34027753595728,
+  "infrastructure_error": "RuntimeError: fixture install.sh failed (1): error: timed out waiting for the condition",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-11-proofix-t1-20260829T202707Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

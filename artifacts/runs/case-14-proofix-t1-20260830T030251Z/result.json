@@ -1,0 +1,13 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-14",
+  "elapsed_seconds": 0.03208935202565044,
+  "infrastructure_error": "RuntimeError: fixture install.sh failed (2): kubectl is required",
+  "infrastructure_traceback": "Traceback (most recent call last):\n  File \"/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/src/proofix/runner.py\", line 259, in run_live\n    lifecycle[\"install\"] = fixture.run(\"install.sh\")\n  File \"/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/src/proofix/runner.py\", line 112, in run\n    raise RuntimeError(\nRuntimeError: fixture install.sh failed (2): kubectl is required\n",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-14-proofix-t1-20260830T030251Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

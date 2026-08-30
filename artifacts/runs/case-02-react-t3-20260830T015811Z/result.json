@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 34.719545384985395,
+  "infrastructure_error": "JSONDecodeError: Expecting property name enclosed in double quotes: line 5120 column 4 (char 200000)",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-02-react-t3-20260830T015811Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": false
+}

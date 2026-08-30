@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from proofix.backends import AntigravityBackend, schema_for
+from proofix.backends import AntigravityBackend, _prompt, schema_for
 
 
 def _fake_agy(tmp_path: Path) -> Path:
@@ -19,6 +19,8 @@ import os
 import sys
 
 mode = os.environ.get("FAKE_AGY_MODE", "success")
+if os.environ.get("FAKE_AGY_MALFORMED_PREFIX"):
+    print('{{"event":"user","message":"truncated')
 if mode == "exit":
     print("worker failed", file=sys.stderr)
     raise SystemExit(7)
@@ -58,7 +60,12 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-Path({str(log)!r}).write_text(json.dumps(sys.argv[1:]), encoding="utf-8")
+args = sys.argv[1:]
+schema_arg = args[args.index("--json-schema") + 1]
+schema = json.loads(Path(schema_arg).read_text(encoding="utf-8"))
+Path({str(log)!r}).write_text(
+    json.dumps({{"argv": args, "schema": schema}}), encoding="utf-8"
+)
 raise SystemExit(subprocess.run([{str(executable)!r}, *sys.argv[1:]]).returncode)
 """,
         encoding="utf-8",
@@ -70,14 +77,38 @@ raise SystemExit(subprocess.run([{str(executable)!r}, *sys.argv[1:]]).returncode
     )
 
     assert result["namespace"] == "bench"
-    argv = json.loads(log.read_text(encoding="utf-8"))
+    invocation = json.loads(log.read_text(encoding="utf-8"))
+    argv = invocation["argv"]
     assert argv[argv.index("--model") + 1] == "gemini-3.7-flash-medium"
     assert "--sandbox" in argv
     assert "--dangerously-skip-permissions" not in argv
     assert argv[argv.index("--input-format") + 1] == "stream-json"
     assert argv[argv.index("--output-format") + 1] == "stream-json"
     assert "--print" not in argv
-    assert json.loads(argv[argv.index("--json-schema") + 1]) == schema_for("scope")
+    assert invocation["schema"] == schema_for("scope")
+
+
+def test_large_context_is_bounded_and_hash_marked() -> None:
+    prompt = _prompt(
+        "react",
+        {"observations": [{"source": f"source-{i}", "data": "x" * 20_000} for i in range(100)]},
+    )
+
+    assert len(prompt) < 400_000
+    assert "_proofix_context_compaction" in prompt
+    assert "full_evidence_preserved_in_trajectory" in prompt
+
+
+def test_antigravity_ignores_truncated_intermediate_event(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("FAKE_AGY_MALFORMED_PREFIX", "1")
+
+    result = AntigravityBackend(agy_binary=str(_fake_agy(tmp_path))).respond(
+        "scope", {"case": "truncated-echo"}
+    )
+
+    assert result["namespace"] == "bench"
 
 
 @pytest.mark.parametrize(

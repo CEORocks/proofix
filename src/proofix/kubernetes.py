@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import http.client
 import json
 import math
 import shlex
@@ -28,7 +29,9 @@ class KubernetesConfig:
     probe_requests: int = 30
     probe_timeout_seconds: float = 2.0
     window_seconds: int = 10
-    command_timeout_seconds: int = 30
+    # Mutating operations deliberately wait up to 180 seconds for rollouts.
+    # Keep the subprocess envelope above that Kubernetes-side deadline.
+    command_timeout_seconds: int = 240
     command_prefix: tuple[str, ...] = ()
 
 
@@ -496,7 +499,7 @@ class KubernetesEnvironment:
                 status = int(response.status)
         except urllib.error.HTTPError as exc:
             status = int(exc.code)
-        except (urllib.error.URLError, TimeoutError):
+        except (urllib.error.URLError, http.client.HTTPException, OSError):
             status = 0
         return status, (time.monotonic() - started) * 1000.0
 

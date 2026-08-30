@@ -1,0 +1,1142 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "generateName": "inventory-controller-d468c8cfc-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "inventory-controller",
+              "pod-template-hash": "d468c8cfc",
+              "proofix.io/case": "CASE-09"
+            },
+            "name": "inventory-controller-d468c8cfc-4m574",
+            "namespace": "proofix-case-09",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "inventory-controller-d468c8cfc"
+              }
+            ]
+          },
+          "spec": {
+            "automountServiceAccountToken": true,
+            "containers": [
+              {
+                "args": [
+                  "-Xms32m",
+                  "-Xmx128m",
+                  "/app/InventoryServer.java"
+                ],
+                "command": [
+                  "java"
+                ],
+                "image": "eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 5,
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "inventory-controller",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 15,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "96Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "source",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-l247c",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "node1",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "inventory-controller",
+            "serviceAccountName": "inventory-controller",
+            "terminationGracePeriodSeconds": 5,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "inventory-controller-source"
+                },
+                "name": "source"
+              },
+              {
+                "emptyDir": {
+                  "sizeLimit": "64Mi"
+                },
+                "name": "tmp"
+              },
+              {
+                "name": "kube-api-access-l247c",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "50m",
+              "memory": "96Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T00:55:28Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T00:55:28Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T00:55:46Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T00:55:46Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T00:55:28Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "50m",
+                  "memory": "96Mi"
+                },
+                "containerID": "containerd://b4c89fa7d4ea062e848af47344db2d3f63dbff44df55bf925195a9b8b995d3e1",
+                "image": "sha256:d917205ca8b1eee432ed6e60f1fbd74a41600559b406c7d201c75dce2f18efe1",
+                "imageID": "docker.io/library/eclipse-temurin@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                "lastState": {},
+                "name": "inventory-controller",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "500m",
+                    "memory": "256Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "96Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-29T00:55:38Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "source",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/tmp",
+                    "name": "tmp"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-l247c",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "144.202.3.93",
+            "hostIPs": [
+              {
+                "ip": "144.202.3.93"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.12",
+            "podIPs": [
+              {
+                "ip": "10.42.0.12"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "28m",
+                "memory": "96Mi"
+              }
+            },
+            "startTime": "2026-08-29T00:55:28Z"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#805096a2ee5c"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "1"
+            },
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "inventory-controller",
+              "proofix.io/case": "CASE-09"
+            },
+            "name": "inventory-controller",
+            "namespace": "proofix-case-09"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "inventory-controller"
+              }
+            },
+            "strategy": {
+              "rollingUpdate": {
+                "maxSurge": "25%",
+                "maxUnavailable": "25%"
+              },
+              "type": "RollingUpdate"
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/name": "inventory-controller",
+                  "proofix.io/case": "CASE-09"
+                }
+              },
+              "spec": {
+                "automountServiceAccountToken": true,
+                "containers": [
+                  {
+                    "args": [
+                      "-Xms32m",
+                      "-Xmx128m",
+                      "/app/InventoryServer.java"
+                    ],
+                    "command": [
+                      "java"
+                    ],
+                    "image": "eclipse-temurin:17-jdk-jammy@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "initialDelaySeconds": 5,
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "name": "inventory-controller",
+                    "ports": [
+                      {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 15,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 2,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "500m",
+                        "memory": "256Mi"
+                      },
+                      "requests": {
+                        "cpu": "50m",
+                        "memory": "96Mi"
+                      }
+                    },
+                    "securityContext": {
+                      "allowPrivilegeEscalation": false,
+                      "capabilities": {
+                        "drop": [
+                          "ALL"
+                        ]
+                      },
+                      "readOnlyRootFilesystem": true,
+                      "runAsNonRoot": true,
+                      "runAsUser": 10001
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/app",
+                        "name": "source",
+                        "readOnly": true
+                      },
+                      {
+                        "mountPath": "/tmp",
+                        "name": "tmp"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "serviceAccount": "inventory-controller",
+                "serviceAccountName": "inventory-controller",
+                "terminationGracePeriodSeconds": 5,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "inventory-controller-source"
+                    },
+                    "name": "source"
+                  },
+                  {
+                    "emptyDir": {
+                      "sizeLimit": "64Mi"
+                    },
+                    "name": "tmp"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-29T00:55:46Z",
+                "lastUpdateTime": "2026-08-29T00:55:46Z",
+                "message": "Deployment has minimum availability.",
+                "reason": "MinimumReplicasAvailable",
+                "status": "True",
+                "type": "Available"
+              },
+              {
+                "lastTransitionTime": "2026-08-29T00:55:28Z",
+                "lastUpdateTime": "2026-08-29T00:55:46Z",
+                "message": "ReplicaSet \"inventory-controller-d468c8cfc\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              }
+            ],
+            "observedGeneration": 1,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "updatedReplicas": 1
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#a10bcca2e933"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "labels": {
+              "proofix.io/case": "CASE-09"
+            },
+            "name": "inventory-controller",
+            "namespace": "proofix-case-09"
+          },
+          "spec": {
+            "clusterIP": "10.43.183.12",
+            "clusterIPs": [
+              "10.43.183.12"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "http",
+                "nodePort": 30079,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": "http"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "inventory-controller"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#dc8e99797e36"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-29T00:55:46Z"
+            },
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+              "proofix.io/case": "CASE-09"
+            },
+            "name": "inventory-controller",
+            "namespace": "proofix-case-09"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "ip": "10.42.0.12",
+                  "nodeName": "node1",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "inventory-controller-d468c8cfc-4m574",
+                    "namespace": "proofix-case-09"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "http",
+                  "port": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#9a280cab23fb"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "InventoryServer.java": "import com.sun.net.httpserver.HttpExchange;\nimport com.sun.net.httpserver.HttpServer;\nimport java.io.IOException;\nimport java.io.InputStream;\nimport java.net.InetSocketAddress;\nimport java.net.URI;\nimport java.net.http.HttpClient;\nimport java.net.http.HttpRequest;\nimport java.net.http.HttpResponse;\nimport java.nio.charset.StandardCharsets;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.security.KeyStore;\nimport java.security.cert.Certificate;\nimport java.security.cert.CertificateFactory;\nimport java.time.Duration;\nimport java.util.concurrent.Executors;\nimport javax.net.ssl.SSLContext;\nimport javax.net.ssl.TrustManagerFactory;\n\npublic final class InventoryServer {\n    private static final Path TOKEN = Path.of(\n            \"/var/run/secrets/kubernetes.io/serviceaccount/token\");\n    private static final Path CA = Path.of(\n            \"/var/run/secrets/kubernetes.io/serviceaccount/ca.crt\");\n    private static HttpClient client;\n    private static URI settingsUri;\n\n    private InventoryServer() {}\n\n    private static SSLContext serviceAccountTls() throws Exception {\n        CertificateFactory factory = CertificateFactory.getInstance(\"X.509\");\n        Certificate certificate;\n        try (InputStream input = Files.newInputStream(CA)) {\n            certificate = factory.generateCertificate(input);\n        }\n        KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());\n        store.load(null);\n        store.setCertificateEntry(\"kubernetes-service-account-ca\", certificate);\n        TrustManagerFactory managers = TrustManagerFactory.getInstance(\n                TrustManagerFactory.getDefaultAlgorithm());\n        managers.init(store);\n        SSLContext context = SSLContext.getInstance(\"TLS\");\n        context.init(null, managers.getTrustManagers(), null);\n        return context;\n    }\n\n    private static void reply(HttpExchange exchange, int status, String body)\n            throws IOException {\n        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);\n        exchange.getResponseHeaders().set(\"Content-Type\", \"application/json\");\n        exchange.getResponseHeaders().set(\"Cache-Control\", \"no-store\");\n        exchange.sendResponseHeaders(status, bytes.length);\n        exchange.getResponseBody().write(bytes);\n        exchange.close();\n    }\n\n    private static void inventory(HttpExchange exchange) throws IOException {\n        try {\n            String token = Files.readString(TOKEN, StandardCharsets.UTF_8).trim();\n            HttpRequest request = HttpRequest.newBuilder(settingsUri)\n                    .timeout(Duration.ofSeconds(2))\n                    .header(\"Authorization\", \"Bearer \" + token)\n                    .header(\"Accept\", \"application/json\")\n                    .GET().build();\n            HttpResponse<Void> response = client.send(\n                    request, HttpResponse.BodyHandlers.discarding());\n            if (response.statusCode() == 200) {\n                reply(exchange, 200, \"{\\\"ok\\\":true,\\\"reconciled\\\":true}\\n\");\n            } else {\n                reply(exchange, 503, \"{\\\"ok\\\":false,\\\"kubernetes_status\\\":\"\n                        + response.statusCode() + \"}\\n\");\n            }\n        } catch (InterruptedException interrupted) {\n            Thread.currentThread().interrupt();\n            reply(exchange, 503, \"{\\\"ok\\\":false,\\\"error\\\":\\\"interrupted\\\"}\\n\");\n        } catch (Exception error) {\n            reply(exchange, 503, \"{\\\"ok\\\":false,\\\"error\\\":\\\"api_request_failed\\\"}\\n\");\n        }\n    }\n\n    public static void main(String[] args) throws Exception {\n        String host = System.getenv(\"KUBERNETES_SERVICE_HOST\");\n        String port = System.getenv().getOrDefault(\"KUBERNETES_SERVICE_PORT_HTTPS\", \"443\");\n        settingsUri = URI.create(\"https://\" + host + \":\" + port\n                + \"/api/v1/namespaces/proofix-case-09/configmaps/inventory-settings\");\n        client = HttpClient.newBuilder().sslContext(serviceAccountTls())\n                .connectTimeout(Duration.ofSeconds(2)).build();\n        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);\n        server.createContext(\"/healthz\", exchange ->\n                reply(exchange, 200, \"{\\\"ok\\\":true}\\n\"));\n        server.createContext(\"/inventory\", InventoryServer::inventory);\n        server.setExecutor(Executors.newFixedThreadPool(8));\n        server.start();\n        System.out.println(\"inventory-controller listening on :8080\");\n    }\n}\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "name": "inventory-controller-source",
+            "namespace": "proofix-case-09"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "reconciliation_interval_seconds": "30",
+            "warehouse": "eu-central"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "labels": {
+              "proofix.io/case": "CASE-09"
+            },
+            "name": "inventory-settings",
+            "namespace": "proofix-case-09"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca-crl.pem": ""
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T00:55:27Z",
+            "labels": {
+              "istio.io/config": "true"
+            },
+            "name": "istio-ca-crl",
+            "namespace": "proofix-case-09"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "root-cert.pem": "-----BEGIN CERTIFICATE-----\nMIIC/DCCAeSgAwIBAgIQYghIc8CR+NC78QQfxHNhYjANBgkqhkiG9w0BAQsFADAY\nMRYwFAYDVQQKEw1jbHVzdGVyLmxvY2FsMB4XDTI2MDgyODIyNDYyOVoXDTM2MDgy\nNTIyNDYyOVowGDEWMBQGA1UEChMNY2x1c3Rlci5sb2NhbDCCASIwDQYJKoZIhvcN\nAQEBBQADggEPADCCAQoCggEBAN4Kd52GdQORqJC5EfTC5fBJCGVRVXqPDHSCGySL\nmVq6g6q3c5tM1ZSAtwCWlJBbR0atuwyWzhtvzK2zv8Xiw6hFaN5IvvI6P8CYeGwC\nPNjqaAITQNnXu8s2NZn1OvuZIvfH2TEhdcRdiNGhGmb8GPlphCcgnvAhSh2K7QHs\nR68qNjkP1hrjQ5gKST8CNPSPKH//NFuRuxD/s2GWYsVb32WJ5oXIALjsllBPafwC\nLNwxHv2v67KTgFxfSBBCGtw92jWLAxxfODNryGCkkq4qbldyvFBQQMFDnC58SGt3\ndxCLG4YLkYcKH/7oIOS8wOSJFX+YdMPcSG1V474prc+JR8kCAwEAAaNCMEAwDgYD\nVR0PAQH/BAQDAgIEMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFAIC9zsRi3x0\nI0lrxaZ84jvRH2oVMA0GCSqGSIb3DQEBCwUAA4IBAQC2E70HBIH8tfZdn6RHv5uY\nvVhsNCz1MC6X+4/fJbGZhXsUFgQj79BH/I7qXmr+lI4GpkoDy4NXD18BQoZJIrAQ\nZIalEv+LbYb1d2PYx2UurmP7qUB7qdJxU7l1qaoVPpNwqol9kGVIIXapNijFxOB5\ngflEUKuyC7XMJsjK8hV+QCalX8ViofgIxLWwATCe2FA1joxpqYPZk2fAQkoQoT0U\nl+LXJi/JvK0QLTcwGrzUt/0CtXpLeQgpDiTaLc+O8NjXRhzTzRv3D8Bd7VCgR4Du\nlkYTGdfKnieyhwaAP9F4Xv4i+e9WiJFVKqugvlkMt9upnsYVOuTgt5gCqnXlY9g9\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T00:55:27Z",
+            "labels": {
+              "istio.io/config": "true"
+            },
+            "name": "istio-ca-root-cert",
+            "namespace": "proofix-case-09"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdjCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODc5NTcwNzEwHhcNMjYwODI4MjE0NDMxWhcNMzYwODI1MjE0NDMx\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODc5NTcwNzEwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAAQivTJ+Au7VNNzVHoDf2k85hDWUzfP0r+XOBDtE254A\n+AzFcwRjoJBCem5RjjsfwsSn/Q3hYxZQgOTInMAP95D/o0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUWxESyzpuNGBhOqKCK75k\nsdDnc+MwCgYIKoZIzj0EAwIDRwAwRAIgR1swBetat9YKIGtYxom0qSzTAJFm/uV3\n1zO6z2+DRjoCIHIxVsFbRl8DtzvVe9crt0KGJfcZAbF6GivWMc+9su9v\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-29T00:55:27Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-09"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#1f707f0af85e"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "rbac.authorization.k8s.io/v1",
+          "kind": "Role",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "labels": {
+              "proofix.io/case": "CASE-09",
+              "proofix.io/profile": "injected-rbac-deficit"
+            },
+            "name": "inventory-settings-reader",
+            "namespace": "proofix-case-09"
+          },
+          "rules": [
+            {
+              "apiGroups": [
+                ""
+              ],
+              "resources": [
+                "pods"
+              ],
+              "verbs": [
+                "get"
+              ]
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#942e12837fac"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "rbac.authorization.k8s.io/v1",
+          "kind": "RoleBinding",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "labels": {
+              "proofix.io/case": "CASE-09"
+            },
+            "name": "inventory-settings-reader",
+            "namespace": "proofix-case-09"
+          },
+          "roleRef": {
+            "apiGroup": "rbac.authorization.k8s.io",
+            "kind": "Role",
+            "name": "inventory-settings-reader"
+          },
+          "subjects": [
+            {
+              "kind": "ServiceAccount",
+              "name": "inventory-controller",
+              "namespace": "proofix-case-09"
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#f659f4092a7c"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T00:55:27Z",
+            "name": "default",
+            "namespace": "proofix-case-09"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "automountServiceAccountToken": true,
+          "kind": "ServiceAccount",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T00:55:28Z",
+            "labels": {
+              "proofix.io/case": "CASE-09"
+            },
+            "name": "inventory-controller",
+            "namespace": "proofix-case-09"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#e74e0b866049"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/events#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "144.202.3.93",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"da:85:b3:22:3f:d1\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "144.202.3.93",
+              "k3s.io/hostname": "node1",
+              "k3s.io/internal-ip": "144.202.3.93",
+              "k3s.io/node-args": "[\"server\",\"--disable\",\"traefik\",\"--write-kubeconfig-mode\",\"644\"]",
+              "k3s.io/node-config-hash": "Y735WCEK5OA7WRV7XHI7EBVBQNG2C7ABWJO2R25H2YIAEAJQVALA====",
+              "k3s.io/node-env": "{}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-28T22:44:37Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "node1",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s",
+              "proofix.io/case04-owned": "true",
+              "storage": "nvme"
+            },
+            "name": "node1"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://node1",
+            "taints": [
+              {
+                "effect": "NoSchedule",
+                "key": "dedicated",
+                "value": "reports"
+              }
+            ]
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "144.202.3.93",
+                "type": "InternalIP"
+              },
+              {
+                "address": "node1",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "8",
+              "ephemeral-storage": "334228502881",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16369476Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "8",
+              "ephemeral-storage": "343573708Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16369476Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-29T19:27:37Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-29T19:27:37Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-29T19:27:37Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-29T19:27:37Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "docker.io/library/eclipse-temurin@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a"
+                ],
+                "sizeBytes": 196246833
+              },
+              {
+                "names": [
+                  "docker.io/library/postgres@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c"
+                ],
+                "sizeBytes": 99175927
+              },
+              {
+                "names": [
+                  "registry.istio.io/release/proxyv2@sha256:43b6aeab7428470d3d0ea6b6f0bc217e5b36df2b279bba337643df48590226d9",
+                  "registry.istio.io/release/proxyv2:1.30.4"
+                ],
+                "sizeBytes": 88165018
+              },
+              {
+                "names": [
+                  "registry.istio.io/release/pilot@sha256:c236c1df5cc127fe193e5a17d8ece9cdd0dc17c5d89b4e20baf01d464f029dce",
+                  "registry.istio.io/release/pilot:1.30.4"
+                ],
+                "sizeBytes": 72480540
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:4ff102c5d78d254a6f0da062b3cf39eaf07f01eec0927fd21e219d0af8bc0591",
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                  "docker.io/library/nginx:1.27.4-alpine"
+                ],
+                "sizeBytes": 20834790
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/rancher/klipper-lb@sha256:910944bb0bd94f060a82a56ca1ea1c577d3e49b3473a093a47a985f32e92d94a",
+                  "docker.io/rancher/klipper-lb:v0.4.17"
+                ],
+                "sizeBytes": 5280144
+              },
+              {
+                "names": [
+                  "docker.io/library/busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662",
+                  "docker.io/library/busybox:1.36.1"
+                ],
+                "sizeBytes": 2217006
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "18e7b522-bdff-446d-81c7-f920736096ce",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-138-generic",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "7c7400346644496f9a0a5e57ec700823",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 24.04.4 LTS",
+              "swap": {
+                "capacity": 16971100160
+              },
+              "systemUUID": "2e6a969f-8c46-4da2-add3-8c0fc373745e"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#ba7f04ad44cb"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

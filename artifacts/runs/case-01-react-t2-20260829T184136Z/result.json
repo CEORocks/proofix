@@ -1,0 +1,66 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-01",
+  "elapsed_seconds": 179.17382465989795,
+  "initial_snapshot_sha256": "f0cdd23e3d6bc4b22f4b0aa46820f6587d3afb7b5898672f96cc622994ef090b",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-01",
+    "disposition": "recovered",
+    "evidence_closed": false,
+    "reason": "step budget exhausted",
+    "recovered": true,
+    "run_id": "case-01-react-t2-20260829T184136Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 12.129054055549204,
+        "source": "slo/http-and-pods#b39024c09475",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 9.09568800125271,
+        "source": "slo/http-and-pods#9193a53a4eb3",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 10.818926035426557,
+        "source": "slo/http-and-pods#6d6a8328e812",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/root/proofix-fleet/artifacts/runs/case-01-react-t2-20260829T184136Z/trajectory.jsonl"
+  },
+  "run_id": "case-01-react-t2-20260829T184136Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 2,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-01",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": true,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "evidence_closure"
+    ],
+    "passed": false,
+    "run_id": "case-01-react-t2-20260829T184136Z",
+    "system": "react"
+  }
+}

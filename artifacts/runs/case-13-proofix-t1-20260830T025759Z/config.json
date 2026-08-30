@@ -1,0 +1,29 @@
+{
+  "additional_namespaces": [],
+  "artifact_root": "/root/proofix-fleet/artifacts/runs",
+  "backend": "antigravity",
+  "case_path": "/root/proofix-fleet/benchmark/cases/CASE-13.json",
+  "fixture_environment": [
+    [
+      "PROOFIX_CASE13_STORAGE_CLASS",
+      "longhorn-single"
+    ]
+  ],
+  "host": "local",
+  "kubeconfig": "/etc/rancher/k3s/k3s.yaml",
+  "local_port": 18113,
+  "max_model_calls": 5,
+  "model": "gemini-3.7-flash-medium",
+  "namespace": "proofix-case-13",
+  "node_port": 30113,
+  "probe_path": "/ledger",
+  "probe_requests": 1000,
+  "remote_fixture_dir": "/root/proofix-fleet/fixtures/CASE-13",
+  "service_name": "ledger-api",
+  "service_port": 80,
+  "system": "proofix",
+  "trial": 1,
+  "verification_settle_seconds": 120.0,
+  "window_seconds": 10,
+  "workload_selector": "app.kubernetes.io/name=ledger-api"
+}

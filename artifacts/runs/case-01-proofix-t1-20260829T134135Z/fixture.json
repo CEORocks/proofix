@@ -1,0 +1,3 @@
+{
+  "final_reset": "virtualservice.networking.istio.io/checkout patched (no change)\nCASE-01 reset healthy: ingress returned HTTP 200\n"
+}

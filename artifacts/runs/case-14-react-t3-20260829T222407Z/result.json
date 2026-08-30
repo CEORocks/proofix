@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-14",
+  "elapsed_seconds": 132.88735032605473,
+  "initial_snapshot_sha256": "3912d080df680c09fe941f5b7d2e42d9a44f9f55d3ec12db708483dd72e1cc08",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 0,
+    "case_id": "CASE-14",
+    "disposition": "failed",
+    "evidence_closed": false,
+    "reason": "action rejected: reversible action is missing a rollback specification",
+    "recovered": false,
+    "run_id": "case-14-react-t3-20260829T222407Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": false,
+        "p95_latency_ms": 0.7416039006784558,
+        "source": "slo/http-and-pods#2402729a5149",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": false,
+        "p95_latency_ms": 0.7498710183426738,
+        "source": "slo/http-and-pods#fd70912c6ad4",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": false,
+        "p95_latency_ms": 0.8322180947288871,
+        "source": "slo/http-and-pods#a71cf748dc57",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-14-react-t3-20260829T222407Z/trajectory.jsonl"
+  },
+  "run_id": "case-14-react-t3-20260829T222407Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-14",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-14-react-t3-20260829T222407Z",
+    "system": "react"
+  }
+}

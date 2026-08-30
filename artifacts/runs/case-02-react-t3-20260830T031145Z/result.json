@@ -1,0 +1,64 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 221.57320376392454,
+  "initial_snapshot_sha256": "377d01c71d7b897db8e6420351c7db6f508570ec4f39992639eb619aced7d23e",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 2,
+    "case_id": "CASE-02",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "The incident was resolved by remediating the faulty CoreDNS configuration in the kube-system/coredns ConfigMap and executing a safe rollout restart of the CoreDNS deployment. CoreDNS had been configured with a custom forwarding stanza for bench.proofix:53 pointing to the faulty upstream resolver proofix-dns-bad (10.43.98.165:5353), which introduced latency and NXDOMAIN errors for dependent workloads. The ConfigMap was patched to revert to the known-good Corefile configuration, and the CoreDNS deployment rollout restart completed successfully.",
+    "recovered": true,
+    "run_id": "case-02-react-t3-20260830T031145Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 16.858280985616148,
+        "source": "slo/http-and-pods#d6f82af04893",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 16.083488939329982,
+        "source": "slo/http-and-pods#7de1c4f145d0",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 16.652951017022133,
+        "source": "slo/http-and-pods#e8c8a3154fb4",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-02-react-t3-20260830T031145Z/trajectory.jsonl"
+  },
+  "run_id": "case-02-react-t3-20260830T031145Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-02",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [],
+    "passed": true,
+    "run_id": "case-02-react-t3-20260830T031145Z",
+    "system": "react"
+  }
+}

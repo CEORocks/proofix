@@ -1,0 +1,66 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-03",
+  "elapsed_seconds": 110.54747896292247,
+  "initial_snapshot_sha256": "83f9b4447917c5fdb6b0dae462f6afc3baecd5bd93230fe68cafdca30bb69bd6",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-03",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "The root cause of the incident was a Service targetPort mismatch: the catalog-api Service in namespace proofix-case-03 was configured with targetPort 8080, while the backend pods and nginx configuration listen on port 8081 (catalog-http). This caused connection failures through the Service. The incident was resolved by patching the Service targetPort to match the backend listening port 8081.",
+    "recovered": true,
+    "run_id": "case-03-react-t3-20260829T185809Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 7.334713940508664,
+        "source": "slo/http-and-pods#c3a606c1783b",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.820971982553601,
+        "source": "slo/http-and-pods#1ae611f2d31e",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 5.716765997931361,
+        "source": "slo/http-and-pods#d1d287cc1e13",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/root/proofix-fleet/artifacts/runs/case-03-react-t3-20260829T185809Z/trajectory.jsonl"
+  },
+  "run_id": "case-03-react-t3-20260829T185809Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-03",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": false,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "fixture_semantic_verification"
+    ],
+    "passed": false,
+    "run_id": "case-03-react-t3-20260829T185809Z",
+    "system": "react"
+  }
+}

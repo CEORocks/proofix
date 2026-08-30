@@ -282,9 +282,29 @@ class ProofFixWorkflow:
         samples = self._probe_windows(stage="verify")
         recovered = self._samples_pass(samples)
         if not recovered:
+            rollback_errors: list[str] = []
             for action in reversed(applied):
                 if action.reversible:
-                    result = self.environment.rollback(action)
+                    try:
+                        result = self.environment.rollback(action)
+                    except Exception as exc:
+                        error_text = f"{type(exc).__name__}: {exc}"[-3000:]
+                        rollback_errors.append(error_text)
+                        error_observation = Observation(
+                            source=f"rollback/error/{len(rollback_errors) - 1}",
+                            data={
+                                "error": error_text,
+                                "action": action.to_dict(),
+                            },
+                        )
+                        self.observations.append(error_observation)
+                        self.ledger.append(
+                            "rollback_failed",
+                            error_observation.to_dict(),
+                            stage="verify",
+                            sources=[error_observation.source],
+                        )
+                        continue
                     self.ledger.append(
                         "action_rolled_back",
                         {"action": action.to_dict(), "result": result.to_dict()},
@@ -292,11 +312,16 @@ class ProofFixWorkflow:
                         sources=[result.source],
                     )
             return self._outcome(
-                disposition="rolled_back",
+                disposition="failed" if rollback_errors else "rolled_back",
                 recovered=False,
                 evidence_closed=False,
                 samples=samples,
-                reason=plan.rollback_trigger,
+                reason=(
+                    f"{plan.rollback_trigger}; rollback incomplete: "
+                    + " | ".join(rollback_errors)
+                    if rollback_errors
+                    else plan.rollback_trigger
+                ),
             )
 
         closure = dict(

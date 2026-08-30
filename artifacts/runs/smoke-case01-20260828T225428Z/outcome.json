@@ -1,0 +1,35 @@
+{
+  "action_count": 1,
+  "case_id": "CASE-01",
+  "disposition": "rolled_back",
+  "evidence_closed": false,
+  "reason": "Rollback immediately if the patch is rejected, changes any route beyond the observed checkout route, causes checkout pod readiness or ingress behavior to worsen, or the ingress route continues failing after the expected mesh propagation interval while v1 endpoints remain healthy.",
+  "recovered": false,
+  "run_id": "smoke-case01-20260828T225428Z",
+  "safe": true,
+  "slo_samples": [
+    {
+      "error_rate": 0.03333333333333333,
+      "healthy": true,
+      "p95_latency_ms": 73.67792003788054,
+      "source": "slo/http-and-pods#b66d6184b7cb",
+      "window_seconds": 10
+    },
+    {
+      "error_rate": 0.0,
+      "healthy": true,
+      "p95_latency_ms": 69.75936400704086,
+      "source": "slo/http-and-pods#3fe01eadcd95",
+      "window_seconds": 10
+    },
+    {
+      "error_rate": 0.0,
+      "healthy": true,
+      "p95_latency_ms": 71.74490997567773,
+      "source": "slo/http-and-pods#5e208ae24fa0",
+      "window_seconds": 10
+    }
+  ],
+  "system": "proofix",
+  "trace_path": "artifacts/runs/smoke-case01-20260828T225428Z/trajectory.jsonl"
+}

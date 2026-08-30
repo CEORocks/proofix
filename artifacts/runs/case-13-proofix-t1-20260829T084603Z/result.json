@@ -1,0 +1,11 @@
+{
+  "case_id": "CASE-13",
+  "elapsed_seconds": 189.27468820801005,
+  "infrastructure_error": "RuntimeError: kubectl command failed (1): Error from server (NotFound): pods \"ledger-primary,ledger-replacement\" not found",
+  "model": "gpt-5.6-sol",
+  "run_id": "case-13-proofix-t1-20260829T084603Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

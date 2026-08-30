@@ -38,6 +38,30 @@ def test_proofix_rolls_back_when_slo_does_not_recover(tmp_path):
     assert not evaluate_vrs(outcome).passed
 
 
+def test_proofix_records_rollback_failure_as_valid_failed_outcome(tmp_path):
+    class RollbackFailureEnvironment(FakeEnvironment):
+        def rollback(self, action):
+            del action
+            raise RuntimeError("rollout wait timed out after rollback patch applied")
+
+    trace_path = tmp_path / "proofix.jsonl"
+    workflow = ProofFixWorkflow(
+        backend=ScriptedBackend(proofix_responses()),
+        environment=RollbackFailureEnvironment(healthy_after_apply=False),
+        policy=SafetyPolicy(allowed_namespaces=["bench"]),
+        trace_path=trace_path,
+        run_id="p2-rollback-error",
+        case_id="CASE-05",
+    )
+
+    outcome = workflow.run({"summary": "anti-affinity blocks a replica"})
+
+    assert outcome.disposition == "failed"
+    assert not outcome.recovered
+    assert "rollback incomplete" in outcome.reason
+    assert "rollback_failed" in trace_path.read_text()
+
+
 def test_proofix_replans_once_after_server_rejects_action(tmp_path):
     class RejectMergeEnvironment(FakeEnvironment):
         def apply(self, action):

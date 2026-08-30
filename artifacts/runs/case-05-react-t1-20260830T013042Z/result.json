@@ -1,0 +1,68 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-05",
+  "elapsed_seconds": 155.8370012199739,
+  "initial_snapshot_sha256": "3f827ea1f1107e1ceaa725d68b6b7af544cb9229023adafebf0f87da28a27318",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 2,
+    "case_id": "CASE-05",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The incident is caused by a scheduling deadlock on the recommendations-api deployment in namespace proofix-case-05. The deployment spec configures a strict podAntiAffinity rule (requiredDuringSchedulingIgnoredDuringExecution) with topologyKey kubernetes.io/hostname for pods matching label app.kubernetes.io/name=recommendations-api. With only one available worker node (vm-2) hosting a matching replica, the scheduler fails to place the remaining replica, resulting in FailedScheduling events and leaving the replica permanently Pending. The node has adequate CPU and memory without pressure conditions or taints blocking scheduling. The recovery is to change the pod anti-affinity rule from requiredDuringSchedulingIgnoredDuringExecution to preferredDuringSchedulingIgnoredDuringExecution with topologyKey kubernetes.io/hostname so replicas can be co-located when node capacity allows.",
+    "recovered": false,
+    "run_id": "case-05-react-t1-20260830T013042Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.047,
+        "healthy": true,
+        "p95_latency_ms": 8.305447991006076,
+        "source": "slo/http-and-pods#d8ec18166703",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 7.978937006555498,
+        "source": "slo/http-and-pods#34f2d2195457",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 8.739687968045473,
+        "source": "slo/http-and-pods#72ef986d9b7a",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/artifacts/runs/case-05-react-t1-20260830T013042Z/trajectory.jsonl"
+  },
+  "run_id": "case-05-react-t1-20260830T013042Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-05",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-05-react-t1-20260830T013042Z",
+    "system": "react"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-04",
+  "elapsed_seconds": 3.5597283500246704,
+  "infrastructure_error": "RuntimeError: fixture install.sh failed (1): ",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-04-react-t1-20260829T190534Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": false
+}

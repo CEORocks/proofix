@@ -10,8 +10,10 @@ build/
 .env
 .env.*
 !.env.example
-artifacts/runs/
+.kube/
+# Submission evidence: include scored and diagnostic run trajectories.
+!artifacts/runs/
+!artifacts/runs/**
 artifacts/tmp/
 state/*.db
 tmp/
-

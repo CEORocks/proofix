@@ -1,0 +1,2600 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "proofix.io/profile": "fault-required-hostname-anti-affinity"
+            },
+            "creationTimestamp": "2026-08-30T01:30:46Z",
+            "generateName": "recommendations-api-599d96d7cd-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "recommendations-api",
+              "pod-template-hash": "599d96d7cd",
+              "proofix.io/case": "CASE-05"
+            },
+            "name": "recommendations-api-599d96d7cd-c5q8z",
+            "namespace": "proofix-case-05",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "recommendations-api-599d96d7cd"
+              }
+            ]
+          },
+          "spec": {
+            "affinity": {
+              "podAntiAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "labelSelector": {
+                      "matchLabels": {
+                        "app.kubernetes.io/name": "recommendations-api"
+                      }
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                  }
+                ]
+              }
+            },
+            "containers": [
+              {
+                "image": "nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "recommendations-api",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "20m",
+                    "memory": "16Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 101
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/etc/nginx/conf.d/default.conf",
+                    "name": "config",
+                    "readOnly": true,
+                    "subPath": "default.conf"
+                  },
+                  {
+                    "mountPath": "/var/cache/nginx",
+                    "name": "cache"
+                  },
+                  {
+                    "mountPath": "/var/run",
+                    "name": "run"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-kpghp",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "vm-2",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "recommendations-nginx"
+                },
+                "name": "config"
+              },
+              {
+                "emptyDir": {},
+                "name": "cache"
+              },
+              {
+                "emptyDir": {},
+                "name": "run"
+              },
+              {
+                "name": "kube-api-access-kpghp",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "20m",
+              "memory": "16Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:30:47Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:30:46Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:30:47Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:30:47Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:30:46Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "20m",
+                  "memory": "16Mi"
+                },
+                "containerID": "containerd://8e003c23fce6cddb70d8558fe94040ef5d1f5f43ffb8b871cc2403d4c5a50efe",
+                "image": "sha256:1ff4bb4faebcfb1f7e01144fa9904a570ab9bab88694457855feb6c6bba3fa07",
+                "imageID": "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                "lastState": {},
+                "name": "recommendations-api",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "20m",
+                    "memory": "16Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-30T01:30:47Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 101,
+                    "supplementalGroups": [
+                      101
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/etc/nginx/conf.d/default.conf",
+                    "name": "config",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/var/cache/nginx",
+                    "name": "cache"
+                  },
+                  {
+                    "mountPath": "/var/run",
+                    "name": "run"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-kpghp",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.4",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.4"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.31",
+            "podIPs": [
+              {
+                "ip": "10.42.0.31"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "64Mi"
+              },
+              "requests": {
+                "memory": "16Mi"
+              }
+            },
+            "startTime": "2026-08-30T01:30:46Z"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "proofix.io/profile": "fault-required-hostname-anti-affinity"
+            },
+            "creationTimestamp": "2026-08-30T01:30:46Z",
+            "generateName": "recommendations-api-599d96d7cd-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "recommendations-api",
+              "pod-template-hash": "599d96d7cd",
+              "proofix.io/case": "CASE-05"
+            },
+            "name": "recommendations-api-599d96d7cd-xq6g9",
+            "namespace": "proofix-case-05",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "recommendations-api-599d96d7cd"
+              }
+            ]
+          },
+          "spec": {
+            "affinity": {
+              "podAntiAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "labelSelector": {
+                      "matchLabels": {
+                        "app.kubernetes.io/name": "recommendations-api"
+                      }
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                  }
+                ]
+              }
+            },
+            "containers": [
+              {
+                "image": "nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "recommendations-api",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "20m",
+                    "memory": "16Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 101
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/etc/nginx/conf.d/default.conf",
+                    "name": "config",
+                    "readOnly": true,
+                    "subPath": "default.conf"
+                  },
+                  {
+                    "mountPath": "/var/cache/nginx",
+                    "name": "cache"
+                  },
+                  {
+                    "mountPath": "/var/run",
+                    "name": "run"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-nl5sl",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "recommendations-nginx"
+                },
+                "name": "config"
+              },
+              {
+                "emptyDir": {},
+                "name": "cache"
+              },
+              {
+                "emptyDir": {},
+                "name": "run"
+              },
+              {
+                "name": "kube-api-access-nl5sl",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T01:30:46Z",
+                "message": "0/1 nodes are available: 1 node(s) didn't match pod anti-affinity rules. no new claims to deallocate, preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.",
+                "observedGeneration": 1,
+                "reason": "Unschedulable",
+                "status": "False",
+                "type": "PodScheduled"
+              }
+            ],
+            "phase": "Pending",
+            "qosClass": "Burstable"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#8216bc3892ea"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "16"
+            },
+            "creationTimestamp": "2026-08-30T01:17:07Z",
+            "generation": 16,
+            "labels": {
+              "proofix.io/case": "CASE-05"
+            },
+            "name": "recommendations-api",
+            "namespace": "proofix-case-05"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 2,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "recommendations-api"
+              }
+            },
+            "strategy": {
+              "type": "Recreate"
+            },
+            "template": {
+              "metadata": {
+                "annotations": {
+                  "proofix.io/profile": "fault-required-hostname-anti-affinity"
+                },
+                "labels": {
+                  "app.kubernetes.io/name": "recommendations-api",
+                  "proofix.io/case": "CASE-05"
+                }
+              },
+              "spec": {
+                "affinity": {
+                  "podAntiAffinity": {
+                    "requiredDuringSchedulingIgnoredDuringExecution": [
+                      {
+                        "labelSelector": {
+                          "matchLabels": {
+                            "app.kubernetes.io/name": "recommendations-api"
+                          }
+                        },
+                        "topologyKey": "kubernetes.io/hostname"
+                      }
+                    ]
+                  }
+                },
+                "containers": [
+                  {
+                    "image": "nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "recommendations-api",
+                    "ports": [
+                      {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 2,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "250m",
+                        "memory": "64Mi"
+                      },
+                      "requests": {
+                        "cpu": "20m",
+                        "memory": "16Mi"
+                      }
+                    },
+                    "securityContext": {
+                      "allowPrivilegeEscalation": false,
+                      "capabilities": {
+                        "drop": [
+                          "ALL"
+                        ]
+                      },
+                      "readOnlyRootFilesystem": true,
+                      "runAsNonRoot": true,
+                      "runAsUser": 101
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/etc/nginx/conf.d/default.conf",
+                        "name": "config",
+                        "readOnly": true,
+                        "subPath": "default.conf"
+                      },
+                      {
+                        "mountPath": "/var/cache/nginx",
+                        "name": "cache"
+                      },
+                      {
+                        "mountPath": "/var/run",
+                        "name": "run"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 30,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "recommendations-nginx"
+                    },
+                    "name": "config"
+                  },
+                  {
+                    "emptyDir": {},
+                    "name": "cache"
+                  },
+                  {
+                    "emptyDir": {},
+                    "name": "run"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-30T01:17:07Z",
+                "lastUpdateTime": "2026-08-30T01:27:54Z",
+                "message": "ReplicaSet \"recommendations-api-bb569bf95\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              },
+              {
+                "lastTransitionTime": "2026-08-30T01:30:45Z",
+                "lastUpdateTime": "2026-08-30T01:30:45Z",
+                "message": "Deployment does not have minimum availability.",
+                "reason": "MinimumReplicasUnavailable",
+                "status": "False",
+                "type": "Available"
+              }
+            ],
+            "observedGeneration": 16,
+            "readyReplicas": 1,
+            "replicas": 2,
+            "terminatingReplicas": 0,
+            "unavailableReplicas": 1,
+            "updatedReplicas": 2
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#7da7e403fb5f"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:17:07Z",
+            "name": "recommendations-api",
+            "namespace": "proofix-case-05"
+          },
+          "spec": {
+            "clusterIP": "10.43.20.248",
+            "clusterIPs": [
+              "10.43.20.248"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "http",
+                "nodePort": 30075,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": "http"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "recommendations-api"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#d16c97c9e1aa"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-30T01:30:47Z"
+            },
+            "creationTimestamp": "2026-08-30T01:17:07Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller"
+            },
+            "name": "recommendations-api",
+            "namespace": "proofix-case-05"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "ip": "10.42.0.31",
+                  "nodeName": "vm-2",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "recommendations-api-599d96d7cd-c5q8z",
+                    "namespace": "proofix-case-05"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "http",
+                  "port": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#f400659d6172"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODgwNTIzNTcwHhcNMjYwODMwMDAxMjM3WhcNMzYwODI3MDAxMjM3\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODgwNTIzNTcwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAAR6tHwmUoi5F4yDF03wAKTVNEFOsJisXRezvxACY4w2\n8+cT+0pQtkQfn0/4RwtfZAimLCIB63YpeXlNjCAbLrDWo0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUlaC3+Cc050REbeQcs5bf\n1EvFxkcwCgYIKoZIzj0EAwIDSAAwRQIhAPsFiBne0vB/5M83PKP9MwsaoTBHoGTr\nI1oYnvBZuDMYAiAmHbOvTi/NX05QuAmcMlIl3TkfMwbQs3VxZxTog3YmPQ==\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-30T01:17:06Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-05"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "default.conf": "server {\n  listen 8080;\n  access_log off;\n  location /healthz { return 200 'healthy\\n'; }\n  location / { return 200 'recommendations-ok\\n'; }\n}\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T01:17:07Z",
+            "name": "recommendations-nginx",
+            "namespace": "proofix-case-05"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#b671499ec33b"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:17:06Z",
+            "name": "default",
+            "namespace": "proofix-case-05"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#19fac5d893b6"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:29:12.656893Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-m9k6z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-05/recommendations-api-7ff9878bd4-m9k6z to vm-2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:12Z",
+            "name": "recommendations-api-7ff9878bd4-m9k6z.18d0710cfc8f8fa3",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:29:12.636910Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-p75d5",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-05/recommendations-api-7ff9878bd4-p75d5 to vm-2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:12Z",
+            "name": "recommendations-api-7ff9878bd4-p75d5.18d0710cfb5ea735",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:12Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-7ff9878bd4",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:12Z",
+          "message": "Created pod: recommendations-api-7ff9878bd4-p75d5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:12Z",
+            "name": "recommendations-api-7ff9878bd4.18d0710cfab92af1",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:12Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-7ff9878bd4",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:12Z",
+          "message": "Created pod: recommendations-api-7ff9878bd4-m9k6z",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:12Z",
+            "name": "recommendations-api-7ff9878bd4.18d0710cfb2b73a2",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:13Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-m9k6z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:13Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:13Z",
+            "name": "recommendations-api-7ff9878bd4-m9k6z.18d0710d390c2c3e",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:13Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-m9k6z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:13Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:13Z",
+            "name": "recommendations-api-7ff9878bd4-m9k6z.18d0710d3ca3299c",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:13Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-p75d5",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:13Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:13Z",
+            "name": "recommendations-api-7ff9878bd4-p75d5.18d0710d42af0065",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:13Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-p75d5",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:13Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:13Z",
+            "name": "recommendations-api-7ff9878bd4-p75d5.18d0710d480d31e4",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:13Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-m9k6z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:13Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:14Z",
+            "name": "recommendations-api-7ff9878bd4-m9k6z.18d0710d4c91e326",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:14Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-m9k6z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:14Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.26:8080/healthz\": dial tcp 10.42.0.26:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:14Z",
+            "name": "recommendations-api-7ff9878bd4-m9k6z.18d0710d4dbd98e8",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:14Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-p75d5",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:14Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:14Z",
+            "name": "recommendations-api-7ff9878bd4-p75d5.18d0710d52a01858",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:29:14Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-p75d5",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:29:14Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.27:8080/healthz\": dial tcp 10.42.0.27:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:29:14Z",
+            "name": "recommendations-api-7ff9878bd4-p75d5.18d0710d53e4ad2f",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:07Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-m9k6z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:07Z",
+          "message": "Stopping container recommendations-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:07Z",
+            "name": "recommendations-api-7ff9878bd4-m9k6z.18d07119cf58c92c",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:07Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-p75d5",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:07Z",
+          "message": "Stopping container recommendations-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:07Z",
+            "name": "recommendations-api-7ff9878bd4-p75d5.18d07119cf9509fe",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:07Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-7ff9878bd4",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:07Z",
+          "message": "Deleted pod: recommendations-api-7ff9878bd4-m9k6z",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:07Z",
+            "name": "recommendations-api-7ff9878bd4.18d07119cf519168",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:07Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-7ff9878bd4",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:07Z",
+          "message": "Deleted pod: recommendations-api-7ff9878bd4-p75d5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:07Z",
+            "name": "recommendations-api-7ff9878bd4.18d07119d099521b",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:30:08.710693Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-29zhr",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: 1 node(s) didn't match pod anti-affinity rules. no new claims to deallocate, preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:08Z",
+            "name": "recommendations-api-599d96d7cd-29zhr.18d0711a09a0ab6f",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:30:08.704462Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-dbdm6",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-05/recommendations-api-599d96d7cd-dbdm6 to vm-2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:08Z",
+            "name": "recommendations-api-599d96d7cd-dbdm6.18d0711a0941b729",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:08Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-599d96d7cd",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:08Z",
+          "message": "Created pod: recommendations-api-599d96d7cd-dbdm6",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:08Z",
+            "name": "recommendations-api-599d96d7cd.18d0711a08e774a3",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 3,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:08Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-599d96d7cd",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:46Z",
+          "message": "(combined from similar events): Created pod: recommendations-api-599d96d7cd-xq6g9",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:08Z",
+            "name": "recommendations-api-599d96d7cd.18d0711a0998ecaa",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:09Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-dbdm6",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:09Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:09Z",
+            "name": "recommendations-api-599d96d7cd-dbdm6.18d0711a3c267272",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:09Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-dbdm6",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:09Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:09Z",
+            "name": "recommendations-api-599d96d7cd-dbdm6.18d0711a4055418d",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:09Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-dbdm6",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:09Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:09Z",
+            "name": "recommendations-api-599d96d7cd-dbdm6.18d0711a48ff8fe9",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:09Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-dbdm6",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:38Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.28:8080/healthz\": dial tcp 10.42.0.28:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:09Z",
+            "name": "recommendations-api-599d96d7cd-dbdm6.18d0711a49626960",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:09Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-7ff9878bd4-p75d5",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:09Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.27:8080/healthz\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:09Z",
+            "name": "recommendations-api-7ff9878bd4-p75d5.18d0711a321a2560",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:38Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-dbdm6",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:38Z",
+          "message": "Stopping container recommendations-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:38Z",
+            "name": "recommendations-api-599d96d7cd-dbdm6.18d07120fab0d36a",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:38Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-599d96d7cd",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:38Z",
+          "message": "Deleted pod: recommendations-api-599d96d7cd-dbdm6",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:38Z",
+            "name": "recommendations-api-599d96d7cd.18d07120fa921d06",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:38Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-599d96d7cd",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:38Z",
+          "message": "(combined from similar events): Deleted pod: recommendations-api-599d96d7cd-29zhr",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:38Z",
+            "name": "recommendations-api-599d96d7cd.18d07120fc9c0fc4",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:30:39.161835Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-5pssw",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-05/recommendations-api-bb569bf95-5pssw to vm-2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:39Z",
+            "name": "recommendations-api-bb569bf95-5pssw.18d0712120a839f2",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:30:39.132198Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-pwrb2",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-05/recommendations-api-bb569bf95-pwrb2 to vm-2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:39Z",
+            "name": "recommendations-api-bb569bf95-pwrb2.18d071211ee4001e",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:39Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-bb569bf95",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:39Z",
+          "message": "Created pod: recommendations-api-bb569bf95-pwrb2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:39Z",
+            "name": "recommendations-api-bb569bf95.18d071211dfc6bd2",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:39Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-bb569bf95",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:39Z",
+          "message": "(combined from similar events): Created pod: recommendations-api-bb569bf95-5pssw",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:39Z",
+            "name": "recommendations-api-bb569bf95.18d071211f3622e0",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-5pssw",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-5pssw.18d071215785ec9b",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-5pssw",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-5pssw.18d071215e40e6ce",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-5pssw",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-5pssw.18d0712167343122",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-5pssw",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.30:8080/healthz\": dial tcp 10.42.0.30:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-5pssw.18d07121686b2d6c",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-pwrb2",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-pwrb2.18d071215c1408d7",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-pwrb2",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-pwrb2.18d07121620bb097",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-pwrb2",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-pwrb2.18d071216a515834",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:40Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-pwrb2",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:40Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.29:8080/healthz\": dial tcp 10.42.0.29:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:40Z",
+            "name": "recommendations-api-bb569bf95-pwrb2.18d071216b64a5ff",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-5pssw",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:45Z",
+          "message": "Stopping container recommendations-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:45Z",
+            "name": "recommendations-api-bb569bf95-5pssw.18d07122ac91131e",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-bb569bf95-pwrb2",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:45Z",
+          "message": "Stopping container recommendations-api",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:45Z",
+            "name": "recommendations-api-bb569bf95-pwrb2.18d07122abef8851",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:45Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-bb569bf95",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:45Z",
+          "message": "Deleted pod: recommendations-api-bb569bf95-pwrb2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:45Z",
+            "name": "recommendations-api-bb569bf95.18d07122ac01d33c",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:45Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "recommendations-api-bb569bf95",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:45Z",
+          "message": "(combined from similar events): Deleted pod: recommendations-api-bb569bf95-5pssw",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:45Z",
+            "name": "recommendations-api-bb569bf95.18d07122ac95fa54",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:30:46.481881Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-c5q8z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-05/recommendations-api-599d96d7cd-c5q8z to vm-2",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:46Z",
+            "name": "recommendations-api-599d96d7cd-c5q8z.18d07122d4f743f0",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T01:30:46.489775Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-xq6g9",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: 1 node(s) didn't match pod anti-affinity rules. no new claims to deallocate, preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:46Z",
+            "name": "recommendations-api-599d96d7cd-xq6g9.18d07122d56fb54d",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-2",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-c5q8z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:47Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:47Z",
+            "name": "recommendations-api-599d96d7cd-c5q8z.18d071230595b7ab",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-c5q8z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:47Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:47Z",
+            "name": "recommendations-api-599d96d7cd-c5q8z.18d071230af57eb4",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-c5q8z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:47Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:47Z",
+            "name": "recommendations-api-599d96d7cd-c5q8z.18d0712311b30202",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T01:30:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{recommendations-api}",
+            "kind": "Pod",
+            "name": "recommendations-api-599d96d7cd-c5q8z",
+            "namespace": "proofix-case-05"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T01:30:47Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.31:8080/healthz\": dial tcp 10.42.0.31:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T01:30:47Z",
+            "name": "recommendations-api-599d96d7cd-c5q8z.18d07123122be889",
+            "namespace": "proofix-case-05"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-2",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-2"
+          },
+          "type": "Warning"
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "proofixOriginalItemCount": 219
+      }
+    },
+    "source": "kubectl/get/events#ffdbb3a3d356"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "10.128.0.4",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"82:58:8a:a6:78:89\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "10.128.0.4",
+              "k3s.io/hostname": "vm-2",
+              "k3s.io/internal-ip": "10.128.0.4",
+              "k3s.io/node-args": "[\"server\"]",
+              "k3s.io/node-config-hash": "HKLO67SPSTTSQ2KPLIB43EJEGV4CNWV52ISWRWMJ5WLI4GJHBULQ====",
+              "k3s.io/node-env": "{\"K3S_KUBECONFIG_MODE\":\"644\"}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-30T01:12:49Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "vm-2",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s"
+            },
+            "name": "vm-2"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://vm-2"
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "10.128.0.4",
+                "type": "InternalIP"
+              },
+              {
+                "address": "vm-2",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "4",
+              "ephemeral-storage": "98672037811",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "4",
+              "ephemeral-storage": "101430960Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-30T01:31:03Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T01:31:03Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T01:31:03Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T01:31:03Z",
+                "lastTransitionTime": "2026-08-30T01:12:49Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "docker.io/rancher/klipper-helm@sha256:5425a2b4613d2458dbdff99218e8d487ebb59c20e7a941f061c0777070f0aac1",
+                  "docker.io/rancher/klipper-helm:v0.13.3-build20260727"
+                ],
+                "sizeBytes": 74172006
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-library-traefik@sha256:4299bbed850421258fc5448c2e0e6ad350981d4d335a68de11b92448aedbefe5",
+                  "docker.io/rancher/mirrored-library-traefik:3.7.8"
+                ],
+                "sizeBytes": 54509210
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc"
+                ],
+                "sizeBytes": 20824433
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/rancher/klipper-lb@sha256:910944bb0bd94f060a82a56ca1ea1c577d3e49b3473a093a47a985f32e92d94a",
+                  "docker.io/rancher/klipper-lb:v0.4.17"
+                ],
+                "sizeBytes": 5280144
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "2918bfb4-229e-4e44-92c2-b099fc458649",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-1066-gcp",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "42a63ad41fc7521a98bcf4bb680cadd7",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 22.04.5 LTS",
+              "swap": {
+                "capacity": 8383578112
+              },
+              "systemUUID": "42a63ad4-1fc7-521a-98bc-f4bb680cadd7"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#94dc5ebb8b63"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

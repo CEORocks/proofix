@@ -1,0 +1,4 @@
+{
+  "inject": "virtualservice.networking.istio.io/checkout patched\nCASE-01 fault active: ingress returned HTTP 503\n",
+  "install": "namespace/proofix-case-01 unchanged\nconfigmap/checkout-nginx unchanged\ndeployment.apps/checkout-gateway unchanged\nservice/checkout unchanged\ndestinationrule.networking.istio.io/checkout unchanged\ngateway.networking.istio.io/proofix-gateway unchanged\nvirtualservice.networking.istio.io/checkout unchanged\ndeployment.apps/evidence-probe unchanged\nservice/case-01-ingress unchanged\ndeployment.apps/checkout-gateway condition met\ndeployment.apps/evidence-probe condition met\ndeployment \"istio-ingressgateway\" successfully rolled out\n"
+}

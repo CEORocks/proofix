@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/proofix-fleet/src/proofix/runner.py", line 309, in run_live
+    outcome = ProofFixWorkflow(
+  File "/tmp/proofix-fleet/src/proofix/workflow.py", line 259, in run
+    replan_payload = self.backend.respond(
+  File "/tmp/proofix-fleet/src/proofix/backends.py", line 399, in respond
+    raise RuntimeError("Antigravity wrapper missing structured_output")
+RuntimeError: Antigravity wrapper missing structured_output

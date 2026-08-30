@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-10",
+  "elapsed_seconds": 182.89140695205424,
+  "initial_snapshot_sha256": "c3918a43ce5288ab6d891ef5b86ebb8823e37be6a93efbe739cd7603028e1dab",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-10",
+    "disposition": "rolled_back",
+    "evidence_closed": false,
+    "reason": "billing-api pods fail readiness probes or continue reporting database_auth rejected with HTTP 503 responses after rollout.",
+    "recovered": false,
+    "run_id": "case-10-proofix-t3-20260830T020513Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.045,
+        "healthy": true,
+        "p95_latency_ms": 15.33343002665788,
+        "source": "slo/http-and-pods#c87076b9267d",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 11.319071985781193,
+        "source": "slo/http-and-pods#c93bfb15d06f",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 16.08907408080995,
+        "source": "slo/http-and-pods#584c1d9fc870",
+        "window_seconds": 10
+      }
+    ],
+    "system": "proofix",
+    "trace_path": "/root/proofix-fleet/artifacts/runs/case-10-proofix-t3-20260830T020513Z/trajectory.jsonl"
+  },
+  "run_id": "case-10-proofix-t3-20260830T020513Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-10",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-10-proofix-t3-20260830T020513Z",
+    "system": "proofix"
+  }
+}

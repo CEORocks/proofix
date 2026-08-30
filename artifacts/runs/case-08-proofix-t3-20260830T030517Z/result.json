@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-08",
+  "elapsed_seconds": 386.09767732,
+  "initial_snapshot_sha256": "7086f4083f1436e10101d5c05c6e2fe5c6618bf7dbd5f5125d9875478024de29",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-08",
+    "disposition": "rolled_back",
+    "evidence_closed": false,
+    "reason": "Deployment rollout fails, pods enter CrashLoopBackOff/Unhealthy state, or HTTP 5xx rate exceeds 0.001 / p95 latency exceeds 200ms.",
+    "recovered": false,
+    "run_id": "case-08-proofix-t3-20260830T030517Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.033,
+        "healthy": true,
+        "p95_latency_ms": 5.776899000011326,
+        "source": "slo/http-and-pods#02ff7a410d01",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 5.612439999822527,
+        "source": "slo/http-and-pods#0d97ed94499a",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 5.755950000093435,
+        "source": "slo/http-and-pods#3e59236e9026",
+        "window_seconds": 10
+      }
+    ],
+    "system": "proofix",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-08-proofix-t3-20260830T030517Z/trajectory.jsonl"
+  },
+  "run_id": "case-08-proofix-t3-20260830T030517Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-08",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-08-proofix-t3-20260830T030517Z",
+    "system": "proofix"
+  }
+}

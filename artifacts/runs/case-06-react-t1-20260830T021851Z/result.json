@@ -1,0 +1,64 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-06",
+  "elapsed_seconds": 89.835826817,
+  "initial_snapshot_sha256": "5b096a26e11d3a8f0ec2283161e738c2075d1dee65add91b56f905119d9e42e4",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-06",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "The checkout-api deployment was unable to scale to its desired 3 replicas due to quota exhaustion on ResourceQuota 'case-06-cpu-budget' (hard limit: 500m requests.cpu, used: 500m). Namespace CPU requests were attributed to 2 running checkout-api pods (100m requests each, 200m total) and 1 stale-canary pod (300m requests). The stale-canary deployment was verified to be benchmark-owned (proofix.io/benchmark-owned: 'true') and carrying no live traffic (proofix.io/live-traffic: 'false', with no backend endpoints). Scaling down the stale-canary deployment to 0 replicas safely reclaims 300m of CPU quota, permitting checkout-api to schedule its third replica onto the available node capacity.",
+    "recovered": true,
+    "run_id": "case-06-react-t1-20260830T021851Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.413878999912413,
+        "source": "slo/http-and-pods#594da7c806b1",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.373258999748941,
+        "source": "slo/http-and-pods#760efe4fa149",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.3528490000426245,
+        "source": "slo/http-and-pods#3acf335dfb71",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-06-react-t1-20260830T021851Z/trajectory.jsonl"
+  },
+  "run_id": "case-06-react-t1-20260830T021851Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-06",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [],
+    "passed": true,
+    "run_id": "case-06-react-t1-20260830T021851Z",
+    "system": "react"
+  }
+}

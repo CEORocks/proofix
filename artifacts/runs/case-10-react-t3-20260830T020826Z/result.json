@@ -1,0 +1,68 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-10",
+  "elapsed_seconds": 179.1396180220181,
+  "initial_snapshot_sha256": "f71db4c6778ede1fc54a20f1cefee51d3755365f8648f2a915df5f05a42cbe40",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-10",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The incident was caused by a credential secret desynchronization between the database and the billing application. The database password was rotated to authoritative generation b9b26c30a42a65968efab3834749fdbf83374b60e371d95d1dc3ee3e8fd2a5ee (held in db-credentials), while the billing-api Deployment and running pod were consuming the stale credential generation 0aab604799348439ce4cc92447e78eebc30206aee3d5625982cddfd410238f40 from billing-credentials (resource version 113923). Network connectivity to PostgreSQL was healthy, but authentication was rejected by the database. The issue was resolved by synchronizing billing-credentials to the authoritative credential generation (digest b9b26c30a42a65968efab3834749fdbf83374b60e371d95d1dc3ee3e8fd2a5ee) and executing a controlled rollout of the billing-api Deployment.",
+    "recovered": false,
+    "run_id": "case-10-react-t3-20260830T020826Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.051,
+        "healthy": true,
+        "p95_latency_ms": 17.758192028850317,
+        "source": "slo/http-and-pods#ad1dae7ba676",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 14.944168971851468,
+        "source": "slo/http-and-pods#3136f8112715",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 20.883937017060816,
+        "source": "slo/http-and-pods#78baa288960c",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/root/proofix-fleet/artifacts/runs/case-10-react-t3-20260830T020826Z/trajectory.jsonl"
+  },
+  "run_id": "case-10-react-t3-20260830T020826Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-10",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-10-react-t3-20260830T020826Z",
+    "system": "react"
+  }
+}

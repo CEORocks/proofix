@@ -1,0 +1,29 @@
+{
+  "additional_namespaces": [],
+  "artifact_root": "/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/artifacts/runs",
+  "backend": "antigravity",
+  "case_path": "/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/benchmark/cases/CASE-13.json",
+  "fixture_environment": [
+    [
+      "PROOFIX_CASE13_STORAGE_CLASS",
+      "standard-rwo"
+    ]
+  ],
+  "host": "local",
+  "kubeconfig": "/home/ahmad_shakeelceo/.kube/config",
+  "local_port": 18113,
+  "max_model_calls": 5,
+  "model": "gemini-3.7-flash-medium",
+  "namespace": "proofix-case-13",
+  "node_port": 30113,
+  "probe_path": "/ledger",
+  "probe_requests": 1000,
+  "remote_fixture_dir": "/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/fixtures/CASE-13",
+  "service_name": "ledger-api",
+  "service_port": 80,
+  "system": "proofix",
+  "trial": 3,
+  "verification_settle_seconds": 120.0,
+  "window_seconds": 10,
+  "workload_selector": "app.kubernetes.io/name=ledger-api"
+}

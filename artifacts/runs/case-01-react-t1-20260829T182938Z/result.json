@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-01",
+  "elapsed_seconds": 86.17410959699191,
+  "infrastructure_error": "ValueError: diagnostic URL is outside the registered SLO probe",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-01-react-t1-20260829T182938Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": false
+}

@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 39.24873234692495,
+  "infrastructure_error": "JSONDecodeError: Unterminated string starting at: line 5118 column 13 (char 199993)",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-02-react-t3-20260830T015114Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": false
+}

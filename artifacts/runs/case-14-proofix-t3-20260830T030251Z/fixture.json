@@ -1,0 +1,3 @@
+{
+  "final_reset_error": "RuntimeError: fixture reset.sh failed (2): kubectl is required"
+}

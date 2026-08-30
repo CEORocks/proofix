@@ -10,6 +10,7 @@ import signal
 import socket
 import subprocess
 import time
+import traceback
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -72,7 +73,7 @@ class FixtureController:
         self,
         script: str,
         *arguments: str,
-        timeout_seconds: int = 600,
+        timeout_seconds: int = 1200,
     ) -> str:
         if script not in {
             "install.sh",
@@ -362,6 +363,10 @@ def run_live(config: LiveRunConfig) -> dict[str, Any]:
             "vrs": vrs.to_dict(),
         }
     except Exception as exc:
+        infrastructure_traceback = traceback.format_exc()
+        (run_dir / "infrastructure-traceback.txt").write_text(
+            infrastructure_traceback, encoding="utf-8"
+        )
         result = {
             "schema_version": "1.0",
             "valid": False,
@@ -373,6 +378,7 @@ def run_live(config: LiveRunConfig) -> dict[str, Any]:
             "model": effective_model,
             "elapsed_seconds": time.monotonic() - started,
             "infrastructure_error": f"{type(exc).__name__}: {exc}",
+            "infrastructure_traceback": infrastructure_traceback,
         }
     finally:
         try:

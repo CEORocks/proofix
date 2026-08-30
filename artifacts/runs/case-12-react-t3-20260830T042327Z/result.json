@@ -1,0 +1,69 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-12",
+  "elapsed_seconds": 433.12840511102695,
+  "initial_snapshot_sha256": "25e18557a228d4d661f62682f0f3f2778c91e0f6aa725e0aa57424504d039a26",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 0,
+    "case_id": "CASE-12",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The broker kafka-2 failed startup due to a benchmark-injected invalid argument override (--proofix-invalid-startup-flag) configured in the ConfigMap kafka-startup-override. The underlying storage volume pvc-3ac15b18-0982-491f-943b-f48d1acfad2f is healthy and bound to data-kafka-2. Removing the bad startup override from the ConfigMap and restarting kafka-2 restores the broker and brings all partition replicas back into the in-sync replica (ISR) set without data loss.",
+    "recovered": false,
+    "run_id": "case-12-react-t3-20260830T042327Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.09749601688236,
+        "source": "slo/http-and-pods#710c09384820",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 0.9664490353316069,
+        "source": "slo/http-and-pods#2cc3f51023be",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 0.8460310054942966,
+        "source": "slo/http-and-pods#2b845e96e310",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-12-react-t3-20260830T042327Z/trajectory.jsonl"
+  },
+  "run_id": "case-12-react-t3-20260830T042327Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-12",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-12-react-t3-20260830T042327Z",
+    "system": "react"
+  }
+}

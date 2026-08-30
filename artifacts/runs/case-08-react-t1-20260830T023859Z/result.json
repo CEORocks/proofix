@@ -1,0 +1,69 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-08",
+  "elapsed_seconds": 184.44874239199999,
+  "initial_snapshot_sha256": "6e3201b9a4aa924f9425f7e2785942c96de3c66969a5729ca5c01ae45b60082e",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 0,
+    "case_id": "CASE-08",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The root cause of incident CASE-08 is CPU throttling on the search-api container caused by an injected 100m CPU limit and request combined with a tight 1s liveness probe timeout. Under benchmark load, the /healthz endpoint (which executes 50ms of CPU work in SearchServer.java) competed for CPU cycles and exceeded the 1-second timeout, triggering kubelet Unhealthy probe failures and restart cascades (exit code 143). Node vm-4 has 4 allocatable CPUs and no resource pressure, confirming capacity. The remediation is to patch the search-api deployment to increase CPU request/limit (500m request / 1000m limit) and tune the liveness probe timeout to 3s with a failure threshold of 3.",
+    "recovered": false,
+    "run_id": "case-08-react-t1-20260830T023859Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": false,
+        "p95_latency_ms": 0.5868010002814117,
+        "source": "slo/http-and-pods#daf4bdf68fe7",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": false,
+        "p95_latency_ms": 0.5696600001101615,
+        "source": "slo/http-and-pods#e9b5dc4e14e7",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.363,
+        "healthy": true,
+        "p95_latency_ms": 89.5942140000443,
+        "source": "slo/http-and-pods#c8c9c5358ef0",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-08-react-t1-20260830T023859Z/trajectory.jsonl"
+  },
+  "run_id": "case-08-react-t1-20260830T023859Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-08",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-08-react-t1-20260830T023859Z",
+    "system": "react"
+  }
+}

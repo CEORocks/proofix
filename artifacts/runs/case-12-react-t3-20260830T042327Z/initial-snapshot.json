@@ -1,0 +1,3194 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T01:14:13Z",
+            "generateName": "kafka-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "kafka",
+              "apps.kubernetes.io/pod-index": "0",
+              "controller-revision-hash": "kafka-5dbb5d7448",
+              "proofix.io/case": "CASE-12",
+              "statefulset.kubernetes.io/pod-name": "kafka-0"
+            },
+            "name": "kafka-0",
+            "namespace": "proofix-case-12",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "StatefulSet",
+                "name": "kafka"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "/bin/sh",
+                  "-ec",
+                  "fqdn=\"${HOSTNAME}.kafka.${POD_NAMESPACE}.svc.cluster.local\"\nextra=\"\"\nif [ \"${HOSTNAME}\" = \"kafka-2\" ] && [ -s /etc/proofix/override/extra_args ]; then\n  extra=\"$(tr '\\n' ' ' < /etc/proofix/override/extra_args)\"\nfi\nexec rpk redpanda start \\\n  --smp 1 \\\n  --memory 768M \\\n  --reserve-memory 0M \\\n  --overprovisioned \\\n  --check=false \\\n  --default-log-level=warn \\\n  --kafka-addr internal://0.0.0.0:9092 \\\n  --advertise-kafka-addr \"internal://${fqdn}:9092\" \\\n  --rpc-addr 0.0.0.0:33145 \\\n  --advertise-rpc-addr \"${fqdn}:33145\" \\\n  --seeds kafka-0.kafka.proofix-case-12.svc.cluster.local:33145,kafka-1.kafka.proofix-case-12.svc.cluster.local:33145,kafka-2.kafka.proofix-case-12.svc.cluster.local:33145 \\\n  --set redpanda.empty_seed_starts_cluster=false \\\n  ${extra}\n"
+                ],
+                "env": [
+                  {
+                    "name": "POD_NAMESPACE",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.namespace"
+                      }
+                    }
+                  }
+                ],
+                "image": "mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 45,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "redpanda",
+                "ports": [
+                  {
+                    "containerPort": 9092,
+                    "name": "kafka",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 9644,
+                    "name": "admin",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 33145,
+                    "name": "rpc",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "startupProbe": {
+                  "failureThreshold": 90,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/etc/proofix/override",
+                    "name": "startup-override",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-v6hgq",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "hostname": "kafka-0",
+            "nodeName": "vm-5",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "subdomain": "kafka",
+            "terminationGracePeriodSeconds": 45,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "data-kafka-0"
+                }
+              },
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "kafka-startup-override"
+                },
+                "name": "startup-override"
+              },
+              {
+                "name": "kube-api-access-v6hgq",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "500m",
+              "memory": "768Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:18Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:17Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:27Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:27Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:17Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "500m",
+                  "memory": "768Mi"
+                },
+                "containerID": "containerd://8ca4e10ca4284c7926c1bf6654f15e8e75f7efa12a9b1366522064e186470542",
+                "image": "sha256:41c7723586bc7fc032cd5b59758c2ceb1da7207655e00558fcfd9ccfd142edb2",
+                "imageID": "mirror.gcr.io/redpandadata/redpanda@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "lastState": {},
+                "name": "redpanda",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-29T01:14:18Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 101,
+                    "supplementalGroups": [
+                      101
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/etc/proofix/override",
+                    "name": "startup-override",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-v6hgq",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.6",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.6"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.48",
+            "podIPs": [
+              {
+                "ip": "10.42.0.48"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "1Gi"
+              },
+              "requests": {
+                "cpu": "489m",
+                "memory": "768Mi"
+              }
+            },
+            "startTime": "2026-08-29T01:14:17Z"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T01:14:13Z",
+            "generateName": "kafka-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "kafka",
+              "apps.kubernetes.io/pod-index": "1",
+              "controller-revision-hash": "kafka-5dbb5d7448",
+              "proofix.io/case": "CASE-12",
+              "statefulset.kubernetes.io/pod-name": "kafka-1"
+            },
+            "name": "kafka-1",
+            "namespace": "proofix-case-12",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "StatefulSet",
+                "name": "kafka"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "/bin/sh",
+                  "-ec",
+                  "fqdn=\"${HOSTNAME}.kafka.${POD_NAMESPACE}.svc.cluster.local\"\nextra=\"\"\nif [ \"${HOSTNAME}\" = \"kafka-2\" ] && [ -s /etc/proofix/override/extra_args ]; then\n  extra=\"$(tr '\\n' ' ' < /etc/proofix/override/extra_args)\"\nfi\nexec rpk redpanda start \\\n  --smp 1 \\\n  --memory 768M \\\n  --reserve-memory 0M \\\n  --overprovisioned \\\n  --check=false \\\n  --default-log-level=warn \\\n  --kafka-addr internal://0.0.0.0:9092 \\\n  --advertise-kafka-addr \"internal://${fqdn}:9092\" \\\n  --rpc-addr 0.0.0.0:33145 \\\n  --advertise-rpc-addr \"${fqdn}:33145\" \\\n  --seeds kafka-0.kafka.proofix-case-12.svc.cluster.local:33145,kafka-1.kafka.proofix-case-12.svc.cluster.local:33145,kafka-2.kafka.proofix-case-12.svc.cluster.local:33145 \\\n  --set redpanda.empty_seed_starts_cluster=false \\\n  ${extra}\n"
+                ],
+                "env": [
+                  {
+                    "name": "POD_NAMESPACE",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.namespace"
+                      }
+                    }
+                  }
+                ],
+                "image": "mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 45,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "redpanda",
+                "ports": [
+                  {
+                    "containerPort": 9092,
+                    "name": "kafka",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 9644,
+                    "name": "admin",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 33145,
+                    "name": "rpc",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "startupProbe": {
+                  "failureThreshold": 90,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/etc/proofix/override",
+                    "name": "startup-override",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-cwjnx",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "hostname": "kafka-1",
+            "nodeName": "vm-5",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "subdomain": "kafka",
+            "terminationGracePeriodSeconds": 45,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "data-kafka-1"
+                }
+              },
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "kafka-startup-override"
+                },
+                "name": "startup-override"
+              },
+              {
+                "name": "kube-api-access-cwjnx",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "500m",
+              "memory": "768Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:18Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:17Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:28Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:28Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T01:14:17Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "500m",
+                  "memory": "768Mi"
+                },
+                "containerID": "containerd://b44ea5c6dc56e70a6761c9e2c1633a9e429c93f32e5dd267f5e9f3dac8bfa987",
+                "image": "sha256:41c7723586bc7fc032cd5b59758c2ceb1da7207655e00558fcfd9ccfd142edb2",
+                "imageID": "mirror.gcr.io/redpandadata/redpanda@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "lastState": {},
+                "name": "redpanda",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-29T01:14:18Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 101,
+                    "supplementalGroups": [
+                      101
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/etc/proofix/override",
+                    "name": "startup-override",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-cwjnx",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.6",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.6"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.49",
+            "podIPs": [
+              {
+                "ip": "10.42.0.49"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "1Gi"
+              },
+              "requests": {
+                "cpu": "489m",
+                "memory": "768Mi"
+              }
+            },
+            "startTime": "2026-08-29T01:14:17Z"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:23:44Z",
+            "generateName": "kafka-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "kafka",
+              "apps.kubernetes.io/pod-index": "2",
+              "controller-revision-hash": "kafka-5dbb5d7448",
+              "proofix.io/case": "CASE-12",
+              "statefulset.kubernetes.io/pod-name": "kafka-2"
+            },
+            "name": "kafka-2",
+            "namespace": "proofix-case-12",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "StatefulSet",
+                "name": "kafka"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "/bin/sh",
+                  "-ec",
+                  "fqdn=\"${HOSTNAME}.kafka.${POD_NAMESPACE}.svc.cluster.local\"\nextra=\"\"\nif [ \"${HOSTNAME}\" = \"kafka-2\" ] && [ -s /etc/proofix/override/extra_args ]; then\n  extra=\"$(tr '\\n' ' ' < /etc/proofix/override/extra_args)\"\nfi\nexec rpk redpanda start \\\n  --smp 1 \\\n  --memory 768M \\\n  --reserve-memory 0M \\\n  --overprovisioned \\\n  --check=false \\\n  --default-log-level=warn \\\n  --kafka-addr internal://0.0.0.0:9092 \\\n  --advertise-kafka-addr \"internal://${fqdn}:9092\" \\\n  --rpc-addr 0.0.0.0:33145 \\\n  --advertise-rpc-addr \"${fqdn}:33145\" \\\n  --seeds kafka-0.kafka.proofix-case-12.svc.cluster.local:33145,kafka-1.kafka.proofix-case-12.svc.cluster.local:33145,kafka-2.kafka.proofix-case-12.svc.cluster.local:33145 \\\n  --set redpanda.empty_seed_starts_cluster=false \\\n  ${extra}\n"
+                ],
+                "env": [
+                  {
+                    "name": "POD_NAMESPACE",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "apiVersion": "v1",
+                        "fieldPath": "metadata.namespace"
+                      }
+                    }
+                  }
+                ],
+                "image": "mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 45,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "redpanda",
+                "ports": [
+                  {
+                    "containerPort": 9092,
+                    "name": "kafka",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 9644,
+                    "name": "admin",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 33145,
+                    "name": "rpc",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "startupProbe": {
+                  "failureThreshold": 90,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/etc/proofix/override",
+                    "name": "startup-override",
+                    "readOnly": true
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-48w66",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "hostname": "kafka-2",
+            "nodeName": "vm-5",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "subdomain": "kafka",
+            "terminationGracePeriodSeconds": 45,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "data-kafka-2"
+                }
+              },
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "kafka-startup-override"
+                },
+                "name": "startup-override"
+              },
+              {
+                "name": "kube-api-access-48w66",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "500m",
+              "memory": "768Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T04:23:45Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T04:23:44Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T04:23:44Z",
+                "message": "containers with unready status: [redpanda]",
+                "observedGeneration": 1,
+                "reason": "ContainersNotReady",
+                "status": "False",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T04:23:44Z",
+                "message": "containers with unready status: [redpanda]",
+                "observedGeneration": 1,
+                "reason": "ContainersNotReady",
+                "status": "False",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T04:23:44Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "500m",
+                  "memory": "768Mi"
+                },
+                "containerID": "containerd://dca5cd560e905f3c470fabda24d3b3183f79a7c876bf8876be91ed2769bf4c94",
+                "image": "sha256:41c7723586bc7fc032cd5b59758c2ceb1da7207655e00558fcfd9ccfd142edb2",
+                "imageID": "mirror.gcr.io/redpandadata/redpanda@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "lastState": {
+                  "terminated": {
+                    "containerID": "containerd://dca5cd560e905f3c470fabda24d3b3183f79a7c876bf8876be91ed2769bf4c94",
+                    "exitCode": 1,
+                    "finishedAt": "2026-08-30T04:23:57Z",
+                    "reason": "Error",
+                    "startedAt": "2026-08-30T04:23:57Z"
+                  }
+                },
+                "name": "redpanda",
+                "ready": false,
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "restartCount": 2,
+                "started": false,
+                "state": {
+                  "waiting": {
+                    "message": "back-off 20s restarting failed container=redpanda pod=kafka-2_proofix-case-12(cd8ad402-566c-478d-a384-5fd2f10d16cc)",
+                    "reason": "CrashLoopBackOff"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 101,
+                    "supplementalGroups": [
+                      101
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/etc/proofix/override",
+                    "name": "startup-override",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-48w66",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.6",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.6"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.44",
+            "podIPs": [
+              {
+                "ip": "10.42.0.44"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "1Gi"
+              },
+              "requests": {
+                "cpu": "489m",
+                "memory": "768Mi"
+              }
+            },
+            "startTime": "2026-08-30T04:23:44Z"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#b560ca436766"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "StatefulSet",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "generation": 1,
+            "name": "kafka",
+            "namespace": "proofix-case-12"
+          },
+          "spec": {
+            "persistentVolumeClaimRetentionPolicy": {
+              "whenDeleted": "Retain",
+              "whenScaled": "Retain"
+            },
+            "podManagementPolicy": "Parallel",
+            "replicas": 3,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "kafka"
+              }
+            },
+            "serviceName": "kafka",
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/name": "kafka",
+                  "proofix.io/case": "CASE-12"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "command": [
+                      "/bin/sh",
+                      "-ec",
+                      "fqdn=\"${HOSTNAME}.kafka.${POD_NAMESPACE}.svc.cluster.local\"\nextra=\"\"\nif [ \"${HOSTNAME}\" = \"kafka-2\" ] && [ -s /etc/proofix/override/extra_args ]; then\n  extra=\"$(tr '\\n' ' ' < /etc/proofix/override/extra_args)\"\nfi\nexec rpk redpanda start \\\n  --smp 1 \\\n  --memory 768M \\\n  --reserve-memory 0M \\\n  --overprovisioned \\\n  --check=false \\\n  --default-log-level=warn \\\n  --kafka-addr internal://0.0.0.0:9092 \\\n  --advertise-kafka-addr \"internal://${fqdn}:9092\" \\\n  --rpc-addr 0.0.0.0:33145 \\\n  --advertise-rpc-addr \"${fqdn}:33145\" \\\n  --seeds kafka-0.kafka.proofix-case-12.svc.cluster.local:33145,kafka-1.kafka.proofix-case-12.svc.cluster.local:33145,kafka-2.kafka.proofix-case-12.svc.cluster.local:33145 \\\n  --set redpanda.empty_seed_starts_cluster=false \\\n  ${extra}\n"
+                    ],
+                    "env": [
+                      {
+                        "name": "POD_NAMESPACE",
+                        "valueFrom": {
+                          "fieldRef": {
+                            "apiVersion": "v1",
+                            "fieldPath": "metadata.namespace"
+                          }
+                        }
+                      }
+                    ],
+                    "image": "mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/v1/status/ready",
+                        "port": "admin",
+                        "scheme": "HTTP"
+                      },
+                      "initialDelaySeconds": 45,
+                      "periodSeconds": 10,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "name": "redpanda",
+                    "ports": [
+                      {
+                        "containerPort": 9092,
+                        "name": "kafka",
+                        "protocol": "TCP"
+                      },
+                      {
+                        "containerPort": 9644,
+                        "name": "admin",
+                        "protocol": "TCP"
+                      },
+                      {
+                        "containerPort": 33145,
+                        "name": "rpc",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/v1/status/ready",
+                        "port": "admin",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "1",
+                        "memory": "1Gi"
+                      },
+                      "requests": {
+                        "cpu": "500m",
+                        "memory": "768Mi"
+                      }
+                    },
+                    "startupProbe": {
+                      "failureThreshold": 90,
+                      "httpGet": {
+                        "path": "/v1/status/ready",
+                        "port": "admin",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/var/lib/redpanda/data",
+                        "name": "data"
+                      },
+                      {
+                        "mountPath": "/etc/proofix/override",
+                        "name": "startup-override",
+                        "readOnly": true
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 45,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "kafka-startup-override"
+                    },
+                    "name": "startup-override"
+                  }
+                ]
+              }
+            },
+            "updateStrategy": {
+              "rollingUpdate": {
+                "partition": 0
+              },
+              "type": "RollingUpdate"
+            },
+            "volumeClaimTemplates": [
+              {
+                "apiVersion": "v1",
+                "kind": "PersistentVolumeClaim",
+                "metadata": {
+                  "labels": {
+                    "proofix.io/case": "CASE-12"
+                  },
+                  "name": "data"
+                },
+                "spec": {
+                  "accessModes": [
+                    "ReadWriteOnce"
+                  ],
+                  "resources": {
+                    "requests": {
+                      "storage": "4Gi"
+                    }
+                  },
+                  "storageClassName": "local-path",
+                  "volumeMode": "Filesystem"
+                },
+                "status": {
+                  "phase": "Pending"
+                }
+              }
+            ]
+          },
+          "status": {
+            "availableReplicas": 2,
+            "collisionCount": 0,
+            "currentReplicas": 3,
+            "currentRevision": "kafka-5dbb5d7448",
+            "observedGeneration": 1,
+            "readyReplicas": 2,
+            "replicas": 3,
+            "updateRevision": "kafka-5dbb5d7448",
+            "updatedReplicas": 3
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#fb204b1be117"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "name": "kafka",
+            "namespace": "proofix-case-12"
+          },
+          "spec": {
+            "clusterIP": "None",
+            "clusterIPs": [
+              "None"
+            ],
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "kafka",
+                "port": 9092,
+                "protocol": "TCP",
+                "targetPort": 9092
+              },
+              {
+                "name": "admin",
+                "port": 9644,
+                "protocol": "TCP",
+                "targetPort": 9644
+              },
+              {
+                "name": "rpc",
+                "port": 33145,
+                "protocol": "TCP",
+                "targetPort": 33145
+              }
+            ],
+            "publishNotReadyAddresses": true,
+            "selector": {
+              "app.kubernetes.io/name": "kafka"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "name": "kafka-admin",
+            "namespace": "proofix-case-12"
+          },
+          "spec": {
+            "clusterIP": "10.43.4.13",
+            "clusterIPs": [
+              "10.43.4.13"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "admin",
+                "nodePort": 30082,
+                "port": 9644,
+                "protocol": "TCP",
+                "targetPort": "admin"
+              }
+            ],
+            "selector": {
+              "statefulset.kubernetes.io/pod-name": "kafka-0"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#f07439795b3d"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-30T04:23:44Z"
+            },
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+              "service.kubernetes.io/headless": ""
+            },
+            "name": "kafka",
+            "namespace": "proofix-case-12"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "hostname": "kafka-2",
+                  "ip": "10.42.0.44",
+                  "nodeName": "vm-5",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "kafka-2",
+                    "namespace": "proofix-case-12"
+                  }
+                },
+                {
+                  "hostname": "kafka-0",
+                  "ip": "10.42.0.48",
+                  "nodeName": "vm-5",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "kafka-0",
+                    "namespace": "proofix-case-12"
+                  }
+                },
+                {
+                  "hostname": "kafka-1",
+                  "ip": "10.42.0.49",
+                  "nodeName": "vm-5",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "kafka-1",
+                    "namespace": "proofix-case-12"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "admin",
+                  "port": 9644,
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "rpc",
+                  "port": 33145,
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "kafka",
+                  "port": 9092,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-29T01:14:27Z"
+            },
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller"
+            },
+            "name": "kafka-admin",
+            "namespace": "proofix-case-12"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "ip": "10.42.0.48",
+                  "nodeName": "vm-5",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "kafka-0",
+                    "namespace": "proofix-case-12"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "admin",
+                  "port": 9644,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#0720a11152fe"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "metadata": {
+            "annotations": {
+              "pv.kubernetes.io/bind-completed": "yes",
+              "pv.kubernetes.io/bound-by-controller": "yes",
+              "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+              "volume.kubernetes.io/selected-node": "vm-5",
+              "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:13Z",
+            "finalizers": [
+              "kubernetes.io/pvc-protection"
+            ],
+            "labels": {
+              "app.kubernetes.io/name": "kafka",
+              "proofix.io/case": "CASE-12"
+            },
+            "name": "data-kafka-0",
+            "namespace": "proofix-case-12"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "4Gi"
+              }
+            },
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem",
+            "volumeName": "pvc-9857a772-3137-44a2-be3a-0275d55e7fdf"
+          },
+          "status": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "metadata": {
+            "annotations": {
+              "pv.kubernetes.io/bind-completed": "yes",
+              "pv.kubernetes.io/bound-by-controller": "yes",
+              "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+              "volume.kubernetes.io/selected-node": "vm-5",
+              "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:13Z",
+            "finalizers": [
+              "kubernetes.io/pvc-protection"
+            ],
+            "labels": {
+              "app.kubernetes.io/name": "kafka",
+              "proofix.io/case": "CASE-12"
+            },
+            "name": "data-kafka-1",
+            "namespace": "proofix-case-12"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "4Gi"
+              }
+            },
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem",
+            "volumeName": "pvc-38296aa2-f797-4103-8bd1-fadfda756426"
+          },
+          "status": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "metadata": {
+            "annotations": {
+              "pv.kubernetes.io/bind-completed": "yes",
+              "pv.kubernetes.io/bound-by-controller": "yes",
+              "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+              "volume.kubernetes.io/selected-node": "vm-5",
+              "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:13Z",
+            "finalizers": [
+              "kubernetes.io/pvc-protection"
+            ],
+            "labels": {
+              "app.kubernetes.io/name": "kafka",
+              "proofix.io/case": "CASE-12"
+            },
+            "name": "data-kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "4Gi"
+              }
+            },
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem",
+            "volumeName": "pvc-3ac15b18-0982-491f-943b-f48d1acfad2f"
+          },
+          "status": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "phase": "Bound"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#d58b9cc0b77e"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "extra_args": "--proofix-invalid-startup-flag"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "labels": {
+              "proofix.io/case": "CASE-12"
+            },
+            "name": "kafka-startup-override",
+            "namespace": "proofix-case-12"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODc5NTcwODEwHhcNMjYwODI4MjE0NDQxWhcNMzYwODI1MjE0NDQx\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODc5NTcwODEwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAARWgVGw6nOw809O0OEhTQe+eTcVQunIC7NJEVItLEZ/\npUlsBZBkDWTBrQmEszh9cVbd4rLLC+jOr3ncCJE5zRcGo0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUDPpXxcIn/sHD3GGj2UeJ\n2eQu8p0wCgYIKoZIzj0EAwIDSAAwRQIgHhyFYQt3wGrkKF5nzArUgDBHm8EHShOg\n0CyrpZINh+kCIQDTVtlST2e75t1UUCLrLY2LIYVzJ0so+/5lBOw90qXX6A==\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-12"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "broker_id": "2",
+            "fault_prefix": "case12-run-12-fault",
+            "marker_count": "60",
+            "pre_prefix": "case12-run-12-pre",
+            "pvc_uid": "3ac15b18-0982-491f-943b-f48d1acfad2f",
+            "run_counter": "12"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T01:14:34Z",
+            "name": "proofix-case12-state",
+            "namespace": "proofix-case-12"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#c7e4481d8036"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T01:14:12Z",
+            "name": "default",
+            "namespace": "proofix-case-12"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#3266813911bf"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:56:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:56:41Z",
+          "message": "Stopping container redpanda",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:56:41Z",
+            "name": "kafka-2.18d0791941a8a14d",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:56:42.622929Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-12/kafka-2 to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:56:42Z",
+            "name": "kafka-2.18d0791987a48a4e",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:56:43Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:57:59Z",
+          "message": "Container image \"mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:56:43Z",
+            "name": "kafka-2.18d07919b44ff872",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:56:43Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:57:59Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:56:43Z",
+            "name": "kafka-2.18d07919b62f182f",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:56:43Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:57:59Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:56:43Z",
+            "name": "kafka-2.18d07919bc3c3711",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 10,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:56:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:57:22Z",
+          "message": "Back-off restarting failed container redpanda in pod kafka-2_proofix-case-12(8e1e7c42-cb87-4ed0-b405-3cf22ca49e49)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:56:45Z",
+            "name": "kafka-2.18d0791a231e45bd",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "BackOff",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:01:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:01:06Z",
+          "message": "Stopping container redpanda",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:01:06Z",
+            "name": "kafka-2.18d0795709bb11f4",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T04:01:07.636881Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-12/kafka-2 to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:01:07Z",
+            "name": "kafka-2.18d079573bb48e84",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:01:08Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:02:40Z",
+          "message": "Container image \"mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:01:08Z",
+            "name": "kafka-2.18d07957678894f1",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:01:08Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:02:40Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:01:08Z",
+            "name": "kafka-2.18d079576ac6ee15",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:01:08Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:02:40Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:01:08Z",
+            "name": "kafka-2.18d0795771a07674",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 13,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:01:10Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:01:49Z",
+          "message": "Back-off restarting failed container redpanda in pod kafka-2_proofix-case-12(d377743b-ca26-4848-9049-8e05fc7302b5)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:01:10Z",
+            "name": "kafka-2.18d07957e5658b99",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "BackOff",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:10:16Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:10:16Z",
+          "message": "Stopping container redpanda",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:10:16Z",
+            "name": "kafka-2.18d079d6f3ee5564",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T04:10:17.625531Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-12/kafka-2 to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:10:17Z",
+            "name": "kafka-2.18d079d749955831",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 6,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:10:18Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:13:15Z",
+          "message": "Container image \"mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:10:18Z",
+            "name": "kafka-2.18d079d7887f749d",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 6,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:10:18Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:13:15Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:10:18Z",
+            "name": "kafka-2.18d079d78abd8cda",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 6,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:10:18Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:13:15Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:10:18Z",
+            "name": "kafka-2.18d079d790c9a400",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 15,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:10:20Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:11:57Z",
+          "message": "Back-off restarting failed container redpanda in pod kafka-2_proofix-case-12(f21ce47b-814d-45fe-92be-26a11be31454)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:10:20Z",
+            "name": "kafka-2.18d079d7e4dd66a8",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "BackOff",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:10:57Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:10:57Z",
+          "message": "Startup probe failed: Get \"http://10.42.0.42:9644/v1/status/ready\": dial tcp 10.42.0.42:9644: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:10:57Z",
+            "name": "kafka-2.18d079e0ae1b692c",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:19:31Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:19:31Z",
+          "message": "Stopping container redpanda",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:19:31Z",
+            "name": "kafka-2.18d07a58223ea5a1",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T04:19:32.616424Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-12/kafka-2 to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:19:32Z",
+            "name": "kafka-2.18d07a58819e457d",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:19:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:20:50Z",
+          "message": "Container image \"mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:19:33Z",
+            "name": "kafka-2.18d07a58ab95a214",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:19:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:20:50Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:19:33Z",
+            "name": "kafka-2.18d07a58ae451191",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 5,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:19:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:20:50Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:19:33Z",
+            "name": "kafka-2.18d07a58b5994c80",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 8,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:19:34Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:20:13Z",
+          "message": "Back-off restarting failed container redpanda in pod kafka-2_proofix-case-12(08878b4b-f05b-47bb-8b42-dd39c3b89776)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:19:34Z",
+            "name": "kafka-2.18d07a59096e347d",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "BackOff",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:23:43Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:23:43Z",
+          "message": "Stopping container redpanda",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:23:43Z",
+            "name": "kafka-2.18d07a92e5674adc",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T04:23:44.615135Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-12/kafka-2 to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:23:44Z",
+            "name": "kafka-2.18d07a932de97450",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 3,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:23:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:23:57Z",
+          "message": "Container image \"mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:23:45Z",
+            "name": "kafka-2.18d07a936b1b3575",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 3,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:23:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:23:57Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:23:45Z",
+            "name": "kafka-2.18d07a936cde10de",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 3,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:23:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:23:57Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:23:45Z",
+            "name": "kafka-2.18d07a93729e433e",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 6,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T04:23:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "kafka-2",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:24:05Z",
+          "message": "Back-off restarting failed container redpanda in pod kafka-2_proofix-case-12(cd8ad402-566c-478d-a384-5fd2f10d16cc)",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T04:23:47Z",
+            "name": "kafka-2.18d07a93beb87689",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "BackOff",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 8,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T01:14:13Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "StatefulSet",
+            "name": "kafka",
+            "namespace": "proofix-case-12"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T04:23:44Z",
+          "message": "Create Pod kafka-2 in StatefulSet kafka successful",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:56:42Z",
+            "name": "kafka.18d021a719a2f622",
+            "namespace": "proofix-case-12"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "statefulset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "statefulset-controller"
+          },
+          "type": "Normal"
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/events#7ff67370a3d2"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "10.128.0.6",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"e2:9b:26:59:21:0e\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "10.128.0.6",
+              "k3s.io/hostname": "vm-5",
+              "k3s.io/internal-ip": "10.128.0.6",
+              "k3s.io/node-args": "[\"server\",\"--disable\",\"traefik\",\"--write-kubeconfig-mode\",\"644\"]",
+              "k3s.io/node-config-hash": "Y735WCEK5OA7WRV7XHI7EBVBQNG2C7ABWJO2R25H2YIAEAJQVALA====",
+              "k3s.io/node-env": "{}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-28T22:44:50Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "vm-5",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s"
+            },
+            "name": "vm-5"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://vm-5"
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "10.128.0.6",
+                "type": "InternalIP"
+              },
+              {
+                "address": "vm-5",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "4",
+              "ephemeral-storage": "19586931083",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "4",
+              "ephemeral-storage": "20134592Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-30T04:20:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T04:20:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T04:20:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T04:20:14Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "mirror.gcr.io/redpandadata/redpanda@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb"
+                ],
+                "sizeBytes": 215609105
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc"
+                ],
+                "sizeBytes": 20824433
+              },
+              {
+                "names": [
+                  "docker.io/library/python@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31"
+                ],
+                "sizeBytes": 18039622
+              },
+              {
+                "names": [
+                  "docker.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                  "mirror.gcr.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f"
+                ],
+                "sizeBytes": 17271797
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/library/busybox@sha256:b7f3d86d6e84fc17718c48bcde1450807faa2d56704205c697b4bd5df7b9e29f"
+                ],
+                "sizeBytes": 2207471
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-library-busybox@sha256:101b4afd76732482eff9b95cae5f94bcf295e521fbec4e01b69c5421f3f3f3e5",
+                  "docker.io/rancher/mirrored-library-busybox:1.37.0"
+                ],
+                "sizeBytes": 2151353
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "c651aad1-71e7-41df-9076-feb6f556e586",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-1066-gcp",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "5be10a4e69117c059c223b3d952a1a55",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 22.04.5 LTS",
+              "swap": {
+                "capacity": 8383578112
+              },
+              "systemUUID": "5be10a4e-6911-7c05-9c22-3b3d952a1a55"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#8a2da1639455"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:17Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-38296aa2-f797-4103-8bd1-fadfda756426"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-kafka-1",
+              "namespace": "proofix-case-12"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-38296aa2-f797-4103-8bd1-fadfda756426_proofix-case-12_data-kafka-1"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T01:14:17Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:18Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-3ac15b18-0982-491f-943b-f48d1acfad2f"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-kafka-2",
+              "namespace": "proofix-case-12"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-3ac15b18-0982-491f-943b-f48d1acfad2f_proofix-case-12_data-kafka-2"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T01:14:18Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T22:28:55Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-62e47472-8a6a-4a73-acf9-c0f2d973c212"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "64Mi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "uploads",
+              "namespace": "proofix-case-14"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-62e47472-8a6a-4a73-acf9-c0f2d973c212_proofix-case-14_uploads"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T22:28:55Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-30T03:52:33Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-91ff1596-2ba9-413b-81ec-116b6b04160a"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "3Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-redpanda-0",
+              "namespace": "proofix-case-11"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-91ff1596-2ba9-413b-81ec-116b6b04160a_proofix-case-11_data-redpanda-0"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-30T03:52:33Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:16Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-9857a772-3137-44a2-be3a-0275d55e7fdf"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-kafka-0",
+              "namespace": "proofix-case-12"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-9857a772-3137-44a2-be3a-0275d55e7fdf_proofix-case-12_data-kafka-0"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T01:14:16Z",
+            "phase": "Bound"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#f3f298cd25dd"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

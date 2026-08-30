@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-04",
+  "elapsed_seconds": 91.03685695002787,
+  "infrastructure_error": "ConnectionResetError: [Errno 104] Connection reset by peer",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-04-react-t3-20260829T191047Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": false
+}

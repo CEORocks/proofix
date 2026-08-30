@@ -1,0 +1,68 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-05",
+  "elapsed_seconds": 122.27235181300011,
+  "initial_snapshot_sha256": "8681babdbbbe16740e2d7b62bb049e068b3ad4d51ec3207fd3a595b215a0f41b",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-05",
+    "disposition": "failed",
+    "evidence_closed": true,
+    "reason": "The recommendations-api Deployment in namespace proofix-case-05 has a scheduling deadlock caused by a hard (required) podAntiAffinity rule with topologyKey 'kubernetes.io/hostname'. With only one eligible node (vm-4) in the cluster hosting an existing recommendations-api replica, the remaining replica cannot be scheduled and remains in Pending state with FailedScheduling events ('didn't match pod anti-affinity rules'). The node has sufficient allocatable resources and no pressure conditions or taints preventing scheduling. The root cause is the unsatisfiable required hostname anti-affinity rule on the single-node pool, which can be resolved by converting the rule to preferredDuringSchedulingIgnoredDuringExecution or relaxing the topology domain.",
+    "recovered": false,
+    "run_id": "case-05-react-t3-20260830T020922Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.043,
+        "healthy": true,
+        "p95_latency_ms": 4.312440000148854,
+        "source": "slo/http-and-pods#54ebd28f9a5d",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.3501099999048165,
+        "source": "slo/http-and-pods#7c655a18d701",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.3864099998245365,
+        "source": "slo/http-and-pods#e179aa5aa2f5",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-05-react-t3-20260830T020922Z/trajectory.jsonl"
+  },
+  "run_id": "case-05-react-t3-20260830T020922Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-05",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-05-react-t3-20260830T020922Z",
+    "system": "react"
+  }
+}

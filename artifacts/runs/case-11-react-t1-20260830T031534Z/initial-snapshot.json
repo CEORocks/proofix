@@ -1,0 +1,3773 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "generateName": "orders-consumer-575c4bdbcf-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "orders-consumer",
+              "pod-template-hash": "575c4bdbcf",
+              "proofix.io/case": "CASE-11"
+            },
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "orders-consumer-575c4bdbcf"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "/app/consumer.py"
+                ],
+                "env": [
+                  {
+                    "name": "PYTHONPATH",
+                    "value": "/deps"
+                  },
+                  {
+                    "name": "BOOTSTRAP_SERVERS",
+                    "value": "redpanda-0.redpanda.proofix-case-11.svc.cluster.local:9092"
+                  },
+                  {
+                    "name": "PROCESS_SECONDS",
+                    "value": "0.04"
+                  }
+                ],
+                "image": "mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 20,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "consumer",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 5,
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "48Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "app"
+                  },
+                  {
+                    "mountPath": "/deps",
+                    "name": "deps"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-mrmbj",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "initContainers": [
+              {
+                "args": [
+                  "pip install --disable-pip-version-check --no-cache-dir --require-hashes --target /deps -r /app/requirements.txt"
+                ],
+                "command": [
+                  "sh",
+                  "-ec"
+                ],
+                "image": "mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "install-kafka-client",
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "app"
+                  },
+                  {
+                    "mountPath": "/deps",
+                    "name": "deps"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-mrmbj",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "nodeName": "vm-5",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 15,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "orders-app"
+                },
+                "name": "app"
+              },
+              {
+                "emptyDir": {
+                  "sizeLimit": "32Mi"
+                },
+                "name": "deps"
+              },
+              {
+                "name": "kube-api-access-mrmbj",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "50m",
+              "memory": "48Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:16:06Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:16:12Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:16:12Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "50m",
+                  "memory": "48Mi"
+                },
+                "containerID": "containerd://c208051d20ddc1e1195a86cf87d780fb41cd0a85e1200dbe52ee6136ad8d823c",
+                "image": "sha256:de975f3f5997fef7d279dd25b8aea9e2abed6e7c2e9a5c4d095dab12db393471",
+                "imageID": "docker.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                "lastState": {},
+                "name": "consumer",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "48Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-30T03:16:06Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4,
+                      6,
+                      10,
+                      11,
+                      20,
+                      26,
+                      27
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "app"
+                  },
+                  {
+                    "mountPath": "/deps",
+                    "name": "deps"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-mrmbj",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.6",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.6"
+              }
+            ],
+            "initContainerStatuses": [
+              {
+                "containerID": "containerd://e4e736ed59246d0187befb35b15eb2a0d972c8cabd65791089a71cd69543dd3c",
+                "image": "sha256:de975f3f5997fef7d279dd25b8aea9e2abed6e7c2e9a5c4d095dab12db393471",
+                "imageID": "docker.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                "lastState": {},
+                "name": "install-kafka-client",
+                "ready": true,
+                "resources": {},
+                "restartCount": 0,
+                "started": false,
+                "state": {
+                  "terminated": {
+                    "containerID": "containerd://e4e736ed59246d0187befb35b15eb2a0d972c8cabd65791089a71cd69543dd3c",
+                    "exitCode": 0,
+                    "finishedAt": "2026-08-30T03:16:05Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-08-30T03:15:58Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4,
+                      6,
+                      10,
+                      11,
+                      20,
+                      26,
+                      27
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "app"
+                  },
+                  {
+                    "mountPath": "/deps",
+                    "name": "deps"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-mrmbj",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.225",
+            "podIPs": [
+              {
+                "ip": "10.42.0.225"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "28m",
+                "memory": "48Mi"
+              }
+            },
+            "startTime": "2026-08-30T03:15:56Z"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "generateName": "orders-producer-584bd65986-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "orders-producer",
+              "pod-template-hash": "584bd65986",
+              "proofix.io/case": "CASE-11"
+            },
+            "name": "orders-producer-584bd65986-t97jl",
+            "namespace": "proofix-case-11",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "orders-producer-584bd65986"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "python3",
+                  "/app/producer.py"
+                ],
+                "env": [
+                  {
+                    "name": "PROXY_URL",
+                    "value": "http://redpanda:8082"
+                  },
+                  {
+                    "name": "RECORDS_PER_SECOND",
+                    "value": "42"
+                  }
+                ],
+                "image": "mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "producer",
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "48Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "app"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-tx8jt",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "vm-5",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "orders-app"
+                },
+                "name": "app"
+              },
+              {
+                "name": "kube-api-access-tx8jt",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "50m",
+              "memory": "48Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "50m",
+                  "memory": "48Mi"
+                },
+                "containerID": "containerd://b437ba36b9fe1a9fa4d72435e4d10f742004bcd06078045159dcf2c779718abc",
+                "image": "sha256:de975f3f5997fef7d279dd25b8aea9e2abed6e7c2e9a5c4d095dab12db393471",
+                "imageID": "docker.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                "lastState": {},
+                "name": "producer",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "48Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-30T03:15:58Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0,
+                      1,
+                      2,
+                      3,
+                      4,
+                      6,
+                      10,
+                      11,
+                      20,
+                      26,
+                      27
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/app",
+                    "name": "app"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-tx8jt",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.6",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.6"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.222",
+            "podIPs": [
+              {
+                "ip": "10.42.0.222"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "250m",
+                "memory": "128Mi"
+              },
+              "requests": {
+                "cpu": "50m",
+                "memory": "48Mi"
+              }
+            },
+            "startTime": "2026-08-30T03:15:56Z"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:44Z",
+            "generateName": "redpanda-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "redpanda",
+              "apps.kubernetes.io/pod-index": "0",
+              "controller-revision-hash": "redpanda-d98498cc9",
+              "proofix.io/case": "CASE-11",
+              "statefulset.kubernetes.io/pod-name": "redpanda-0"
+            },
+            "name": "redpanda-0",
+            "namespace": "proofix-case-11",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "StatefulSet",
+                "name": "redpanda"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "command": [
+                  "/bin/sh",
+                  "-ec",
+                  "exec rpk redpanda start \\\n  --mode dev-container \\\n  --smp 1 \\\n  --memory 768M \\\n  --default-log-level=warn \\\n  --kafka-addr internal://0.0.0.0:9092 \\\n  --advertise-kafka-addr internal://redpanda-0.redpanda.proofix-case-11.svc.cluster.local:9092 \\\n  --pandaproxy-addr 0.0.0.0:8082 \\\n  --advertise-pandaproxy-addr redpanda-0.redpanda.proofix-case-11.svc.cluster.local:8082 \\\n  --rpc-addr 0.0.0.0:33145 \\\n  --advertise-rpc-addr redpanda-0.redpanda.proofix-case-11.svc.cluster.local:33145\n"
+                ],
+                "image": "mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 30,
+                  "periodSeconds": 10,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "redpanda",
+                "ports": [
+                  {
+                    "containerPort": 9092,
+                    "name": "kafka",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 8082,
+                    "name": "proxy",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 9644,
+                    "name": "admin",
+                    "protocol": "TCP"
+                  },
+                  {
+                    "containerPort": 33145,
+                    "name": "rpc",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "startupProbe": {
+                  "failureThreshold": 60,
+                  "httpGet": {
+                    "path": "/v1/status/ready",
+                    "port": "admin",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 5,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-prc6p",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "hostname": "redpanda-0",
+            "nodeName": "vm-5",
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "subdomain": "redpanda",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "data-redpanda-0"
+                }
+              },
+              {
+                "name": "kube-api-access-prc6p",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "allocatedResources": {
+              "cpu": "500m",
+              "memory": "768Mi"
+            },
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:50Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:48Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:55Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:55Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-30T03:15:48Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "500m",
+                  "memory": "768Mi"
+                },
+                "containerID": "containerd://7112785ef0c0b9461043636628075b44750b5ab859cb560c0bfb27b3ebfbc460",
+                "image": "sha256:41c7723586bc7fc032cd5b59758c2ceb1da7207655e00558fcfd9ccfd142edb2",
+                "imageID": "mirror.gcr.io/redpandadata/redpanda@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                "lastState": {},
+                "name": "redpanda",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "500m",
+                    "memory": "768Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-30T03:15:50Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 101,
+                    "supplementalGroups": [
+                      101
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/lib/redpanda/data",
+                    "name": "data"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-prc6p",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "10.128.0.6",
+            "hostIPs": [
+              {
+                "ip": "10.128.0.6"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.42.0.221",
+            "podIPs": [
+              {
+                "ip": "10.42.0.221"
+              }
+            ],
+            "qosClass": "Burstable",
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "1Gi"
+              },
+              "requests": {
+                "cpu": "489m",
+                "memory": "768Mi"
+              }
+            },
+            "startTime": "2026-08-30T03:15:48Z"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#70e6a178a2f8"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "1"
+            },
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "generation": 2,
+            "name": "orders-consumer",
+            "namespace": "proofix-case-11"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "orders-consumer"
+              }
+            },
+            "strategy": {
+              "rollingUpdate": {
+                "maxSurge": "25%",
+                "maxUnavailable": "25%"
+              },
+              "type": "RollingUpdate"
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/name": "orders-consumer",
+                  "proofix.io/case": "CASE-11"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "command": [
+                      "python3",
+                      "/app/consumer.py"
+                    ],
+                    "env": [
+                      {
+                        "name": "PYTHONPATH",
+                        "value": "/deps"
+                      },
+                      {
+                        "name": "BOOTSTRAP_SERVERS",
+                        "value": "redpanda-0.redpanda.proofix-case-11.svc.cluster.local:9092"
+                      },
+                      {
+                        "name": "PROCESS_SECONDS",
+                        "value": "0.04"
+                      }
+                    ],
+                    "image": "mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "initialDelaySeconds": 20,
+                      "periodSeconds": 10,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "name": "consumer",
+                    "ports": [
+                      {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "initialDelaySeconds": 5,
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "250m",
+                        "memory": "128Mi"
+                      },
+                      "requests": {
+                        "cpu": "50m",
+                        "memory": "48Mi"
+                      }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/app",
+                        "name": "app"
+                      },
+                      {
+                        "mountPath": "/deps",
+                        "name": "deps"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "initContainers": [
+                  {
+                    "args": [
+                      "pip install --disable-pip-version-check --no-cache-dir --require-hashes --target /deps -r /app/requirements.txt"
+                    ],
+                    "command": [
+                      "sh",
+                      "-ec"
+                    ],
+                    "image": "mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "install-kafka-client",
+                    "resources": {},
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/app",
+                        "name": "app"
+                      },
+                      {
+                        "mountPath": "/deps",
+                        "name": "deps"
+                      }
+                    ]
+                  }
+                ],
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 15,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "orders-app"
+                    },
+                    "name": "app"
+                  },
+                  {
+                    "emptyDir": {
+                      "sizeLimit": "32Mi"
+                    },
+                    "name": "deps"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-30T03:16:16Z",
+                "lastUpdateTime": "2026-08-30T03:16:16Z",
+                "message": "Deployment has minimum availability.",
+                "reason": "MinimumReplicasAvailable",
+                "status": "True",
+                "type": "Available"
+              },
+              {
+                "lastTransitionTime": "2026-08-30T03:15:56Z",
+                "lastUpdateTime": "2026-08-30T03:16:16Z",
+                "message": "ReplicaSet \"orders-consumer-575c4bdbcf\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              }
+            ],
+            "observedGeneration": 2,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "updatedReplicas": 1
+          }
+        },
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "1"
+            },
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "generation": 1,
+            "name": "orders-producer",
+            "namespace": "proofix-case-11"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "orders-producer"
+              }
+            },
+            "strategy": {
+              "rollingUpdate": {
+                "maxSurge": "25%",
+                "maxUnavailable": "25%"
+              },
+              "type": "RollingUpdate"
+            },
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/name": "orders-producer",
+                  "proofix.io/case": "CASE-11"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "command": [
+                      "python3",
+                      "/app/producer.py"
+                    ],
+                    "env": [
+                      {
+                        "name": "PROXY_URL",
+                        "value": "http://redpanda:8082"
+                      },
+                      {
+                        "name": "RECORDS_PER_SECOND",
+                        "value": "42"
+                      }
+                    ],
+                    "image": "mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "producer",
+                    "resources": {
+                      "limits": {
+                        "cpu": "250m",
+                        "memory": "128Mi"
+                      },
+                      "requests": {
+                        "cpu": "50m",
+                        "memory": "48Mi"
+                      }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/app",
+                        "name": "app"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 30,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "orders-app"
+                    },
+                    "name": "app"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "availableReplicas": 1,
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-30T03:15:58Z",
+                "lastUpdateTime": "2026-08-30T03:15:58Z",
+                "message": "Deployment has minimum availability.",
+                "reason": "MinimumReplicasAvailable",
+                "status": "True",
+                "type": "Available"
+              },
+              {
+                "lastTransitionTime": "2026-08-30T03:15:56Z",
+                "lastUpdateTime": "2026-08-30T03:15:58Z",
+                "message": "ReplicaSet \"orders-producer-584bd65986\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              }
+            ],
+            "observedGeneration": 1,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "updatedReplicas": 1
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#b16a4192018e"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "StatefulSet",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T03:15:43Z",
+            "generation": 1,
+            "name": "redpanda",
+            "namespace": "proofix-case-11"
+          },
+          "spec": {
+            "persistentVolumeClaimRetentionPolicy": {
+              "whenDeleted": "Retain",
+              "whenScaled": "Retain"
+            },
+            "podManagementPolicy": "OrderedReady",
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "redpanda"
+              }
+            },
+            "serviceName": "redpanda",
+            "template": {
+              "metadata": {
+                "labels": {
+                  "app.kubernetes.io/name": "redpanda",
+                  "proofix.io/case": "CASE-11"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "command": [
+                      "/bin/sh",
+                      "-ec",
+                      "exec rpk redpanda start \\\n  --mode dev-container \\\n  --smp 1 \\\n  --memory 768M \\\n  --default-log-level=warn \\\n  --kafka-addr internal://0.0.0.0:9092 \\\n  --advertise-kafka-addr internal://redpanda-0.redpanda.proofix-case-11.svc.cluster.local:9092 \\\n  --pandaproxy-addr 0.0.0.0:8082 \\\n  --advertise-pandaproxy-addr redpanda-0.redpanda.proofix-case-11.svc.cluster.local:8082 \\\n  --rpc-addr 0.0.0.0:33145 \\\n  --advertise-rpc-addr redpanda-0.redpanda.proofix-case-11.svc.cluster.local:33145\n"
+                    ],
+                    "image": "mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/v1/status/ready",
+                        "port": "admin",
+                        "scheme": "HTTP"
+                      },
+                      "initialDelaySeconds": 30,
+                      "periodSeconds": 10,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "name": "redpanda",
+                    "ports": [
+                      {
+                        "containerPort": 9092,
+                        "name": "kafka",
+                        "protocol": "TCP"
+                      },
+                      {
+                        "containerPort": 8082,
+                        "name": "proxy",
+                        "protocol": "TCP"
+                      },
+                      {
+                        "containerPort": 9644,
+                        "name": "admin",
+                        "protocol": "TCP"
+                      },
+                      {
+                        "containerPort": 33145,
+                        "name": "rpc",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/v1/status/ready",
+                        "port": "admin",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "1",
+                        "memory": "1Gi"
+                      },
+                      "requests": {
+                        "cpu": "500m",
+                        "memory": "768Mi"
+                      }
+                    },
+                    "startupProbe": {
+                      "failureThreshold": 60,
+                      "httpGet": {
+                        "path": "/v1/status/ready",
+                        "port": "admin",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 5,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/var/lib/redpanda/data",
+                        "name": "data"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 30
+              }
+            },
+            "updateStrategy": {
+              "rollingUpdate": {
+                "partition": 0
+              },
+              "type": "RollingUpdate"
+            },
+            "volumeClaimTemplates": [
+              {
+                "apiVersion": "v1",
+                "kind": "PersistentVolumeClaim",
+                "metadata": {
+                  "labels": {
+                    "proofix.io/case": "CASE-11"
+                  },
+                  "name": "data"
+                },
+                "spec": {
+                  "accessModes": [
+                    "ReadWriteOnce"
+                  ],
+                  "resources": {
+                    "requests": {
+                      "storage": "3Gi"
+                    }
+                  },
+                  "storageClassName": "local-path",
+                  "volumeMode": "Filesystem"
+                },
+                "status": {
+                  "phase": "Pending"
+                }
+              }
+            ]
+          },
+          "status": {
+            "availableReplicas": 1,
+            "collisionCount": 0,
+            "currentReplicas": 1,
+            "currentRevision": "redpanda-d98498cc9",
+            "observedGeneration": 1,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "updateRevision": "redpanda-d98498cc9",
+            "updatedReplicas": 1
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#cbc88ca73006"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer",
+            "namespace": "proofix-case-11"
+          },
+          "spec": {
+            "clusterIP": "10.43.89.74",
+            "clusterIPs": [
+              "10.43.89.74"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "http",
+                "nodePort": 30081,
+                "port": 8080,
+                "protocol": "TCP",
+                "targetPort": "http"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "orders-consumer"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T03:15:43Z",
+            "name": "redpanda",
+            "namespace": "proofix-case-11"
+          },
+          "spec": {
+            "clusterIP": "None",
+            "clusterIPs": [
+              "None"
+            ],
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "kafka",
+                "port": 9092,
+                "protocol": "TCP",
+                "targetPort": 9092
+              },
+              {
+                "name": "proxy",
+                "port": 8082,
+                "protocol": "TCP",
+                "targetPort": 8082
+              },
+              {
+                "name": "admin",
+                "port": 9644,
+                "protocol": "TCP",
+                "targetPort": 9644
+              },
+              {
+                "name": "rpc",
+                "port": 33145,
+                "protocol": "TCP",
+                "targetPort": 33145
+              }
+            ],
+            "publishNotReadyAddresses": true,
+            "selector": {
+              "app.kubernetes.io/name": "redpanda"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#a4b5c16032bb"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller"
+            },
+            "name": "orders-consumer",
+            "namespace": "proofix-case-11"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "ip": "10.42.0.225",
+                  "nodeName": "vm-5",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "orders-consumer-575c4bdbcf-gf94f",
+                    "namespace": "proofix-case-11"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "http",
+                  "port": 8080,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "annotations": {
+              "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-30T03:15:48Z"
+            },
+            "creationTimestamp": "2026-08-30T03:15:43Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+              "service.kubernetes.io/headless": ""
+            },
+            "name": "redpanda",
+            "namespace": "proofix-case-11"
+          },
+          "subsets": [
+            {
+              "addresses": [
+                {
+                  "hostname": "redpanda-0",
+                  "ip": "10.42.0.221",
+                  "nodeName": "vm-5",
+                  "targetRef": {
+                    "kind": "Pod",
+                    "name": "redpanda-0",
+                    "namespace": "proofix-case-11"
+                  }
+                }
+              ],
+              "ports": [
+                {
+                  "name": "admin",
+                  "port": 9644,
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "proxy",
+                  "port": 8082,
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "rpc",
+                  "port": 33145,
+                  "protocol": "TCP"
+                },
+                {
+                  "name": "kafka",
+                  "port": 9092,
+                  "protocol": "TCP"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#0c7dab13b8b9"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolumeClaim",
+          "metadata": {
+            "annotations": {
+              "pv.kubernetes.io/bind-completed": "yes",
+              "pv.kubernetes.io/bound-by-controller": "yes",
+              "volume.beta.kubernetes.io/storage-provisioner": "rancher.io/local-path",
+              "volume.kubernetes.io/selected-node": "vm-5",
+              "volume.kubernetes.io/storage-provisioner": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-30T03:15:44Z",
+            "finalizers": [
+              "kubernetes.io/pvc-protection"
+            ],
+            "labels": {
+              "app.kubernetes.io/name": "redpanda",
+              "proofix.io/case": "CASE-11"
+            },
+            "name": "data-redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "resources": {
+              "requests": {
+                "storage": "3Gi"
+              }
+            },
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem",
+            "volumeName": "pvc-4e6c616a-c0e1-4844-bd65-96d6bdd9a076"
+          },
+          "status": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "3Gi"
+            },
+            "phase": "Bound"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#bdfc6e3ec634"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODc5NTcwODEwHhcNMjYwODI4MjE0NDQxWhcNMzYwODI1MjE0NDQx\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODc5NTcwODEwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAARWgVGw6nOw809O0OEhTQe+eTcVQunIC7NJEVItLEZ/\npUlsBZBkDWTBrQmEszh9cVbd4rLLC+jOr3ncCJE5zRcGo0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUDPpXxcIn/sHD3GGj2UeJ\n2eQu8p0wCgYIKoZIzj0EAwIDSAAwRQIgHhyFYQt3wGrkKF5nzArUgDBHm8EHShOg\n0CyrpZINh+kCIQDTVtlST2e75t1UUCLrLY2LIYVzJ0so+/5lBOw90qXX6A==\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-30T03:15:43Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-11"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "consumer.py": "import json\nimport os\nimport signal\nimport threading\nimport time\nfrom http.server import BaseHTTPRequestHandler, ThreadingHTTPServer\nfrom kafka import KafkaConsumer\nfrom kafka.errors import KafkaError\n\nBROKERS = os.environ[\"BOOTSTRAP_SERVERS\"].split(\",\")\nGROUP = \"proofix-orders-v1\"\nINSTANCE = os.environ.get(\"HOSTNAME\", \"orders-consumer\")\nPROCESS_SECONDS = float(os.environ.get(\"PROCESS_SECONDS\", \"0.04\"))\nstate = {\"processed\": 0, \"errors\": 0, \"last_fetch\": 0.0, \"instance\": INSTANCE}\nstopping = False\n\nclass Health(BaseHTTPRequestHandler):\n    def do_GET(self):\n        healthy = state[\"last_fetch\"] and time.monotonic() - state[\"last_fetch\"] < 15\n        payload = json.dumps({**state, \"healthy\": bool(healthy)}).encode()\n        self.send_response(200 if healthy else 503)\n        self.send_header(\"Content-Type\", \"application/json\")\n        self.send_header(\"Content-Length\", str(len(payload)))\n        self.end_headers()\n        self.wfile.write(payload)\n    def log_message(self, *_args):\n        return\n\ndef shutdown(*_args):\n    global stopping\n    stopping = True\n\nsignal.signal(signal.SIGTERM, shutdown)\nserver = ThreadingHTTPServer((\"0.0.0.0\", 8080), Health)\nthreading.Thread(target=server.serve_forever, daemon=True).start()\n\nwhile not stopping:\n    consumer = None\n    try:\n        consumer = KafkaConsumer(\n            \"orders\",\n            bootstrap_servers=BROKERS,\n            group_id=GROUP,\n            client_id=INSTANCE,\n            enable_auto_commit=False,\n            auto_offset_reset=\"earliest\",\n            max_poll_records=10,\n            request_timeout_ms=15000,\n            api_version_auto_timeout_ms=15000,\n        )\n        for _record in consumer:\n            if stopping:\n                break\n            state[\"last_fetch\"] = time.monotonic()\n            time.sleep(PROCESS_SECONDS)\n            consumer.commit()\n            state[\"processed\"] += 1\n    except (KafkaError, OSError, ValueError) as error:\n        state[\"errors\"] += 1\n        print(json.dumps({\"event\": \"consumer_error\", \"instance\": INSTANCE, \"error\": str(error)}), flush=True)\n        time.sleep(2)\n    finally:\n        if consumer is not None:\n            consumer.close(autocommit=False)\n",
+            "producer.py": "import json\nimport os\nimport time\nimport urllib.error\nimport urllib.request\n\nPROXY = os.environ[\"PROXY_URL\"].rstrip(\"/\")\nRATE = int(os.environ.get(\"RECORDS_PER_SECOND\", \"42\"))\nTOPIC = \"orders\"\n\ndef post(path, payload):\n    request = urllib.request.Request(\n        PROXY + path,\n        data=json.dumps(payload).encode(),\n        headers={\n            \"Content-Type\": \"application/vnd.kafka.json.v2+json\",\n            \"Accept\": \"application/vnd.kafka.v2+json\",\n        },\n        method=\"POST\",\n    )\n    with urllib.request.urlopen(request, timeout=10) as response:\n        body = response.read()\n        if response.status not in (200, 204):\n            raise RuntimeError(f\"produce status {response.status}: {body!r}\")\n        return json.loads(body) if body else {}\n\nsequence = 0\nwhile True:\n    started = time.monotonic()\n    records = []\n    for _ in range(RATE):\n        records.append({\n            \"partition\": sequence % 6,\n            \"value\": {\"order_id\": f\"order-{sequence:012d}\", \"sequence\": sequence},\n        })\n        sequence += 1\n    try:\n        result = post(f\"/topics/{TOPIC}\", {\"records\": records})\n        errors = [item for item in result.get(\"offsets\", []) if item.get(\"error_code\")]\n        if errors:\n            raise RuntimeError(f\"produce errors: {errors}\")\n        print(json.dumps({\"event\": \"produced\", \"count\": RATE, \"sequence\": sequence}), flush=True)\n    except (OSError, urllib.error.HTTPError, RuntimeError) as error:\n        print(json.dumps({\"event\": \"producer_error\", \"error\": str(error)}), flush=True)\n        time.sleep(1)\n        continue\n    time.sleep(max(0.0, 1.0 - (time.monotonic() - started)))\n",
+            "requirements.txt": "kafka-python==2.2.15 --hash=sha256:84c0993cd4f7f2f01e92d8104ea9bdf631aff72fc5e6ea62eb3bdf1d56528fc3\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-app",
+            "namespace": "proofix-case-11"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#b2f0e1087040"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:43Z",
+            "name": "default",
+            "namespace": "proofix-case-11"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#571ebdeafd75"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:44Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "data-redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:44Z",
+          "message": "waiting for first consumer to be created before binding",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:44Z",
+            "name": "data-redpanda-0.18d076dd3ab8741f",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "WaitForFirstConsumer",
+          "reportingComponent": "persistentvolume-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "persistentvolume-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 3,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:44Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "data-redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:45Z",
+          "message": "Waiting for a volume to be created either by the external provisioner 'rancher.io/local-path' or manually by the system administrator. If volume creation is delayed, please verify that the provisioner is running and correctly registered.",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:44Z",
+            "name": "data-redpanda-0.18d076dd3d2af19b",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "ExternalProvisioning",
+          "reportingComponent": "persistentvolume-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "persistentvolume-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:44Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "data-redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:44Z",
+          "message": "External provisioner is provisioning volume for claim \"proofix-case-11/data-redpanda-0\"",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:44Z",
+            "name": "data-redpanda-0.18d076dd3dff8310",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Provisioning",
+          "reportingComponent": "rancher.io/local-path_local-path-provisioner-77b9867795-sbcxt_3b766daa-57c5-462c-b8e1-b9b3502d5971",
+          "reportingInstance": "",
+          "source": {
+            "component": "rancher.io/local-path_local-path-provisioner-77b9867795-sbcxt_3b766daa-57c5-462c-b8e1-b9b3502d5971"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:47Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "PersistentVolumeClaim",
+            "name": "data-redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:47Z",
+          "message": "Successfully provisioned volume pvc-4e6c616a-c0e1-4844-bd65-96d6bdd9a076",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:47Z",
+            "name": "data-redpanda-0.18d076ddf5ce6e77",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "ProvisioningSucceeded",
+          "reportingComponent": "rancher.io/local-path_local-path-provisioner-77b9867795-sbcxt_3b766daa-57c5-462c-b8e1-b9b3502d5971",
+          "reportingInstance": "",
+          "source": {
+            "component": "rancher.io/local-path_local-path-provisioner-77b9867795-sbcxt_3b766daa-57c5-462c-b8e1-b9b3502d5971"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:15:56.931015Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-11/orders-consumer-575c4bdbcf-gf94f to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer-575c4bdbcf-gf94f.18d076e0190b74b5",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container image \"mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-gf94f.18d076e068887f22",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-gf94f.18d076e06f3783ce",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-gf94f.18d076e085c984c8",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container image \"mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-gf94f.18d076e25ae1c2a8",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-gf94f.18d076e25dfa6431",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-gf94f",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-gf94f.18d076e268eb7308",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:15:56.886075Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-11/orders-consumer-575c4bdbcf-lsgcs to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076e0165dce9a",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container image \"mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076e05c1a03c0",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076e062d55e70",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076e07e09f4d7",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container image \"mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076e25a89a70b",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076e25e8ab037",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076e26a013943",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-lsgcs",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:41Z",
+          "message": "Stopping container consumer",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:41Z",
+            "name": "orders-consumer-575c4bdbcf-lsgcs.18d076ea66918b7a",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:15:56.911454Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-11/orders-consumer-575c4bdbcf-x6nm4 to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e017e10794",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container image \"mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e0654ee014",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e06d000656",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.initContainers{install-kafka-client}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e0884c70e1",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container image \"mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e25a6135bb",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e25d140e9a",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:06Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:06Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:06Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e267085a37",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 2,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:11Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:11Z",
+          "message": "Readiness probe failed: HTTP probe failed with statuscode: 503",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:11Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076e3926fb12c",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:41Z",
+          "message": "Stopping container consumer",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:41Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076ea6679bd06",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:41Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{consumer}",
+            "kind": "Pod",
+            "name": "orders-consumer-575c4bdbcf-x6nm4",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:41Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.224:8080/healthz\": dial tcp 10.42.0.224:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:41Z",
+            "name": "orders-consumer-575c4bdbcf-x6nm4.18d076ea8ee8112d",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:56Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "orders-consumer-575c4bdbcf",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:56Z",
+          "message": "Created pod: orders-consumer-575c4bdbcf-lsgcs",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer-575c4bdbcf.18d076e01319be30",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:56Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "orders-consumer-575c4bdbcf",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:56Z",
+          "message": "Created pod: orders-consumer-575c4bdbcf-x6nm4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer-575c4bdbcf.18d076e0155dfc58",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:56Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "orders-consumer-575c4bdbcf",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:56Z",
+          "message": "Created pod: orders-consumer-575c4bdbcf-gf94f",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer-575c4bdbcf.18d076e016cf45a8",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:41Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "orders-consumer-575c4bdbcf",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:41Z",
+          "message": "Deleted pod: orders-consumer-575c4bdbcf-x6nm4",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:41Z",
+            "name": "orders-consumer-575c4bdbcf.18d076ea65f6dab6",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:41Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "orders-consumer-575c4bdbcf",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:41Z",
+          "message": "Deleted pod: orders-consumer-575c4bdbcf-lsgcs",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:41Z",
+            "name": "orders-consumer-575c4bdbcf.18d076ea660df90b",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:56Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "orders-consumer",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:56Z",
+          "message": "Scaled up replica set orders-consumer-575c4bdbcf from 0 to 3",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-consumer.18d076e01211ac43",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:16:41Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "orders-consumer",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:16:41Z",
+          "message": "Scaled down replica set orders-consumer-575c4bdbcf from 3 to 1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:16:41Z",
+            "name": "orders-consumer.18d076ea6589acf5",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:15:56.803939Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "orders-producer-584bd65986-t97jl",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-11/orders-producer-584bd65986-t97jl to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-producer-584bd65986-t97jl.18d076e011787007",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{producer}",
+            "kind": "Pod",
+            "name": "orders-producer-584bd65986-t97jl",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container image \"mirror.gcr.io/library/python:3.12.5-alpine3.20@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-producer-584bd65986-t97jl.18d076e05b6d6e1d",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{producer}",
+            "kind": "Pod",
+            "name": "orders-producer-584bd65986-t97jl",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-producer-584bd65986-t97jl.18d076e061b85b44",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:58Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{producer}",
+            "kind": "Pod",
+            "name": "orders-producer-584bd65986-t97jl",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:58Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:58Z",
+            "name": "orders-producer-584bd65986-t97jl.18d076e0772f17e7",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:56Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "orders-producer-584bd65986",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:56Z",
+          "message": "Created pod: orders-producer-584bd65986-t97jl",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-producer-584bd65986.18d076e010dc3063",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:56Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "name": "orders-producer",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:56Z",
+          "message": "Scaled up replica set orders-producer-584bd65986 from 0 to 1",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:56Z",
+            "name": "orders-producer.18d076e01044e178",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "ScalingReplicaSet",
+          "reportingComponent": "deployment-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "deployment-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-30T03:15:48.651678Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-11/redpanda-0 to vm-5",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:48Z",
+            "name": "redpanda-0.18d076de2b8edc51",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-vm-5",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:50Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:50Z",
+          "message": "Container image \"mirror.gcr.io/redpandadata/redpanda:v25.3.8@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:50Z",
+            "name": "redpanda-0.18d076de87183094",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:50Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:50Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:50Z",
+            "name": "redpanda-0.18d076de89e615d6",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:50Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{redpanda}",
+            "kind": "Pod",
+            "name": "redpanda-0",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:50Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:50Z",
+            "name": "redpanda-0.18d076de9044d56f",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "vm-5",
+          "source": {
+            "component": "kubelet",
+            "host": "vm-5"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:44Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "StatefulSet",
+            "name": "redpanda",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:44Z",
+          "message": "Create Claim data-redpanda-0 Pod redpanda-0 in StatefulSet redpanda success",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:44Z",
+            "name": "redpanda.18d076dd3a967390",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "statefulset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "statefulset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-30T03:15:44Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "StatefulSet",
+            "name": "redpanda",
+            "namespace": "proofix-case-11"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-30T03:15:44Z",
+          "message": "Create Pod redpanda-0 in StatefulSet redpanda successful",
+          "metadata": {
+            "creationTimestamp": "2026-08-30T03:15:44Z",
+            "name": "redpanda.18d076dd3b6f45a7",
+            "namespace": "proofix-case-11"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "statefulset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "statefulset-controller"
+          },
+          "type": "Normal"
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/events#da17905a7873"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "10.128.0.6",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"e2:9b:26:59:21:0e\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "10.128.0.6",
+              "k3s.io/hostname": "vm-5",
+              "k3s.io/internal-ip": "10.128.0.6",
+              "k3s.io/node-args": "[\"server\",\"--disable\",\"traefik\",\"--write-kubeconfig-mode\",\"644\"]",
+              "k3s.io/node-config-hash": "Y735WCEK5OA7WRV7XHI7EBVBQNG2C7ABWJO2R25H2YIAEAJQVALA====",
+              "k3s.io/node-env": "{}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-28T22:44:50Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "vm-5",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s"
+            },
+            "name": "vm-5"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://vm-5"
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "10.128.0.6",
+                "type": "InternalIP"
+              },
+              {
+                "address": "vm-5",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "4",
+              "ephemeral-storage": "19586931083",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "4",
+              "ephemeral-storage": "20134592Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16374180Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-30T03:13:59Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T03:13:59Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T03:13:59Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-30T03:13:59Z",
+                "lastTransitionTime": "2026-08-28T22:44:50Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "mirror.gcr.io/redpandadata/redpanda@sha256:7ac11e18ee95a18237154f6d8d79631cdeb4e4eff44bf365a9d3acecc18209fb"
+                ],
+                "sizeBytes": 215609105
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc"
+                ],
+                "sizeBytes": 20824433
+              },
+              {
+                "names": [
+                  "docker.io/library/python@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31"
+                ],
+                "sizeBytes": 18039622
+              },
+              {
+                "names": [
+                  "docker.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f",
+                  "mirror.gcr.io/library/python@sha256:bb5d0ac04679d78a1258e7dfacdb4d9bdefe9a10480eaf9b4bb09445d076369f"
+                ],
+                "sizeBytes": 17271797
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/library/busybox@sha256:b7f3d86d6e84fc17718c48bcde1450807faa2d56704205c697b4bd5df7b9e29f"
+                ],
+                "sizeBytes": 2207471
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-library-busybox@sha256:101b4afd76732482eff9b95cae5f94bcf295e521fbec4e01b69c5421f3f3f3e5",
+                  "docker.io/rancher/mirrored-library-busybox:1.37.0"
+                ],
+                "sizeBytes": 2151353
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "c651aad1-71e7-41df-9076-feb6f556e586",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-1066-gcp",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "5be10a4e69117c059c223b3d952a1a55",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 22.04.5 LTS",
+              "swap": {
+                "capacity": 8383578112
+              },
+              "systemUUID": "5be10a4e-6911-7c05-9c22-3b3d952a1a55"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#0c6b31ca78b0"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:17Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-38296aa2-f797-4103-8bd1-fadfda756426"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-kafka-1",
+              "namespace": "proofix-case-12"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-38296aa2-f797-4103-8bd1-fadfda756426_proofix-case-12_data-kafka-1"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T01:14:17Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:18Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-3ac15b18-0982-491f-943b-f48d1acfad2f"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-kafka-2",
+              "namespace": "proofix-case-12"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-3ac15b18-0982-491f-943b-f48d1acfad2f_proofix-case-12_data-kafka-2"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T01:14:18Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-30T03:15:47Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-4e6c616a-c0e1-4844-bd65-96d6bdd9a076"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "3Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-redpanda-0",
+              "namespace": "proofix-case-11"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-4e6c616a-c0e1-4844-bd65-96d6bdd9a076_proofix-case-11_data-redpanda-0"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-30T03:15:47Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T22:28:55Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-62e47472-8a6a-4a73-acf9-c0f2d973c212"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "64Mi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "uploads",
+              "namespace": "proofix-case-14"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-62e47472-8a6a-4a73-acf9-c0f2d973c212_proofix-case-14_uploads"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T22:28:55Z",
+            "phase": "Bound"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "PersistentVolume",
+          "metadata": {
+            "annotations": {
+              "local.path.provisioner/selected-node": "vm-5",
+              "pv.kubernetes.io/provisioned-by": "rancher.io/local-path"
+            },
+            "creationTimestamp": "2026-08-29T01:14:16Z",
+            "finalizers": [
+              "kubernetes.io/pv-protection"
+            ],
+            "name": "pvc-9857a772-3137-44a2-be3a-0275d55e7fdf"
+          },
+          "spec": {
+            "accessModes": [
+              "ReadWriteOnce"
+            ],
+            "capacity": {
+              "storage": "4Gi"
+            },
+            "claimRef": {
+              "apiVersion": "v1",
+              "kind": "PersistentVolumeClaim",
+              "name": "data-kafka-0",
+              "namespace": "proofix-case-12"
+            },
+            "local": {
+              "path": "/var/lib/rancher/k3s/storage/pvc-9857a772-3137-44a2-be3a-0275d55e7fdf_proofix-case-12_data-kafka-0"
+            },
+            "nodeAffinity": {
+              "required": {
+                "nodeSelectorTerms": [
+                  {
+                    "matchExpressions": [
+                      {
+                        "key": "kubernetes.io/hostname",
+                        "operator": "In",
+                        "values": [
+                          "vm-5"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "persistentVolumeReclaimPolicy": "Delete",
+            "storageClassName": "local-path",
+            "volumeMode": "Filesystem"
+          },
+          "status": {
+            "lastPhaseTransitionTime": "2026-08-29T01:14:16Z",
+            "phase": "Bound"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#0a053628c810"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

@@ -1,0 +1,69 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-12",
+  "elapsed_seconds": 263.3582673750352,
+  "initial_snapshot_sha256": "3ef8f04ee541ed7dbb067305558505d1b041f8d1fd4f5330684f1c6e2ce0ea34",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-12",
+    "disposition": "failed",
+    "evidence_closed": false,
+    "reason": "action rejected: reversible action is missing a rollback specification",
+    "recovered": false,
+    "run_id": "case-12-react-t1-20260830T035626Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.2551890686154366,
+        "source": "slo/http-and-pods#fe742599643d",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.1067939922213554,
+        "source": "slo/http-and-pods#48afde921403",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.0489539708942175,
+        "source": "slo/http-and-pods#4e686b62ef1d",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-12-react-t1-20260830T035626Z/trajectory.jsonl"
+  },
+  "run_id": "case-12-react-t1-20260830T035626Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-12",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": true,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-12-react-t1-20260830T035626Z",
+    "system": "react"
+  }
+}

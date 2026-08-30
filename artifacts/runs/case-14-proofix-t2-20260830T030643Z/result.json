@@ -1,0 +1,66 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-14",
+  "elapsed_seconds": 250.37061103607994,
+  "initial_snapshot_sha256": "a7a67ba11f398d699c346714f314d78c03ebb3c9f154ab3ab1d92138d92cbb0b",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-14",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "all critical claims are tied to collected evidence",
+    "recovered": true,
+    "run_id": "case-14-proofix-t2-20260830T030643Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 14.258437091484666,
+        "source": "slo/http-and-pods#419f972c2387",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 14.745285036042333,
+        "source": "slo/http-and-pods#0846cb89be13",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 14.926702016964555,
+        "source": "slo/http-and-pods#3e27f6a240f5",
+        "window_seconds": 10
+      }
+    ],
+    "system": "proofix",
+    "trace_path": "/home/ahmad_shakeelceo/Documents/ChatGPT/micro1/artifacts/runs/case-14-proofix-t2-20260830T030643Z/trajectory.jsonl"
+  },
+  "run_id": "case-14-proofix-t2-20260830T030643Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 2,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-14",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": false,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "fixture_semantic_verification"
+    ],
+    "passed": false,
+    "run_id": "case-14-proofix-t2-20260830T030643Z",
+    "system": "proofix"
+  }
+}

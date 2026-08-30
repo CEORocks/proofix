@@ -1,0 +1,2283 @@
+[
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "annotations": {
+              "proofix.io/profile": "fault-disk-selector-no-toleration"
+            },
+            "creationTimestamp": "2026-08-29T19:12:26Z",
+            "generateName": "reports-worker-85c5f84f96-",
+            "generation": 1,
+            "labels": {
+              "app.kubernetes.io/name": "reports-worker",
+              "pod-template-hash": "85c5f84f96",
+              "proofix.io/case": "CASE-04"
+            },
+            "name": "reports-worker-85c5f84f96-nt79f",
+            "namespace": "proofix-case-04",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "reports-worker-85c5f84f96"
+              }
+            ]
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "reports-worker",
+                "ports": [
+                  {
+                    "containerPort": 8080,
+                    "name": "http",
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/healthz",
+                    "port": "http",
+                    "scheme": "HTTP"
+                  },
+                  "periodSeconds": 2,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "64Mi"
+                  },
+                  "requests": {
+                    "cpu": "20m",
+                    "memory": "16Mi"
+                  }
+                },
+                "securityContext": {
+                  "allowPrivilegeEscalation": false,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 101
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/etc/nginx/conf.d/default.conf",
+                    "name": "config",
+                    "readOnly": true,
+                    "subPath": "default.conf"
+                  },
+                  {
+                    "mountPath": "/var/cache/nginx",
+                    "name": "cache"
+                  },
+                  {
+                    "mountPath": "/var/run",
+                    "name": "run"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-rrh9x",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeSelector": {
+              "disk": "nvme",
+              "storage": "nvme"
+            },
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "configMap": {
+                  "defaultMode": 420,
+                  "name": "reports-nginx"
+                },
+                "name": "config"
+              },
+              {
+                "emptyDir": {},
+                "name": "cache"
+              },
+              {
+                "emptyDir": {},
+                "name": "run"
+              },
+              {
+                "name": "kube-api-access-rrh9x",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-29T19:12:26Z",
+                "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+                "observedGeneration": 1,
+                "reason": "Unschedulable",
+                "status": "False",
+                "type": "PodScheduled"
+              }
+            ],
+            "phase": "Pending",
+            "qosClass": "Burstable"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/pods#97432700052a"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "metadata": {
+            "annotations": {
+              "deployment.kubernetes.io/revision": "15"
+            },
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "generation": 15,
+            "labels": {
+              "proofix.io/case": "CASE-04"
+            },
+            "name": "reports-worker",
+            "namespace": "proofix-case-04"
+          },
+          "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "reports-worker"
+              }
+            },
+            "strategy": {
+              "type": "Recreate"
+            },
+            "template": {
+              "metadata": {
+                "annotations": {
+                  "proofix.io/profile": "fault-disk-selector-no-toleration"
+                },
+                "labels": {
+                  "app.kubernetes.io/name": "reports-worker",
+                  "proofix.io/case": "CASE-04"
+                }
+              },
+              "spec": {
+                "containers": [
+                  {
+                    "image": "nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "reports-worker",
+                    "ports": [
+                      {
+                        "containerPort": 8080,
+                        "name": "http",
+                        "protocol": "TCP"
+                      }
+                    ],
+                    "readinessProbe": {
+                      "failureThreshold": 3,
+                      "httpGet": {
+                        "path": "/healthz",
+                        "port": "http",
+                        "scheme": "HTTP"
+                      },
+                      "periodSeconds": 2,
+                      "successThreshold": 1,
+                      "timeoutSeconds": 1
+                    },
+                    "resources": {
+                      "limits": {
+                        "cpu": "250m",
+                        "memory": "64Mi"
+                      },
+                      "requests": {
+                        "cpu": "20m",
+                        "memory": "16Mi"
+                      }
+                    },
+                    "securityContext": {
+                      "allowPrivilegeEscalation": false,
+                      "capabilities": {
+                        "drop": [
+                          "ALL"
+                        ]
+                      },
+                      "readOnlyRootFilesystem": true,
+                      "runAsNonRoot": true,
+                      "runAsUser": 101
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                      {
+                        "mountPath": "/etc/nginx/conf.d/default.conf",
+                        "name": "config",
+                        "readOnly": true,
+                        "subPath": "default.conf"
+                      },
+                      {
+                        "mountPath": "/var/cache/nginx",
+                        "name": "cache"
+                      },
+                      {
+                        "mountPath": "/var/run",
+                        "name": "run"
+                      }
+                    ]
+                  }
+                ],
+                "dnsPolicy": "ClusterFirst",
+                "nodeSelector": {
+                  "disk": "nvme",
+                  "storage": "nvme"
+                },
+                "restartPolicy": "Always",
+                "schedulerName": "default-scheduler",
+                "securityContext": {},
+                "terminationGracePeriodSeconds": 30,
+                "volumes": [
+                  {
+                    "configMap": {
+                      "defaultMode": 420,
+                      "name": "reports-nginx"
+                    },
+                    "name": "config"
+                  },
+                  {
+                    "emptyDir": {},
+                    "name": "cache"
+                  },
+                  {
+                    "emptyDir": {},
+                    "name": "run"
+                  }
+                ]
+              }
+            }
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2026-08-29T19:02:48Z",
+                "lastUpdateTime": "2026-08-29T19:04:28Z",
+                "message": "ReplicaSet \"reports-worker-79bbd64df8\" has successfully progressed.",
+                "reason": "NewReplicaSetAvailable",
+                "status": "True",
+                "type": "Progressing"
+              },
+              {
+                "lastTransitionTime": "2026-08-29T19:12:25Z",
+                "lastUpdateTime": "2026-08-29T19:12:25Z",
+                "message": "Deployment does not have minimum availability.",
+                "reason": "MinimumReplicasUnavailable",
+                "status": "False",
+                "type": "Available"
+              }
+            ],
+            "observedGeneration": 15,
+            "replicas": 1,
+            "terminatingReplicas": 0,
+            "unavailableReplicas": 1,
+            "updatedReplicas": 1
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/deployments#2e66dedede40"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/statefulsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/daemonsets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "name": "reports-worker",
+            "namespace": "proofix-case-04"
+          },
+          "spec": {
+            "clusterIP": "10.43.48.1",
+            "clusterIPs": [
+              "10.43.48.1"
+            ],
+            "externalTrafficPolicy": "Cluster",
+            "internalTrafficPolicy": "Cluster",
+            "ipFamilies": [
+              "IPv4"
+            ],
+            "ipFamilyPolicy": "SingleStack",
+            "ports": [
+              {
+                "name": "http",
+                "nodePort": 30074,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": "http"
+              }
+            ],
+            "selector": {
+              "app.kubernetes.io/name": "reports-worker"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+          },
+          "status": {
+            "loadBalancer": {}
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/services#069cce4b1a2f"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Endpoints",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "labels": {
+              "endpoints.kubernetes.io/managed-by": "endpoint-controller"
+            },
+            "name": "reports-worker",
+            "namespace": "proofix-case-04"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/endpoints#80d98d174148"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumeclaims#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/resourcequotas#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca-crl.pem": ""
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "labels": {
+              "istio.io/config": "true"
+            },
+            "name": "istio-ca-crl",
+            "namespace": "proofix-case-04"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "root-cert.pem": "-----BEGIN CERTIFICATE-----\nMIIC/DCCAeSgAwIBAgIQYghIc8CR+NC78QQfxHNhYjANBgkqhkiG9w0BAQsFADAY\nMRYwFAYDVQQKEw1jbHVzdGVyLmxvY2FsMB4XDTI2MDgyODIyNDYyOVoXDTM2MDgy\nNTIyNDYyOVowGDEWMBQGA1UEChMNY2x1c3Rlci5sb2NhbDCCASIwDQYJKoZIhvcN\nAQEBBQADggEPADCCAQoCggEBAN4Kd52GdQORqJC5EfTC5fBJCGVRVXqPDHSCGySL\nmVq6g6q3c5tM1ZSAtwCWlJBbR0atuwyWzhtvzK2zv8Xiw6hFaN5IvvI6P8CYeGwC\nPNjqaAITQNnXu8s2NZn1OvuZIvfH2TEhdcRdiNGhGmb8GPlphCcgnvAhSh2K7QHs\nR68qNjkP1hrjQ5gKST8CNPSPKH//NFuRuxD/s2GWYsVb32WJ5oXIALjsllBPafwC\nLNwxHv2v67KTgFxfSBBCGtw92jWLAxxfODNryGCkkq4qbldyvFBQQMFDnC58SGt3\ndxCLG4YLkYcKH/7oIOS8wOSJFX+YdMPcSG1V474prc+JR8kCAwEAAaNCMEAwDgYD\nVR0PAQH/BAQDAgIEMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFAIC9zsRi3x0\nI0lrxaZ84jvRH2oVMA0GCSqGSIb3DQEBCwUAA4IBAQC2E70HBIH8tfZdn6RHv5uY\nvVhsNCz1MC6X+4/fJbGZhXsUFgQj79BH/I7qXmr+lI4GpkoDy4NXD18BQoZJIrAQ\nZIalEv+LbYb1d2PYx2UurmP7qUB7qdJxU7l1qaoVPpNwqol9kGVIIXapNijFxOB5\ngflEUKuyC7XMJsjK8hV+QCalX8ViofgIxLWwATCe2FA1joxpqYPZk2fAQkoQoT0U\nl+LXJi/JvK0QLTcwGrzUt/0CtXpLeQgpDiTaLc+O8NjXRhzTzRv3D8Bd7VCgR4Du\nlkYTGdfKnieyhwaAP9F4Xv4i+e9WiJFVKqugvlkMt9upnsYVOuTgt5gCqnXlY9g9\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "labels": {
+              "istio.io/config": "true"
+            },
+            "name": "istio-ca-root-cert",
+            "namespace": "proofix-case-04"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "ca.crt": "-----BEGIN CERTIFICATE-----\nMIIBdjCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy\ndmVyLWNhQDE3ODc5NTcwNzEwHhcNMjYwODI4MjE0NDMxWhcNMzYwODI1MjE0NDMx\nWjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE3ODc5NTcwNzEwWTATBgcqhkjO\nPQIBBggqhkjOPQMBBwNCAAQivTJ+Au7VNNzVHoDf2k85hDWUzfP0r+XOBDtE254A\n+AzFcwRjoJBCem5RjjsfwsSn/Q3hYxZQgOTInMAP95D/o0IwQDAOBgNVHQ8BAf8E\nBAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUWxESyzpuNGBhOqKCK75k\nsdDnc+MwCgYIKoZIzj0EAwIDRwAwRAIgR1swBetat9YKIGtYxom0qSzTAJFm/uV3\n1zO6z2+DRjoCIHIxVsFbRl8DtzvVe9crt0KGJfcZAbF6GivWMc+9su9v\n-----END CERTIFICATE-----\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {
+              "kubernetes.io/description": "Contains a CA bundle that can be used to verify the kube-apiserver when using internal endpoints such as the internal service IP or kubernetes.default.svc. No other usage is guaranteed across distributions of Kubernetes clusters."
+            },
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "name": "kube-root-ca.crt",
+            "namespace": "proofix-case-04"
+          }
+        },
+        {
+          "apiVersion": "v1",
+          "data": {
+            "default.conf": "server {\n  listen 8080;\n  access_log off;\n  location /healthz { return 200 'healthy\\n'; }\n  location / { return 200 'reports-ok\\n'; }\n}\n"
+          },
+          "kind": "ConfigMap",
+          "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "name": "reports-nginx",
+            "namespace": "proofix-case-04"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/configmaps#b8e64b585b1e"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/roles#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/rolebindings#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "ServiceAccount",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:02:48Z",
+            "name": "default",
+            "namespace": "proofix-case-04"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/serviceaccounts#58aab63521e5"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/secrets#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:08:32.976889Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-fng57",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-04/reports-worker-66db97dcf5-fng57 to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:32Z",
+            "name": "reports-worker-66db97dcf5-fng57.18d05c47358c1c64",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:32Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-66db97dcf5",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:32Z",
+          "message": "Created pod: reports-worker-66db97dcf5-fng57",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:32Z",
+            "name": "reports-worker-66db97dcf5.18d05c47351ad83e",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:32Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-mcvwf",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:32Z",
+          "message": "Stopping container reports-worker",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:32Z",
+            "name": "reports-worker-79bbd64df8-mcvwf.18d05c4721314d5d",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:32Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-79bbd64df8",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:32Z",
+          "message": "Deleted pod: reports-worker-79bbd64df8-mcvwf",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:32Z",
+            "name": "reports-worker-79bbd64df8.18d05c4720f5d5e5",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-fng57",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:33Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:33Z",
+            "name": "reports-worker-66db97dcf5-fng57.18d05c4758bcb85a",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-fng57",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:33Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:33Z",
+            "name": "reports-worker-66db97dcf5-fng57.18d05c4759fc8ec7",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-fng57",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:33Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:33Z",
+            "name": "reports-worker-66db97dcf5-fng57.18d05c475dc7df06",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:33Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-fng57",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:33Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.41:8080/healthz\": dial tcp 10.42.0.41:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:33Z",
+            "name": "reports-worker-66db97dcf5-fng57.18d05c475e01761b",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:38Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-fng57",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:38Z",
+          "message": "Stopping container reports-worker",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:38Z",
+            "name": "reports-worker-66db97dcf5-fng57.18d05c4888199627",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:38Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-66db97dcf5",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:38Z",
+          "message": "Deleted pod: reports-worker-66db97dcf5-fng57",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:38Z",
+            "name": "reports-worker-66db97dcf5.18d05c4887ffecc9",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:08:38.920415Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-85c5f84f96-s87zw",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:38Z",
+            "name": "reports-worker-85c5f84f96-s87zw.18d05c4897cf1310",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:08:38Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-85c5f84f96",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:08:38Z",
+          "message": "Created pod: reports-worker-85c5f84f96-s87zw",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:08:38Z",
+            "name": "reports-worker-85c5f84f96.18d05c4897c4f0df",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:10:18.851794Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-zf9q4",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-04/reports-worker-79bbd64df8-zf9q4 to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:18Z",
+            "name": "reports-worker-79bbd64df8-zf9q4.18d05c5fdc2eed46",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:18Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-79bbd64df8",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:18Z",
+          "message": "Created pod: reports-worker-79bbd64df8-zf9q4",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:18Z",
+            "name": "reports-worker-79bbd64df8.18d05c5fdbeb88bc",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:18Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-85c5f84f96",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:18Z",
+          "message": "Deleted pod: reports-worker-85c5f84f96-s87zw",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:18Z",
+            "name": "reports-worker-85c5f84f96.18d05c5fd0e589ac",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-zf9q4",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:19Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:19Z",
+            "name": "reports-worker-79bbd64df8-zf9q4.18d05c600dd1211b",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-zf9q4",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:19Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:19Z",
+            "name": "reports-worker-79bbd64df8-zf9q4.18d05c600f1b5625",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-zf9q4",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:19Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:19Z",
+            "name": "reports-worker-79bbd64df8-zf9q4.18d05c6013e1dc9d",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-zf9q4",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:19Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.42:8080/healthz\": dial tcp 10.42.0.42:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:19Z",
+            "name": "reports-worker-79bbd64df8-zf9q4.18d05c60144e2dcd",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:44Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-zf9q4",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:44Z",
+          "message": "Stopping container reports-worker",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:44Z",
+            "name": "reports-worker-79bbd64df8-zf9q4.18d05c65e4c836b3",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:44Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-79bbd64df8",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:44Z",
+          "message": "Deleted pod: reports-worker-79bbd64df8-zf9q4",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:44Z",
+            "name": "reports-worker-79bbd64df8.18d05c65e4b1d10a",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:10:45.086984Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-9s8hv",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-04/reports-worker-66db97dcf5-9s8hv to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:45Z",
+            "name": "reports-worker-66db97dcf5-9s8hv.18d05c65f7ec2d88",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-9s8hv",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:45Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:45Z",
+            "name": "reports-worker-66db97dcf5-9s8hv.18d05c6616bcac65",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-9s8hv",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:45Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:45Z",
+            "name": "reports-worker-66db97dcf5-9s8hv.18d05c66186aa8b6",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-9s8hv",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:45Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:45Z",
+            "name": "reports-worker-66db97dcf5-9s8hv.18d05c661e1bcc3d",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:45Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-9s8hv",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:45Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.43:8080/healthz\": dial tcp 10.42.0.43:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:45Z",
+            "name": "reports-worker-66db97dcf5-9s8hv.18d05c661e5674d3",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:45Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-66db97dcf5",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:45Z",
+          "message": "Created pod: reports-worker-66db97dcf5-9s8hv",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:45Z",
+            "name": "reports-worker-66db97dcf5.18d05c65f79db262",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:51Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-9s8hv",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:51Z",
+          "message": "Stopping container reports-worker",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:51Z",
+            "name": "reports-worker-66db97dcf5-9s8hv.18d05c678b4ef10d",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:51Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-66db97dcf5",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:51Z",
+          "message": "Deleted pod: reports-worker-66db97dcf5-9s8hv",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:51Z",
+            "name": "reports-worker-66db97dcf5.18d05c678a7c8544",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:10:52.257189Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-85c5f84f96-lzb8r",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:52Z",
+            "name": "reports-worker-85c5f84f96-lzb8r.18d05c67a34cc453",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:10:52Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-85c5f84f96",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:10:52Z",
+          "message": "Created pod: reports-worker-85c5f84f96-lzb8r",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:10:52Z",
+            "name": "reports-worker-85c5f84f96.18d05c67a348c3b6",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:11:51.520960Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-np5rg",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-04/reports-worker-79bbd64df8-np5rg to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:11:51Z",
+            "name": "reports-worker-79bbd64df8-np5rg.18d05c756fb2305f",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:11:51Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-79bbd64df8",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:11:51Z",
+          "message": "Created pod: reports-worker-79bbd64df8-np5rg",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:11:51Z",
+            "name": "reports-worker-79bbd64df8.18d05c756ef2583b",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:11:51Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-85c5f84f96",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:11:51Z",
+          "message": "Deleted pod: reports-worker-85c5f84f96-lzb8r",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:11:51Z",
+            "name": "reports-worker-85c5f84f96.18d05c756d67c255",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:11:52Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-np5rg",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:11:52Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:11:52Z",
+            "name": "reports-worker-79bbd64df8-np5rg.18d05c75911e781d",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:11:52Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-np5rg",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:11:52Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:11:52Z",
+            "name": "reports-worker-79bbd64df8-np5rg.18d05c75928d6ffa",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:11:52Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-np5rg",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:11:52Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:11:52Z",
+            "name": "reports-worker-79bbd64df8-np5rg.18d05c7596c4334e",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:11:52Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-np5rg",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:11:52Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.44:8080/healthz\": dial tcp 10.42.0.44:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:11:52Z",
+            "name": "reports-worker-79bbd64df8-np5rg.18d05c7596f09c58",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "action": "Binding",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:12:19.467481Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-664vw",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "Successfully assigned proofix-case-04/reports-worker-66db97dcf5-664vw to node1",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:19Z",
+            "name": "reports-worker-66db97dcf5-664vw.18d05c7bf170529f",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Scheduled",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:19Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-66db97dcf5",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:19Z",
+          "message": "Created pod: reports-worker-66db97dcf5-664vw",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:19Z",
+            "name": "reports-worker-66db97dcf5.18d05c7bf1056b09",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:19Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-79bbd64df8-np5rg",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:19Z",
+          "message": "Stopping container reports-worker",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:19Z",
+            "name": "reports-worker-79bbd64df8-np5rg.18d05c7bdb236cb9",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:19Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-79bbd64df8",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:19Z",
+          "message": "Deleted pod: reports-worker-79bbd64df8-np5rg",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:19Z",
+            "name": "reports-worker-79bbd64df8.18d05c7bdaebc69a",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:20Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-664vw",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:20Z",
+          "message": "Container image \"nginx:1.27.4-alpine@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc\" already present on machine and can be accessed by the pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:20Z",
+            "name": "reports-worker-66db97dcf5-664vw.18d05c7c131ca5dd",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Pulled",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:20Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-664vw",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:20Z",
+          "message": "Container created",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:20Z",
+            "name": "reports-worker-66db97dcf5-664vw.18d05c7c145032cd",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Created",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:20Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-664vw",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:20Z",
+          "message": "Container started",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:20Z",
+            "name": "reports-worker-66db97dcf5-664vw.18d05c7c1827f605",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Started",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:20Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-664vw",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:20Z",
+          "message": "Readiness probe failed: Get \"http://10.42.0.45:8080/healthz\": dial tcp 10.42.0.45:8080: connect: connection refused",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:20Z",
+            "name": "reports-worker-66db97dcf5-664vw.18d05c7c18753b0b",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Unhealthy",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:25Z",
+          "involvedObject": {
+            "apiVersion": "v1",
+            "fieldPath": "spec.containers{reports-worker}",
+            "kind": "Pod",
+            "name": "reports-worker-66db97dcf5-664vw",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:25Z",
+          "message": "Stopping container reports-worker",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:25Z",
+            "name": "reports-worker-66db97dcf5-664vw.18d05c7d4fcb8b49",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "Killing",
+          "reportingComponent": "kubelet",
+          "reportingInstance": "node1",
+          "source": {
+            "component": "kubelet",
+            "host": "node1"
+          },
+          "type": "Normal"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:25Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-66db97dcf5",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:25Z",
+          "message": "Deleted pod: reports-worker-66db97dcf5-664vw",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:25Z",
+            "name": "reports-worker-66db97dcf5.18d05c7d4fb27c24",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulDelete",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        },
+        {
+          "action": "Scheduling",
+          "apiVersion": "v1",
+          "eventTime": "2026-08-29T19:12:26.258280Z",
+          "firstTimestamp": null,
+          "involvedObject": {
+            "apiVersion": "v1",
+            "kind": "Pod",
+            "name": "reports-worker-85c5f84f96-nt79f",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": null,
+          "message": "0/1 nodes are available: 1 node(s) had untolerated taint(s). no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:26Z",
+            "name": "reports-worker-85c5f84f96-nt79f.18d05c7d86339879",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "FailedScheduling",
+          "reportingComponent": "default-scheduler",
+          "reportingInstance": "default-scheduler-node1",
+          "source": {},
+          "type": "Warning"
+        },
+        {
+          "apiVersion": "v1",
+          "count": 1,
+          "eventTime": null,
+          "firstTimestamp": "2026-08-29T19:12:26Z",
+          "involvedObject": {
+            "apiVersion": "apps/v1",
+            "kind": "ReplicaSet",
+            "name": "reports-worker-85c5f84f96",
+            "namespace": "proofix-case-04"
+          },
+          "kind": "Event",
+          "lastTimestamp": "2026-08-29T19:12:26Z",
+          "message": "Created pod: reports-worker-85c5f84f96-nt79f",
+          "metadata": {
+            "creationTimestamp": "2026-08-29T19:12:26Z",
+            "name": "reports-worker-85c5f84f96.18d05c7d8629d6a6",
+            "namespace": "proofix-case-04"
+          },
+          "reason": "SuccessfulCreate",
+          "reportingComponent": "replicaset-controller",
+          "reportingInstance": "",
+          "source": {
+            "component": "replicaset-controller"
+          },
+          "type": "Normal"
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "proofixOriginalItemCount": 97
+      }
+    },
+    "source": "kubectl/get/events#cbf04dbdeabb"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Node",
+          "metadata": {
+            "annotations": {
+              "alpha.kubernetes.io/provided-node-ip": "144.202.3.93",
+              "flannel.alpha.coreos.com/backend-data": "{\"VNI\":1,\"VtepMAC\":\"da:85:b3:22:3f:d1\"}",
+              "flannel.alpha.coreos.com/backend-type": "vxlan",
+              "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+              "flannel.alpha.coreos.com/public-ip": "144.202.3.93",
+              "k3s.io/hostname": "node1",
+              "k3s.io/internal-ip": "144.202.3.93",
+              "k3s.io/node-args": "[\"server\",\"--disable\",\"traefik\",\"--write-kubeconfig-mode\",\"644\"]",
+              "k3s.io/node-config-hash": "Y735WCEK5OA7WRV7XHI7EBVBQNG2C7ABWJO2R25H2YIAEAJQVALA====",
+              "k3s.io/node-env": "{}",
+              "node.alpha.kubernetes.io/ttl": "0",
+              "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+            },
+            "creationTimestamp": "2026-08-28T22:44:37Z",
+            "finalizers": [
+              "wrangler.cattle.io/node"
+            ],
+            "labels": {
+              "beta.kubernetes.io/arch": "amd64",
+              "beta.kubernetes.io/instance-type": "k3s",
+              "beta.kubernetes.io/os": "linux",
+              "kubernetes.io/arch": "amd64",
+              "kubernetes.io/hostname": "node1",
+              "kubernetes.io/os": "linux",
+              "node-role.kubernetes.io/control-plane": "true",
+              "node.kubernetes.io/instance-type": "k3s",
+              "proofix.io/case04-owned": "true",
+              "storage": "nvme"
+            },
+            "name": "node1"
+          },
+          "spec": {
+            "podCIDR": "10.42.0.0/24",
+            "podCIDRs": [
+              "10.42.0.0/24"
+            ],
+            "providerID": "k3s://node1",
+            "taints": [
+              {
+                "effect": "NoSchedule",
+                "key": "dedicated",
+                "value": "reports"
+              }
+            ]
+          },
+          "status": {
+            "addresses": [
+              {
+                "address": "144.202.3.93",
+                "type": "InternalIP"
+              },
+              {
+                "address": "node1",
+                "type": "Hostname"
+              }
+            ],
+            "allocatable": {
+              "cpu": "8",
+              "ephemeral-storage": "334228502881",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16369476Ki",
+              "pods": "110"
+            },
+            "capacity": {
+              "cpu": "8",
+              "ephemeral-storage": "343573708Ki",
+              "hugepages-1Gi": "0",
+              "hugepages-2Mi": "0",
+              "memory": "16369476Ki",
+              "pods": "110"
+            },
+            "conditions": [
+              {
+                "lastHeartbeatTime": "2026-08-29T19:12:17Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has sufficient memory available",
+                "reason": "KubeletHasSufficientMemory",
+                "status": "False",
+                "type": "MemoryPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-29T19:12:17Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has no disk pressure",
+                "reason": "KubeletHasNoDiskPressure",
+                "status": "False",
+                "type": "DiskPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-29T19:12:17Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet has sufficient PID available",
+                "reason": "KubeletHasSufficientPID",
+                "status": "False",
+                "type": "PIDPressure"
+              },
+              {
+                "lastHeartbeatTime": "2026-08-29T19:12:17Z",
+                "lastTransitionTime": "2026-08-28T22:44:37Z",
+                "message": "kubelet is posting ready status",
+                "reason": "KubeletReady",
+                "status": "True",
+                "type": "Ready"
+              }
+            ],
+            "daemonEndpoints": {
+              "kubeletEndpoint": {
+                "Port": 10250
+              }
+            },
+            "declaredFeatures": [
+              "ExtendWebSocketsToKubelet",
+              "InPlacePodLevelResourcesVerticalScaling",
+              "InPlacePodVerticalScalingInitContainers",
+              "RestartAllContainersOnContainerExits"
+            ],
+            "features": {
+              "supplementalGroupsPolicy": true
+            },
+            "images": [
+              {
+                "names": [
+                  "docker.io/library/eclipse-temurin@sha256:400014962ad7224461f945bb1cc3d7d5a1927ce15b8245b72d9cedcda554cd2a"
+                ],
+                "sizeBytes": 196246833
+              },
+              {
+                "names": [
+                  "docker.io/library/postgres@sha256:5660c2cbfea50c7a9127d17dc4e48543eedd3d7a41a595a2dfa572471e37e64c"
+                ],
+                "sizeBytes": 99175927
+              },
+              {
+                "names": [
+                  "registry.istio.io/release/proxyv2@sha256:43b6aeab7428470d3d0ea6b6f0bc217e5b36df2b279bba337643df48590226d9",
+                  "registry.istio.io/release/proxyv2:1.30.4"
+                ],
+                "sizeBytes": 88165018
+              },
+              {
+                "names": [
+                  "registry.istio.io/release/pilot@sha256:c236c1df5cc127fe193e5a17d8ece9cdd0dc17c5d89b4e20baf01d464f029dce",
+                  "registry.istio.io/release/pilot:1.30.4"
+                ],
+                "sizeBytes": 72480540
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-coredns-coredns@sha256:900f9c109f7a33545d3c811516e8376df9019147b750f5ce3e254468769176ea",
+                  "docker.io/rancher/mirrored-coredns-coredns:1.14.6"
+                ],
+                "sizeBytes": 23758055
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-metrics-server@sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0",
+                  "docker.io/rancher/mirrored-metrics-server:v0.9.0"
+                ],
+                "sizeBytes": 23258428
+              },
+              {
+                "names": [
+                  "docker.io/library/nginx@sha256:4ff102c5d78d254a6f0da062b3cf39eaf07f01eec0927fd21e219d0af8bc0591",
+                  "docker.io/library/nginx@sha256:a71e0884a7f1192ecf5decf062b67d46b54ad63f0cc1b8aa7e705f739a97c2fc",
+                  "docker.io/library/nginx:1.27.4-alpine"
+                ],
+                "sizeBytes": 20834790
+              },
+              {
+                "names": [
+                  "docker.io/rancher/local-path-provisioner@sha256:e757967a5ec338f6a9b371c5a9688bedaa8c3578ea3dd4db329ea0084be0a86f",
+                  "docker.io/rancher/local-path-provisioner:v0.0.37"
+                ],
+                "sizeBytes": 15066012
+              },
+              {
+                "names": [
+                  "docker.io/rancher/klipper-lb@sha256:910944bb0bd94f060a82a56ca1ea1c577d3e49b3473a093a47a985f32e92d94a",
+                  "docker.io/rancher/klipper-lb:v0.4.17"
+                ],
+                "sizeBytes": 5280144
+              },
+              {
+                "names": [
+                  "docker.io/library/busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662",
+                  "docker.io/library/busybox:1.36.1"
+                ],
+                "sizeBytes": 2217006
+              },
+              {
+                "names": [
+                  "docker.io/rancher/mirrored-pause@sha256:f548e0e8e3dc1896ca956272154dde3314e8cc4fde0a57577ee9fa1c63f5baf4",
+                  "docker.io/rancher/mirrored-pause:3.10.2"
+                ],
+                "sizeBytes": 320805
+              }
+            ],
+            "nodeInfo": {
+              "architecture": "amd64",
+              "bootID": "18e7b522-bdff-446d-81c7-f920736096ce",
+              "containerRuntimeVersion": "containerd://2.3.4-k3s1.36",
+              "kernelVersion": "6.8.0-138-generic",
+              "kubeProxyVersion": "",
+              "kubeletVersion": "v1.36.4+k3s1",
+              "machineID": "7c7400346644496f9a0a5e57ec700823",
+              "operatingSystem": "linux",
+              "osImage": "Ubuntu 24.04.4 LTS",
+              "swap": {
+                "capacity": 16971100160
+              },
+              "systemUUID": "2e6a969f-8c46-4da2-add3-8c0fc373745e"
+            },
+            "runtimeHandlers": [
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": ""
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": true,
+                  "userNamespaces": true
+                },
+                "name": "runc"
+              },
+              {
+                "features": {
+                  "recursiveReadOnlyMounts": false,
+                  "userNamespaces": false
+                },
+                "name": "runhcs-wcow-process"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/nodes#01010cdc24c3"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/persistentvolumes#e0a2a412a0dc"
+  },
+  {
+    "collected_at": null,
+    "data": {
+      "apiVersion": "v1",
+      "items": [],
+      "kind": "List",
+      "metadata": {}
+    },
+    "source": "kubectl/get/volumeattachments.storage.k8s.io#e0a2a412a0dc"
+  }
+]

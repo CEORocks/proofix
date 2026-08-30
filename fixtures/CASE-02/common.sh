@@ -20,9 +20,9 @@ require_tools() {
 }
 
 wait_fixture() {
-  kubectl rollout status deployment/proofix-dns-good -n "${namespace}" --timeout=180s
-  kubectl rollout status deployment/proofix-dns-bad -n "${namespace}" --timeout=180s
-  kubectl rollout status "deployment/${deployment}" -n "${namespace}" --timeout=180s
+  kubectl rollout status deployment/proofix-dns-good -n "${namespace}" --timeout=300s
+  kubectl rollout status deployment/proofix-dns-bad -n "${namespace}" --timeout=300s
+  kubectl rollout status "deployment/${deployment}" -n "${namespace}" --timeout=300s
 }
 
 save_original_corefile() {
@@ -57,7 +57,9 @@ apply_coredns_target() {
   rendered_file="$(mktemp)"
   patch_file="$(mktemp)"
 
-  kubectl get configmap/coredns -n kube-system \
+  # Always render from the immutable pre-fixture snapshot. This prevents a
+  # killed run from feeding a partially rendered Corefile into the next trial.
+  kubectl get configmap/proofix-case-02-coredns-original -n "${namespace}" \
     -o go-template='{{index .data "Corefile"}}' >"${current_file}"
   python3 "${fixture_dir}/corefile.py" --target "${target_ip}:5353" \
     <"${current_file}" >"${rendered_file}"
@@ -72,7 +74,7 @@ PY
     --patch-file "${patch_file}"
   rm -f -- "${current_file}" "${rendered_file}" "${patch_file}"
   kubectl rollout restart deployment/coredns -n kube-system
-  kubectl rollout status deployment/coredns -n kube-system --timeout=180s
+  kubectl rollout status deployment/coredns -n kube-system --timeout=300s
   wait_for_dns_target "${service}"
 }
 

@@ -1,0 +1,70 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-12",
+  "elapsed_seconds": 547.2612091070041,
+  "initial_snapshot_sha256": "0e95b839ad42182b97c88fcd84c2cbd1070ee71c875f30b18d05efa16276bc30",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-12",
+    "disposition": "rolled_back",
+    "evidence_closed": false,
+    "reason": "Pod kafka-2 remains in CrashLoopBackOff or cluster replication degrades further after patching the ConfigMap.",
+    "recovered": false,
+    "run_id": "case-12-proofix-t1-20260830T040051Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.0400069877505302,
+        "source": "slo/http-and-pods#5db9b2973cad",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 0.9648380801081657,
+        "source": "slo/http-and-pods#4d2033648a30",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 1.0,
+        "healthy": true,
+        "p95_latency_ms": 1.005986938253045,
+        "source": "slo/http-and-pods#8e2c8a95fdf9",
+        "window_seconds": 10
+      }
+    ],
+    "system": "proofix",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-12-proofix-t1-20260830T040051Z/trajectory.jsonl"
+  },
+  "run_id": "case-12-proofix-t1-20260830T040051Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-12",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": false,
+      "fixture_semantic_verification": false,
+      "live_recovery": false,
+      "recovery_disposition": false,
+      "safety": true,
+      "three_consecutive_slo_windows": false,
+      "trace_integrity": true
+    },
+    "failure_reasons": [
+      "live_recovery",
+      "three_consecutive_slo_windows",
+      "fixture_semantic_verification",
+      "evidence_closure",
+      "recovery_disposition"
+    ],
+    "passed": false,
+    "run_id": "case-12-proofix-t1-20260830T040051Z",
+    "system": "proofix"
+  }
+}

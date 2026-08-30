@@ -23,12 +23,12 @@ run_current_credential_probe
 
 if [[ "${mode}" == "fault" ]]; then
   [[ "${db_hash}" != "${billing_hash}" ]] || { echo "credential generations are unexpectedly synchronized" >&2; exit 1; }
-  python3 "${fixture_dir}/load.py" fault --base-url "${base_url}"
+  run_load fault
   echo "CASE-10 live database acceptance and stale application rejection verified"
   exit 0
 fi
 
 [[ "${db_hash}" == "${billing_hash}" ]] || { echo "credential generations remain desynchronized" >&2; exit 1; }
 [[ "${billing_rv}" == "${pod_recorded_rv}" ]] || { echo "billing pod template does not record current Secret version" >&2; exit 1; }
-python3 "${fixture_dir}/load.py" slo --base-url "${base_url}"
+run_load slo
 echo "CASE-10 safe synchronization and strict three-window SLO verified"

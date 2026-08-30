@@ -1,0 +1,3 @@
+{
+  "final_reset": "deployment.apps/reports-worker patched (no change)\ndeployment \"reports-worker\" successfully rolled out\npod/reports-worker-66db97dcf5-fbffm condition met\nCASE-04 recovery applied: storage=nvme plus dedicated=reports toleration\n"
+}

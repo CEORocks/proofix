@@ -1,0 +1,64 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-06",
+  "elapsed_seconds": 92.93706464599973,
+  "initial_snapshot_sha256": "1255977b61d63b76c541d984aaa70d6d4ae2999144a4be5836beae4c3ccc275d",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-06",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "The incident CASE-06 (ResourceQuota saturation) in namespace proofix-case-06 is resolved. The ResourceQuota 'case-06-cpu-budget' was saturated at 500m requests.cpu (hard: 500m, used: 500m), preventing checkout-api from scaling to its desired 3 replicas (each requesting 100m CPU). The namespace CPU request quota was consumed by two running checkout-api pods (2x100m = 200m) and one benchmark-owned stale canary pod (300m CPU request) labeled with 'proofix.io/benchmark-owned: true' and 'proofix.io/live-traffic: false'. By scaling deployment/stale-canary to 0 replicas, 300m CPU request quota was reclaimed, allowing checkout-api's third replica to be admitted and scheduled on node vm-4 without modifying the ResourceQuota object or reducing safe container resource requests.",
+    "recovered": true,
+    "run_id": "case-06-react-t3-20260830T022540Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.4694800003526325,
+        "source": "slo/http-and-pods#29d060b98b4d",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.592729999785661,
+        "source": "slo/http-and-pods#31ce929730c2",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 4.566340000110358,
+        "source": "slo/http-and-pods#87f77eb10fec",
+        "window_seconds": 10
+      }
+    ],
+    "system": "react",
+    "trace_path": "/tmp/proofix-fleet/artifacts/runs/case-06-react-t3-20260830T022540Z/trajectory.jsonl"
+  },
+  "run_id": "case-06-react-t3-20260830T022540Z",
+  "schema_version": "1.0",
+  "system": "react",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-06",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [],
+    "passed": true,
+    "run_id": "case-06-react-t3-20260830T022540Z",
+    "system": "react"
+  }
+}

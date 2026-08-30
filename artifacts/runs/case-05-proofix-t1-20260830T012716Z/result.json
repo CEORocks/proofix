@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-05",
+  "elapsed_seconds": 201.4417944139568,
+  "infrastructure_error": "TimeoutExpired: Command '['kubectl', '--kubeconfig', '/etc/rancher/k3s/k3s.yaml', 'rollout', 'status', 'deployment/recommendations-api', '-n', 'proofix-case-05', '--timeout=180s']' timed out after 30 seconds",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-05-proofix-t1-20260830T012716Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 1,
+  "valid": false
+}

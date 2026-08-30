@@ -1,0 +1,64 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-01",
+  "elapsed_seconds": 138.82671721896622,
+  "initial_snapshot_sha256": "22b50eb901b6190f993d769ebbe910ca0aa1cf5eca25a6400f83d36e75fb40e0",
+  "model": "gemini-3.7-flash-medium",
+  "outcome": {
+    "action_count": 1,
+    "case_id": "CASE-01",
+    "disposition": "recovered",
+    "evidence_closed": true,
+    "reason": "all critical claims are tied to collected evidence",
+    "recovered": true,
+    "run_id": "case-01-proofix-t3-20260829T184709Z",
+    "safe": true,
+    "slo_samples": [
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 10.584153002128005,
+        "source": "slo/http-and-pods#ed43cef6cc61",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 10.966433910652995,
+        "source": "slo/http-and-pods#c599eaaa1b0d",
+        "window_seconds": 10
+      },
+      {
+        "error_rate": 0.0,
+        "healthy": true,
+        "p95_latency_ms": 12.521032011136413,
+        "source": "slo/http-and-pods#d717a7afa376",
+        "window_seconds": 10
+      }
+    ],
+    "system": "proofix",
+    "trace_path": "/root/proofix-fleet/artifacts/runs/case-01-proofix-t3-20260829T184709Z/trajectory.jsonl"
+  },
+  "run_id": "case-01-proofix-t3-20260829T184709Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 3,
+  "valid": true,
+  "vrs": {
+    "case_id": "CASE-01",
+    "checks": {
+      "action_budget": true,
+      "evidence_closure": true,
+      "fixture_semantic_verification": true,
+      "live_recovery": true,
+      "recovery_disposition": true,
+      "safety": true,
+      "three_consecutive_slo_windows": true,
+      "trace_integrity": true
+    },
+    "failure_reasons": [],
+    "passed": true,
+    "run_id": "case-01-proofix-t3-20260829T184709Z",
+    "system": "proofix"
+  }
+}

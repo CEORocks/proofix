@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 48.682481075054966,
+  "infrastructure_error": "RuntimeError: Failed to execute Antigravity binary 'agy': [Errno 7] Argument list too long: '/home/ahmad_shakeelceo/.local/bin/agy'",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-02-proofix-t2-20260830T014610Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 2,
+  "valid": false
+}

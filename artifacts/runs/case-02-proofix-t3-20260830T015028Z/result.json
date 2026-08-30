@@ -1,0 +1,12 @@
+{
+  "backend": "antigravity",
+  "case_id": "CASE-02",
+  "elapsed_seconds": 38.64174143108539,
+  "infrastructure_error": "JSONDecodeError: Unterminated string starting at: line 5116 column 13 (char 199995)",
+  "model": "gemini-3.7-flash-medium",
+  "run_id": "case-02-proofix-t3-20260830T015028Z",
+  "schema_version": "1.0",
+  "system": "proofix",
+  "trial": 3,
+  "valid": false
+}

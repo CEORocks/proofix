@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -319,21 +320,6 @@ class AntigravityBackend:
 
     def respond(self, stage: str, context: Mapping[str, object]) -> Mapping[str, object]:
         schema = schema_for(stage)
-        command = [
-            self._resolve_binary(),
-            "--sandbox",
-            "--disable-slash-commands",
-            "--model",
-            self.model,
-            "--input-format",
-            "stream-json",
-            "--output-format",
-            "stream-json",
-            "--print-timeout",
-            f"{self.timeout_seconds}s",
-            "--json-schema",
-            json.dumps(schema),
-        ]
         stream_input = json.dumps(
             {
                 "event": "user",
@@ -344,6 +330,23 @@ class AntigravityBackend:
             }
         ) + "\n"
         with tempfile.TemporaryDirectory(prefix="proofix-reasoning-") as directory:
+            schema_path = Path(directory) / "schema.json"
+            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            command = [
+                self._resolve_binary(),
+                "--sandbox",
+                "--disable-slash-commands",
+                "--model",
+                self.model,
+                "--input-format",
+                "stream-json",
+                "--output-format",
+                "stream-json",
+                "--print-timeout",
+                f"{self.timeout_seconds}s",
+                "--json-schema",
+                str(schema_path),
+            ]
             try:
                 completed = subprocess.run(
                     command,
@@ -369,14 +372,17 @@ class AntigravityBackend:
                 f"Antigravity reasoning failed ({completed.returncode}): "
                 f"{detail or 'no diagnostic output'}"
             )
-        try:
-            events = [
-                json.loads(line)
-                for line in completed.stdout.splitlines()
-                if line.strip().startswith("{")
-            ]
-        except json.JSONDecodeError as exc:
-            raise RuntimeError("Antigravity did not produce valid JSON events") from exc
+        events: list[object] = []
+        for line in completed.stdout.splitlines():
+            if not line.strip().startswith("{"):
+                continue
+            try:
+                events.append(json.loads(line))
+            except json.JSONDecodeError:
+                # The CLI can cap echoed stream-input events at its display
+                # boundary. Those events are diagnostic noise; the final
+                # schema-constrained result remains a separate JSON line.
+                continue
         if not events:
             raise RuntimeError("Antigravity did not produce a result event")
         wrapper = events[-1]
@@ -438,12 +444,95 @@ def _prompt(stage: str, context: Mapping[str, object]) -> str:
             "For a final answer, attach critical claims to exact collected evidence source strings."
         ),
     }[stage]
+    serialized_context = json.dumps(dict(context), sort_keys=True)
+    if len(serialized_context) > 400_000:
+        compacted = _compact_context(context, max_string=2_000, max_items=16)
+        serialized_context = json.dumps(
+            {
+                "_proofix_context_compaction": {
+                    "original_chars": len(json.dumps(dict(context), sort_keys=True)),
+                    "original_sha256": hashlib.sha256(
+                        json.dumps(dict(context), sort_keys=True).encode()
+                    ).hexdigest(),
+                    "full_evidence_preserved_in_trajectory": True,
+                },
+                "context": compacted,
+            },
+            sort_keys=True,
+        )
+    if len(serialized_context) > 400_000:
+        serialized_context = json.dumps(
+            {
+                "_proofix_context_compaction": {
+                    "original_chars": len(serialized_context),
+                    "compacted_sha256": hashlib.sha256(
+                        serialized_context.encode()
+                    ).hexdigest(),
+                    "full_evidence_preserved_in_trajectory": True,
+                },
+                "context": _compact_context(
+                    context, max_string=500, max_items=6
+                ),
+            },
+            sort_keys=True,
+        )
     return (
         "You are the bounded reasoning component of a Kubernetes incident benchmark. "
         "Do not use tools or inspect the filesystem. Return only the schema-constrained JSON. "
         f"{instructions}\n\nINPUT:\n"
-        + json.dumps(dict(context), sort_keys=True)
+        + serialized_context
     )
+
+
+def _compact_context(
+    value: object,
+    *,
+    max_string: int,
+    max_items: int,
+    depth: int = 0,
+) -> object:
+    if depth >= 10:
+        return {"_compacted": "maximum depth reached"}
+    if isinstance(value, str):
+        if len(value) <= max_string:
+            return value
+        side = max(1, (max_string - 80) // 2)
+        return (
+            value[:side]
+            + f"...[compacted {len(value) - side * 2} chars]..."
+            + value[-side:]
+        )
+    if isinstance(value, Mapping):
+        return {
+            str(key): _compact_context(
+                item,
+                max_string=max_string,
+                max_items=max_items,
+                depth=depth + 1,
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, (list, tuple)):
+        items = list(value)
+        if len(items) <= max_items:
+            selected: list[object] = items
+        else:
+            edge = max_items // 2
+            selected = [
+                *items[:edge],
+                {"_compacted_items": len(items) - edge * 2},
+                *items[-edge:],
+            ]
+        return [
+            _compact_context(
+                item,
+                max_string=max_string,
+                max_items=max_items,
+                depth=depth + 1,
+            )
+            for item in selected
+        ]
+    return value
 
 
 def _minimal_environment() -> dict[str, str]:
