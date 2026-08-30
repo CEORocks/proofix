@@ -15,5 +15,6 @@ build/
 !artifacts/runs/
 !artifacts/runs/**
 artifacts/tmp/
+artifacts/video-build/
 state/*.db
 tmp/

@@ -22,6 +22,7 @@ ProofFix is an evidence-closed, policy-gated Kubernetes incident recovery agent 
   - [Conjunctive Verified Recovery Success (VRS)](#conjunctive-verified-recovery-success-vrs)
   - [Strict Multi-Window SLO Contract](#strict-multi-window-slo-contract)
 - [Safety & Boundary Architecture](#safety--boundary-architecture)
+- [Five-Minute Submission Video](#five-minute-submission-video)
 - [Reproducible Command Overview](#reproducible-command-overview)
 - [Authoritative Benchmark Suite & Frozen Results](#authoritative-benchmark-suite--frozen-results)
   - [The 15-Case Benchmark Suite](#the-15-case-benchmark-suite)
@@ -198,6 +199,16 @@ Every scenario enforces identical live SLO verification parameters:
 3. **Stateful Data-Loss Protection:** Hard-coded `DATA_LOSS_PROTECTION:` invariants prevent deletion or destructive modification of persistent volumes, databases, or topic partitions.
 4. **Mandatory Executable Rollback:** Every mutating action must include a reversible inverse action. If live SLO verification detects regression or partial recovery, ProofFix immediately executes the rollback.
 5. **Append-Only Hash-Chained Trace Ledger:** Every state change, observation, and policy decision is committed to `trajectory.jsonl` with SHA-256 chained hashing (`src/proofix/trace.py`), preventing post-hoc log tampering.
+
+---
+
+## Five-Minute Submission Video
+
+- [`submission_video.mp4`](submission_video.mp4) is the finished 300-second, 1080p H.264/AAC submission video with locally synthesized narration and burned-in captions.
+- [`submission_video.html`](submission_video.html) is a zero-dependency, self-playing HTML fallback with timed scenes, terminal comparisons, fullscreen controls, and the frozen metrics table.
+- `python3 tools/render_submission_video.py` deterministically regenerates both artifacts from `artifacts/benchmark/summary.json` using local `ffmpeg` and `ffprobe` executables.
+
+The video covers the CASE-01 side-by-side recovery, the nine-stage evidence-closed state machine, the Incident Recovery Packet, and the full 90-run benchmark result without making claims beyond the frozen evidence.
 
 ---
 
