@@ -1,0 +1,32 @@
+[
+  {
+    "scene": 1,
+    "duration": 45,
+    "text": "It is 3 A.M. Checkout is returning HTTP 503, and the error budget is burning. The Istio route points to subset V two, but only V one has ready backends. A chat assistant may identify that mismatch. An on-call engineer needs much more: a bounded change, an executable rollback, and proof that the service recovered under load. <break time=\"0.35s\" /> ProofFix is an evidence-closed Kubernetes recovery agent. It does not stop at a plausible diagnosis. It records the evidence, controls the action, and verifies the result before declaring victory."
+  },
+  {
+    "scene": 2,
+    "duration": 45,
+    "text": "Here, ReAct and ProofFix receive the same frozen CASE zero one incident. The ReAct baseline finds the bad route and patches V two to V one. Traffic returns, and all three SLO windows pass. But its final conclusion is not tied back to the exact evidence in its ledger. Under strict Verified Recovery Success, the run fails evidence closure. <break time=\"0.35s\" /> ProofFix is judged by a harder standard: safe, auditable recovery. Across three trials, ReAct scores zero of three. ProofFix scores three of three."
+  },
+  {
+    "scene": 3,
+    "duration": 75,
+    "text": "ProofFix replaces an open-ended chat loop with nine deterministic stages. Scope binds the namespace, budgets, and safety envelope. Observe collects Kubernetes resources, events, readiness, and live telemetry, while redacting Secrets before model context. Hypothesize creates competing causal explanations. Discriminate runs targeted tests instead of accepting the first plausible answer. Plan selects the smallest remediation and pairs it with an executable inverse. The Safety Gate rejects forbidden operations, out-of-scope targets, missing rollback, and data-loss risk. Execute applies only the approved change. Verify requires semantic checks and three consecutive live SLO windows. Close produces the Incident Recovery Packet only when every critical claim points to exact evidence. <break time=\"0.4s\" /> Every observation, decision, and tool response is preserved in an append-only S H A two fifty-six hash chain."
+  },
+  {
+    "scene": 4,
+    "duration": 75,
+    "text": "In CASE zero one, ProofFix captures sixteen relevant resources. The evidence shows traffic targeting V two, while only V one has ready pods and endpoints. The plan changes one field in the checkout Virtual Service and includes the exact inverse patch before execution. Policy confirms the namespace, target, operation, and rollback. <break time=\"0.35s\" /> After the patch, ProofFix sends one thousand live requests through each of three verification windows. Trial one records zero errors. P ninety-five latency is eleven point six milliseconds, then ten point one, then eleven point four. All three windows remain far below the two-hundred millisecond limit, and workload readiness stays healthy. If any window failed, rollback would run automatically. The final Incident Recovery Packet closes each claim against the immutable ledger. That is a strict Verified Recovery Success."
+  },
+  {
+    "scene": 5,
+    "duration": 35,
+    "text": "The frozen benchmark contains fifteen Kubernetes cases, three trials, two systems, and exactly ninety valid runs. ProofFix reaches thirty-seven point eight percent Verified Recovery Success, compared with twenty-six point seven percent for ReAct: an eleven point one percentage-point lift. Both systems make zero forbidden actions and abstain safely on the healthy control. All ninety selected trajectories verify across two thousand six hundred ninety-seven hashed events. The confidence interval includes zero, so this is promising measured improvement, not a conclusive win."
+  },
+  {
+    "scene": 6,
+    "duration": 25,
+    "text": "The lesson is simple. Root-cause accuracy is not the finish line. Reliable engineering requires a verified state transition: evidence closed, action admissible, blast radius bounded, rollback ready, and recovery proven under load. <break time=\"0.35s\" /> Do not trust the diagnosis. Trust the proof of recovery."
+  }
+]

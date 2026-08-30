@@ -92,6 +92,24 @@ def extract_scene_text(script_path: Path) -> list[SceneAudio]:
     return scenes
 
 
+def load_narration_json(path: Path) -> list[SceneAudio]:
+    data = json.loads(path.read_text())
+    scenes = [
+        SceneAudio(
+            number=int(item["scene"]),
+            duration=float(item["duration"]),
+            text=str(item["text"]),
+        )
+        for item in data
+    ]
+    expected = list(range(1, 7))
+    if [scene.number for scene in scenes] != expected:
+        raise RuntimeError("Narration JSON must contain Scenes 1 through 6 in order")
+    if tuple(scene.duration for scene in scenes) != SCENE_DURATIONS:
+        raise RuntimeError("Narration JSON scene durations do not match the frozen timeline")
+    return scenes
+
+
 def synthesize(
     scene: SceneAudio,
     output: Path,
@@ -99,6 +117,10 @@ def synthesize(
     api_key: str,
     voice_id: str,
     model_id: str,
+    stability: float,
+    similarity_boost: float,
+    style: float,
+    speed: float,
     previous_text: str | None,
     next_text: str | None,
 ) -> None:
@@ -107,11 +129,11 @@ def synthesize(
         "model_id": model_id,
         "seed": 2026 + scene.number,
         "voice_settings": {
-            "stability": 0.68,
-            "similarity_boost": 0.86,
-            "style": 0.08,
+            "stability": stability,
+            "similarity_boost": similarity_boost,
+            "style": style,
             "use_speaker_boost": True,
-            "speed": 1.12,
+            "speed": speed,
         },
     }
     if previous_text:
@@ -152,12 +174,20 @@ def atempo_chain(rate: float) -> str:
     return ",".join(f"atempo={factor:.8f}" for factor in factors)
 
 
-def fit_scene(source: Path, output: Path, duration: float) -> dict[str, float]:
+def fit_scene(
+    source: Path, output: Path, duration: float, max_tempo_rate: float
+) -> dict[str, float]:
     source_duration = media_duration(source)
     lead_in = 0.22
     tail = 0.38
     speech_target = duration - lead_in - tail
-    tempo_rate = source_duration / speech_target
+    tempo_rate = max(1.0, source_duration / speech_target)
+    if tempo_rate > max_tempo_rate:
+        raise RuntimeError(
+            f"Narration needs {tempo_rate:.3f}x tempo to fit {duration:.0f}s; "
+            f"shorten the script or raise --max-tempo-rate"
+        )
+    speech_seconds = source_duration / tempo_rate
     filters = (
         f"{atempo_chain(tempo_rate)},"
         "loudnorm=I=-16:TP=-1.5:LRA=11,"
@@ -191,11 +221,13 @@ def fit_scene(source: Path, output: Path, duration: float) -> dict[str, float]:
         "source_seconds": round(source_duration, 3),
         "target_seconds": duration,
         "tempo_rate": round(tempo_rate, 4),
+        "speech_seconds": round(speech_seconds, 3),
+        "tail_silence_seconds": round(duration - lead_in - speech_seconds, 3),
         "fitted_seconds": round(fitted_duration, 3),
     }
 
 
-def mux_video(video: Path, narration: Path, output: Path) -> float:
+def mux_video(video: Path, narration: Path, output: Path, voice_name: str) -> float:
     video_duration = media_duration(video)
     run(
         [
@@ -225,7 +257,7 @@ def mux_video(video: Path, narration: Path, output: Path) -> float:
             "-ac",
             "2",
             "-metadata:s:a:0",
-            "title=ElevenLabs Adam narration",
+            f"title=ElevenLabs {voice_name} narration",
             "-metadata:s:a:0",
             "language=eng",
             "-movflags",
@@ -241,6 +273,7 @@ def main() -> None:
     parser.add_argument(
         "--script", type=Path, default=ROOT / "docs/VIDEO_SCRIPT.md"
     )
+    parser.add_argument("--narration-json", type=Path)
     parser.add_argument(
         "--video", type=Path, default=ROOT / "submission_video.mp4"
     )
@@ -255,36 +288,58 @@ def main() -> None:
         default=ROOT / "artifacts/video-build/elevenlabs",
     )
     parser.add_argument("--voice-id", default="pNInz6obpgDQGcFmaJgB")
+    parser.add_argument("--voice-name", default="Adam")
     parser.add_argument("--model-id", default="eleven_multilingual_v2")
+    parser.add_argument("--stability", type=float, default=0.68)
+    parser.add_argument("--similarity-boost", type=float, default=0.86)
+    parser.add_argument("--style", type=float, default=0.0)
+    parser.add_argument("--speed", type=float, default=1.0)
+    parser.add_argument("--max-tempo-rate", type=float, default=1.12)
+    parser.add_argument("--reuse-sources", action="store_true")
     args = parser.parse_args()
 
     api_key = os.environ.get("ELEVENLABS_API_KEY")
-    if not api_key:
+    if not api_key and not args.reuse_sources:
         raise SystemExit("ELEVENLABS_API_KEY is required")
     args.work_dir.mkdir(parents=True, exist_ok=True)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    scenes = extract_scene_text(args.script)
+    scenes = (
+        load_narration_json(args.narration_json)
+        if args.narration_json
+        else extract_scene_text(args.script)
+    )
     report: dict[str, object] = {
         "voice_id": args.voice_id,
-        "voice_name": "Adam",
+        "voice_name": args.voice_name,
         "model_id": args.model_id,
+        "voice_settings": {
+            "stability": args.stability,
+            "similarity_boost": args.similarity_boost,
+            "style": args.style,
+            "speed": args.speed,
+        },
         "scene_durations": list(SCENE_DURATIONS),
         "scenes": [],
     }
     fitted_paths: list[Path] = []
     for index, scene in enumerate(scenes):
-        source = args.work_dir / f"scene-{scene.number:02}-adam-source.mp3"
+        source = args.work_dir / f"scene-{scene.number:02}-source.mp3"
         fitted = args.work_dir / f"scene-{scene.number:02}-fitted.wav"
-        synthesize(
-            scene,
-            source,
-            api_key=api_key,
-            voice_id=args.voice_id,
-            model_id=args.model_id,
-            previous_text=scenes[index - 1].text if index else None,
-            next_text=scenes[index + 1].text if index + 1 < len(scenes) else None,
-        )
-        timing = fit_scene(source, fitted, scene.duration)
+        if not args.reuse_sources or not source.exists():
+            synthesize(
+                scene,
+                source,
+                api_key=api_key or "",
+                voice_id=args.voice_id,
+                model_id=args.model_id,
+                stability=args.stability,
+                similarity_boost=args.similarity_boost,
+                style=args.style,
+                speed=args.speed,
+                previous_text=scenes[index - 1].text if index else None,
+                next_text=scenes[index + 1].text if index + 1 < len(scenes) else None,
+            )
+        timing = fit_scene(source, fitted, scene.duration, args.max_tempo_rate)
         timing.update(
             {
                 "scene": scene.number,
@@ -301,8 +356,10 @@ def main() -> None:
         )
 
     concat_file = args.work_dir / "concat.txt"
-    concat_file.write_text("".join(f"file '{path}'\n" for path in fitted_paths))
-    narration = args.work_dir / "elevenlabs-adam-narration.wav"
+    concat_file.write_text(
+        "".join(f"file '{path.resolve()}'\n" for path in fitted_paths)
+    )
+    narration = args.work_dir / "elevenlabs-narration.wav"
     run(
         [
             "ffmpeg",
@@ -322,7 +379,7 @@ def main() -> None:
         ]
     )
     report["narration_seconds"] = round(media_duration(narration), 3)
-    output_duration = mux_video(args.video, narration, args.output)
+    output_duration = mux_video(args.video, narration, args.output, args.voice_name)
     report["output_seconds"] = round(output_duration, 3)
     report["output_file"] = str(args.output)
     report_path = args.work_dir / "render-report.json"
